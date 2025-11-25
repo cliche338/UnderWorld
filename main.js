@@ -1,6 +1,7 @@
 import * as GameLogic from './game_logic.js';
 import { elements, updateExchangeDisplay } from './ui_manager.js';
 
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. 啟動遊戲入口：檢查本地登入資訊
     GameLogic.checkLocalLogin(); 
