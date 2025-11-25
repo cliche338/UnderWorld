@@ -1,0 +1,148 @@
+
+<head>
+    <title>地下城冒險 RPG</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+
+<body>
+    <div class="game-container">
+        
+        <div id="auth-area" class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>👤 帳號管理</h3>
+                <button id="how-to-play-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #f39c12; color: white;">
+                    ❓ 遊戲提示
+                </button>
+            </div>
+            
+            <div id="logged-out-view">
+                <p style="margin-bottom: 10px;">請輸入帳號密碼來登入或創建帳號：</p>
+                
+                <div style="margin-bottom: 8px;">
+                    <label for="username-input">帳號：</label>
+                    <input type="text" id="username-input" placeholder="請輸入帳號" required>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label for="password-input">密碼：</label>
+                    <input type="password" id="password-input" placeholder="請輸入密碼" required>
+                </div>
+                
+                <button id="login-btn" style="background-color: #3498db; margin-right: 15px;">登入</button>
+                
+                <button id="create-account-btn" style="background-color: #2ecc71;">創建帳號</button>
+
+                <div style="margin-top: 10px; font-size: 0.9em;">
+                    <a href="#" onclick="alert('請聯繫管理員重設密碼'); return false;">忘記密碼？</a>
+                </div>
+            </div>
+            <div id="logged-in-view" style="display: none;">
+                <p>歡迎回來，<span id="current-username"></span>！</p>
+                <button id="logout-btn">登出</button>
+            </div>
+        </div>
+
+        <div id="game-content" style="display: none;">
+            
+            <div class="game-layout">
+
+                <div class="left-panel">
+                    <div id="status-display" class="panel">
+                        <h3>⚔️ 冒險家狀態</h3>
+                        
+                        <p>生命：<span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
+                        
+                        <p>攻擊：<span id="attack-value">0</span></p>
+                        <p>防禦：<span id="defense-value">0</span></p>  <p>金幣：<span id="gold-value">0</span></p>
+                        
+                        <p>深度：<span id="depth-value">0</span> 層</p>
+                        <p>耀魂石：<span id="stones-value">0</span> 💎</p>
+                        
+                        <hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
+
+                        <p>武器：<span id="equipped-weapon-name">無</span></p>
+                        <p>防具：<span id="equipped-armor-name">無</span></p>
+                        <p>項鍊：<span id="equipped-necklace-name">無</span></p>
+                        <p>戒指：<span id="equipped-ring-name">無</span></p>
+
+                        <button id="inventory-btn">背包</button>
+                    </div>
+                </div>
+
+                <div id="hub-area" class="panel">
+                        <h3>🏰 城鎮</h3>        
+                    
+                        <div id="shop-area" class="panel">
+                            <h3>💰 雜貨鋪</h3>
+                            <div id="shop-inventory-list">正在載入商品...</div>
+                        </div>
+
+                        <div id="stone-exchange" class="panel" style="border: 1px dashed #aaa;">
+                            <h4>✨ 耀魂石兌換所 (10 💰 : 1 💎)</h4>
+                            <input type="number" id="gold-amount-input" value="100" min="10" step="10" style="width: 80px;">
+                            <button id="exchange-btn">兌換</button>
+                            <span>可兌換 <span id="exchange-result">10</span> 💎</span>
+                        </div>
+
+                        <div style="margin-top: 15px;">
+                            <p>使用耀魂石強化你的能力：</p>
+                            <button id="upgrade-hp-btn">永久 HP+5</button>
+                            <button id="upgrade-attack-btn">永久 攻擊+5</button>
+                        </div>
+                    </div> 
+
+                <div class="right-panel">
+    
+                    <div id="game-log" class="panel log">
+                        <h3>📜 冒險日誌</h3>
+                        <div id="messages">歡迎來到地下世界！</div>
+                    </div>
+
+                    <div id="controls-area" class="panel">
+                        <h3 id="current-stage-title">下一步行動</h3>
+                        
+                        <div id="class-selection">
+                            <button id="select-knight-btn">🛡️ 騎士 (+10 HP)</button>
+                            <button id="select-merchant-btn">💰 商販 (+50 金幣)</button>
+                            <button id="select-thief-btn">🗡️ 盜賊 (+5 攻擊)</button>
+                        </div>
+
+                <div id="adventure-actions">
+    
+                    <div id="explore-mode-buttons"> 
+                        <button id="explore-btn" style="font-size: 1.2em;">🎲 繼續探險</button>
+                        <button id="rest-btn">⛺ 確認回城步數</button>
+                    </div>
+                </div>  
+
+                    <div id="combat-mode-buttons" style="display: none;">
+                        <button id="attack-btn" style="background-color: #e74c3c;">⚔️ 攻擊</button>
+                        <button id="run-btn" style="background-color: #f39c12;">🏃 逃跑</button>
+                    </div>
+                    
+                    <div id="death-mode-buttons" style="display: none;">
+                        <button id="revive-btn" style="background-color: #3498db; font-size: 1.2em;">🔙 回到城鎮 (復原進度)</button>
+                    </div>
+                    
+                </div>
+                    
+
+
+                    <div id="backpack-content-panel" class="panel" style="display: none;">
+                        <h3>🎒 背包</h3>
+                        <div id="inventory-list">目前沒有物品。</div>
+                        <button id="close-inventory-btn" style="background-color: #666;">關閉背包</button>
+
+                        <div id="materials-section" style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px;">
+                            <h4>📦 販售素材</h4>
+                            <div id="material-inventory-list">素材清單載入中...</div>
+                        </div> 
+                    </div> 
+                    
+                </div>
+            </div> 
+        </div> 
+    </div> 
+                    
+    <script type="module" src="main.js"></script>
+</body>

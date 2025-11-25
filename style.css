@@ -1,0 +1,116 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0; /* 確保沒有多餘邊距 */
+}
+
+/* --- 核心容器：確保寬度足夠 Flex 排版 --- */
+.game-container {
+    width: 95%;          /* 用更多螢幕寬度 */
+    max-width: 1900px;   /* 關鍵修正：確保有足夠寬度並排 */
+    background-color: #696969;
+    border: 2px solid #333;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box; 
+}
+
+/* --- 關鍵排版 CSS (讓它變橫的) --- */
+.game-layout {
+    display: flex;       /* 啟動彈性排版 */
+    gap: 20px;           /* 左右欄位的間距 */
+    align-items: flex-start; /* 頂部對齊 */
+}
+
+.left-panel {
+    flex: 2;             /* 左邊佔 1 份寬度 (較窄，放狀態) */
+    min-width: 250px;    
+}
+
+.right-panel {
+    flex: 3;             /* 右邊佔 3 份寬度 (較寬，放內容) */
+}
+
+/* 手機版適應：螢幕太小時自動變直 */
+@media (max-width: 768px) {
+    .game-layout {
+        flex-direction: column;
+    }
+    .left-panel, .right-panel {
+        width: 100%;
+    }
+}
+/* ---------------------------------- */
+
+.panel {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px; /* 圓角 */
+    background-color: #fff;
+}
+
+#status-display {
+    background-color: #e6f7ff; /* 狀態欄淡藍色 */
+}
+
+#game-log {
+    height: 430px; 
+    overflow-y: scroll;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+#messages {
+    padding-top: 5px;
+}
+
+#hub-area {
+    background-color: #fffbe6; /* 城鎮淡黃色 */
+}
+
+/* 按鈕樣式美化 */
+#controls-area button {
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+#controls-area button:hover {
+    background-color: #45a049; 
+}
+
+#explore-btn,
+#rest-btn {
+    /* 確保字體大小統一，並使用 !important 覆蓋行內樣式 */
+    font-size: 1.2em !important; 
+    
+    /* 確保有足夠的垂直空間 */
+    padding: 10px 15px !important;
+    
+    /* 確保行高一致 */
+    line-height: 1.2em; 
+}
+
+/* 確保這個規則持續存在 */
+#adventure-actions button {
+    min-width: 180px; 
+}
+
+input[type="text"], input[type="number"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
