@@ -972,11 +972,10 @@ export function initializeGame() {
         if (elements.adventureActions) elements.adventureActions.style.display = 'none'; 
         if (elements.hubArea) elements.hubArea.style.display = 'block';
         
-        // 🚨 關鍵修正點：使用 Object.assign() 安全地重置狀態
         const initialPlayerState = { 
             hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, 
             className: "", equipment: { weapon: null, armor: null }, 
-            inventory: [], materials: {}, // 必須包含 materials 屬性
+            inventory: [], materials: {},
             actionsSinceTown: 0, actionsToTownRequired: 0 
         };
         
@@ -1087,7 +1086,11 @@ export function handleLogout() {
     elements.classSelection.style.display = 'none';
     
     // 5. 清除遊戲數據 (確保下次登入是新進度)
-    State.player = {}; // 簡單重置 player 物件 (initializeGame 時會重建)
+    Object.assign(State.player, {
+        hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, className: "", 
+        equipment: { weapon: null, armor: null }, inventory: [], materials: {}, 
+        actionsSinceTown: 0, actionsToTownRequired: 0 
+    });
     
     updateDisplay();
 }
