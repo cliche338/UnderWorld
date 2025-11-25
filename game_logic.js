@@ -953,15 +953,15 @@ export function handleEscape() {
 
 export function initializeGame() {
     
-    // 1. 載入永久數據 (現在這個步驟可以安全地放在這裡)
+    // 1. 載入永久數據
     loadPermanentData(); 
 
     // 2. 嘗試載入 Run Data (上次的存檔)
     if (loadGame()) {
-        // 載入成功
+        // 載入成功，直接進入冒險模式
         logMessage(`歡迎回來，${currentUsername}！已載入角色 [${State.player.className}] 於地城第 ${State.player.depth} 層的進度。`, 'cyan');
         
-        setGameActive(true); // 🚨 設置遊戲活躍狀態
+        setGameActive(true);
         enterTownMode(); 
         
     } else {
@@ -972,14 +972,15 @@ export function initializeGame() {
         if (elements.adventureActions) elements.adventureActions.style.display = 'none'; 
         if (elements.hubArea) elements.hubArea.style.display = 'block';
         
+        // 🚨 關鍵修正點：使用 Object.assign() 安全地重置狀態
         const initialPlayerState = { 
             hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, 
             className: "", equipment: { weapon: null, armor: null }, 
-            inventory: [], materials: {}, // ⚠ 確保有 materials 屬性
+            inventory: [], materials: {}, // 必須包含 materials 屬性
             actionsSinceTown: 0, actionsToTownRequired: 0 
         };
-
-        Object.assign(State.player, initialPlayerState);
+        
+        Object.assign(State.player, initialPlayerState); // 覆蓋現有物件的屬性，不會引發 TypeError
     }
 
     // 介面更新
@@ -1002,7 +1003,6 @@ export function handleSuccessfulLogin(username) {
     // 啟動遊戲 (載入永久數據和 Run Data)
     initializeGame();
 }
-
 
 export function handleCreateAccount() {
     // 1. 從 UI 元素中獲取輸入值
