@@ -972,7 +972,14 @@ export function initializeGame() {
         if (elements.adventureActions) elements.adventureActions.style.display = 'none'; 
         if (elements.hubArea) elements.hubArea.style.display = 'block';
         
-        State.player = { hp: 0, maxHp: 0, attack: 0, gold: 0, depth: 0, className: "", equipment: { weapon: null, armor: null }, inventory: [], actionsSinceTown: 0, actionsToTownRequired: 0 };
+        const initialPlayerState = { 
+            hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, 
+            className: "", equipment: { weapon: null, armor: null }, 
+            inventory: [], materials: {}, // ⚠ 確保有 materials 屬性
+            actionsSinceTown: 0, actionsToTownRequired: 0 
+        };
+
+        Object.assign(State.player, initialPlayerState);
     }
 
     // 介面更新
