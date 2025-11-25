@@ -971,6 +971,7 @@ export function initializeGame() {
         if (elements.classSelection) elements.classSelection.style.display = 'flex'; 
         if (elements.adventureActions) elements.adventureActions.style.display = 'none'; 
         if (elements.hubArea) elements.hubArea.style.display = 'block';
+        if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'none';
         
         const initialPlayerState = { 
             hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, 
