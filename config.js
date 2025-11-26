@@ -31,12 +31,15 @@ export const MONSTERS = [
         { id: 'demon2', name: "火焰惡魔", hp: 80, attack: 35, goldReward: 90, difficulty: 3 },
 
     // Boss 怪物 (Difficulty 4 & 5)
-        { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 3700, attack: 370, goldReward: 370, difficulty: 10, isBoss: true },
         { id: 'boss1', name: "地城守衛者", hp: 200, attack: 40, goldReward: 300, difficulty: 4, isBoss: true },
         { id: 'boss2', name: "遠古巨龍", hp: 500, attack: 60, goldReward: 1000, difficulty: 5, isBoss: true },
         { id: 'boss3', name: "大樹守衛", hp: 1500, attack: 20, goldReward: 500, difficulty: 4, isBoss: true },
         { id: 'boss4', name: "炸彈惡魔", hp: 200, attack: 75, goldReward: 200, difficulty: 5, isBoss: true },
 
+    // 世界級 Boss
+        { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 3700, attack: 370, goldReward: 370, difficulty: 10, isBoss: true },
+        { id: 'ori-body', name: "奧利哈鋼之軀", hp: 70000, attack: 7700, goldReward: 370, difficulty: 10, isBoss: true },
+        { id: 'ori-god', name: "奧利哈鋼之神", hp: 7777777777777, attack: 777777, goldReward: 7777, difficulty: 10, isBoss: true },
      ];   
 
 export const ITEMS = [
@@ -57,7 +60,7 @@ export const ITEMS = [
         { id: 'a3', name: '泰坦合金板甲', type: 'armor', hp: 170, defense: 35, value: 200, price: 2500, rarity: 4 },
         { id: 'a4', name: '死者肩甲', type: 'armor', hp: 50, defense: 25, value: 80, price: 750, rarity: 3 },
         { id: 'a5', name: '僧侶袈裟', type: 'armor', hp: 120, defense: 20, value: 780, price: 1500, rarity: 3 },
-        
+         
     // 項鍊
         { id: 'ori-necklace', name: '奧利哈鋼之心', type: 'necklace', hp: 200, defense: 35, value: 1500, price: 3700, rarity: 10 },
         { id: 'n1', name: '守護項鍊', type: 'necklace', hp: 20, defense: 5, value: 30, price: 500, rarity: 2 },

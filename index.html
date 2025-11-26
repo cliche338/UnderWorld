@@ -46,14 +46,13 @@
             
             <div class="game-layout">
 
-                <div class="left-panel">
-                    <div id="status-display" class="panel">
+                <div id="status-display" class="panel">
                         <h3>⚔️ 冒險家狀態</h3>
                         
-                        <p>生命：<span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
+                        <p>HP：<span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
                         
-                        <p>攻擊：<span id="attack-value">0</span></p>
-                        <p>防禦：<span id="defense-value">0</span></p>  <p>金幣：<span id="gold-value">0</span></p>
+                        <p>ATK：<span id="attack-value">0</span></p>
+                        <p>DEF：<span id="defense-value">0</span></p>  <p>金幣：<span id="gold-value">0</span></p>
                         
                         <p>深度：<span id="depth-value">0</span> 層</p>
                         <p>耀魂石：<span id="stones-value">0</span> 💎</p>
@@ -67,7 +66,6 @@
 
                         <button id="inventory-btn">背包</button>
                     </div>
-                </div>
 
                 <div id="hub-area" class="panel">
                         <h3>🏰 城鎮</h3>        
@@ -85,18 +83,18 @@
                         </div>
 
                         <div style="margin-top: 15px;">
-                            <p>使用耀魂石強化你的能力：</p>
+                            <span class="nowrap-text">使用耀魂石強化你的能力：</span>
                             <button id="upgrade-hp-btn">永久 HP+5</button>
-                            <button id="upgrade-attack-btn">永久 攻擊+5</button>
-                        </div>
+                            <button id="upgrade-attack-btn">永久 ATK+5</button>
+                            <button id="upgrade-defense-btn">永久 DEF+5</button> </div>
                     </div> 
 
-                <div class="right-panel">
+                <div id="log-and-controls-group">
     
                     <div id="game-log" class="panel log">
                         <h3>📜 冒險日誌</h3>
                         <div id="messages">歡迎來到地下世界！</div>
-                    </div>
+                        </div>
 
                     <div id="controls-area" class="panel">
                         <h3 id="current-stage-title">下一步行動</h3>
@@ -124,10 +122,8 @@
                         <button id="revive-btn" style="background-color: #3498db; font-size: 1.2em;">🔙 回到城鎮 (復原進度)</button>
                     </div>
                     
-                </div>
+                        </div>
                     
-
-
                     <div id="backpack-content-panel" class="panel" style="display: none;">
                         <h3>🎒 背包</h3>
                         <div id="inventory-list">目前沒有物品。</div>
@@ -137,7 +133,7 @@
                             <h4>📦 販售素材</h4>
                             <div id="material-inventory-list">素材清單載入中...</div>
                         </div> 
-                    </div> 
+                        </div> 
                     
                 </div>
             </div> 

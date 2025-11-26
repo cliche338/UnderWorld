@@ -6,7 +6,7 @@ export let isCombatActive = false;
 export let gameActive = false;
 export let currentUsername = null;
 export let isInventoryOpen = false;
-export let permanentData = { stones: 0, hpBonus: 0, attackBonus: 0 };
+export let permanentData = { stones: 0, hpBonus: 0, attackBonus: 0, defenseBonus: 0,};
 
 export let player = {
         hp: 0,

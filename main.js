@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.goldAmountInput.oninput = updateExchangeDisplay; 
     elements.upgradeHpBtn.onclick = GameLogic.handleUpgradeHp;
     elements.upgradeAttackBtn.onclick = GameLogic.handleUpgradeAttack;
-
+    elements.upgradeDefenseBtn.onclick = GameLogic.handleUpgradeDefense;
+    
     elements.howToPlayBtn.onclick = GameLogic.showHowToPlay;
 });
 

@@ -1,118 +1,230 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: "Cinzel", "Segoe UI", Arial, sans-serif;
+    background: #0d0d0d repeat;
+    background-size: cover;
+    margin: 0;
     display: flex;
     justify-content: center;
-    padding: 20px;
-    margin: 0; /* 確保沒有多餘邊距 */
+    padding: 25px;
+    color: #f7f3e9;
 }
 
-/* --- 核心容器：確保寬度足夠 Flex 排版 --- */
+/* 主框架 */
 .game-container {
-    width: 95%;          /* 用更多螢幕寬度 */
-    max-width: 1900px;   /* 關鍵修正：確保有足夠寬度並排 */
-    background-color: #696969;
-    border: 2px solid #333;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 1900px;
+    background: rgba(25, 25, 25, 0.85);
+    border: 3px solid #6b5d4d;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(255, 210, 87, 0.15);
     padding: 20px;
-    box-sizing: border-box; 
 }
 
-/* --- 關鍵排版 CSS (讓它變橫的) --- */
+/* 橫向排版 */
 .game-layout {
-    display: flex;       /* 啟動彈性排版 */
-    gap: 20px;           /* 左右欄位的間距 */
-    align-items: flex-start; /* 頂部對齊 */
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
 }
 
-.left-panel {
-    flex: 2;             /* 左邊佔 1 份寬度 (較窄，放狀態) */
-    min-width: 250px;    
+/* 範圍比例 */
+/*.left-panel { flex: 2; min-width: 260px; }
+.right-panel { flex: 3; }*/
+
+/* 第 1 欄：冒險家狀態 */
+#status-display { 
+    flex: 1; /* 佔 1 份比例 (最窄) */
+    min-width: 200px;
 }
 
-.right-panel {
-    flex: 3;             /* 右邊佔 3 份寬度 (較寬，放內容) */
+/* 第 2 欄：城鎮 */
+#hub-area { 
+    flex: 2; /* 佔 2 份比例 (較寬) */
+    min-width: 300px;
 }
 
-/* 手機版適應：螢幕太小時自動變直 */
-@media (max-width: 768px) {
-    .game-layout {
-        flex-direction: column;
-    }
-    .left-panel, .right-panel {
-        width: 100%;
-    }
+/* 第 3 欄：包裹日誌和控制區塊的新容器 */
+#log-and-controls-group { 
+    flex: 2; /* 佔 2 份比例 (較寬) */
+    display: flex; 
+    flex-direction: column; /* 讓內部元素垂直堆疊 */
 }
-/* ---------------------------------- */
 
+/* 確保 #game-log 在新的容器內能夠擴展 */
+#game-log {
+    flex-grow: 1; /* 讓日誌區塊盡可能佔滿上方剩餘空間 */
+    /* 保持 height: 450px; 的設定，或是移除它讓 flex-grow 作用 */
+    margin-bottom: 15px; /* 與下方的控制區塊保持間距 */
+}
+
+/* 面板樣式 */
 .panel {
-    border: 1px solid #ccc;
+    background: #1b1b1b;
+    border: 2px solid #42392c;
+    border-radius: 10px;
     padding: 15px;
     margin-bottom: 15px;
-    border-radius: 8px; /* 圓角 */
-    background-color: #fff;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
 }
 
+/* 狀態欄 */
 #status-display {
-    background-color: #e6f7ff; /* 狀態欄淡藍色 */
+    background: #1e2d2f;
+    border-color: #2c4749;
+   
 }
 
+/* 日誌（冒險訊息） */
 #game-log {
-    height: 430px; 
-    overflow-y: scroll;
-    background-color: #333;
-    color: #fff;
+    height: 450px;
+    overflow-y: auto;
+    background: #000;
+    color: #d6d6d6;
     padding: 10px;
     border-radius: 8px;
-    margin-bottom: 15px;
+    border: 2px solid #4a3927;
+    font-family: "Courier New", monospace;
+}
+
+.nowrap-text {
+    white-space: nowrap; /* **關鍵：強制文本保持在單行** */
+    display: inline-block; /* 確保它能與後面的按鈕保持在同一行（如果它們本來是行內元素）*/
+    margin-right: 10px; /* 增加與後面按鈕的間距 */
+}
+
+/* 城鎮 */
+#hub-area {
+    background: #3d3326;
+    border-color: #6e5a3d;
+    color: #f5e9c5;
+    max-height: 600px;
 }
 
 #messages {
     padding-top: 5px;
 }
 
-#hub-area {
-    background-color: #fffbe6; /* 城鎮淡黃色 */
+#hub-area > div:last-child {
+    display: flex;
+    justify-content: space-between; 
+    flex-wrap: nowrap; 
+    gap: 10px; 
 }
 
-/* 按鈕樣式美化 */
-#controls-area button {
-    padding: 10px 15px;
-    margin: 5px;
+#hub-area > div:last-child > button[id^="upgrade-"] {
+    display: block;        /* 【關鍵】讓按鈕成為塊級元素，強制垂直堆疊 */
+    width: 80%;           /* 讓按鈕寬度盡可能拉伸，美觀對齊 */
+    margin: 5px 0 10px 0;  /* 設置按鈕間隔 */
+    min-width: unset;      /* 移除最小寬度限制 */
+    text-align: center;    /* 內容居中 */
+    box-sizing: border-box; 
+}
+
+#hub-area > div:last-child > button[id^="upgrade-"] {
+    flex-grow: 1; 
+    flex-shrink: 1;
+    /* 讓三個按鈕平均分配寬度，略小於 33.33% 以預留 gap 空間 */
+    flex-basis: calc(33.33% - 7px); 
+    
+    /* 調整內距 (padding) 來控制方塊大小，增加垂直空間 */
+    padding: 15px 5px; 
+    
+    /* 移除通用樣式中的最小寬度限制 */
+    min-width: 100px; 
+    
+    /* 確保文字居中 */
+    text-align: center; 
+    
+    /* 讓文字可以換行，這樣按鈕不會過寬 */
+    white-space: normal; 
+    line-height: 1.2;
+    white-space: pre-wrap;
+}
+
+/* ---------------- 按鈕樣式 ---------------- */
+#controls-area button,
+#adventure-actions button {
     cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #4CAF50;
-    color: white;
-    font-size: 14px;
-    transition: background-color 0.2s;
+    border: 2px solid #bfa76f;
+    font-size: 1em;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: linear-gradient(#4e3b27, #2f1f15);
+    color: #f5e9c5;
+    transition: 0.25s ease;
+    min-width: 160px;
+    box-shadow: 0px 0px 6px rgba(255, 215, 90, 0.25);
 }
 
-#controls-area button:hover {
-    background-color: #45a049; 
+#controls-area button:hover,
+#adventure-actions button:hover {
+    background: linear-gradient(#ab842d, #674e1a);
+    border-color: #e8c26a;
+    box-shadow: 0 0 10px rgba(255,255,150,0.6);
 }
 
 #explore-btn,
 #rest-btn {
-    /* 確保字體大小統一，並使用 !important 覆蓋行內樣式 */
-    font-size: 1.2em !important; 
-    
-    /* 確保有足夠的垂直空間 */
+    font-size: 1.15em !important;
     padding: 10px 15px !important;
-    
-    /* 確保行高一致 */
-    line-height: 1.2em; 
 }
 
-/* 確保這個規則持續存在 */
-#adventure-actions button {
-    min-width: 180px; 
+#shop-area button,
+#shop-inventory-list button {
+    padding: 3px 9px; 
 }
 
+/* 輸入框 */
 input[type="text"], input[type="number"], input[type="password"] {
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 2px solid #6e5a3d;
     border-radius: 4px;
-    width: 200px; 
-    box-sizing: border-box; 
+    width: 200px;
+    background: #2a241b;
+    color: #ece3c4;
+}
+
+input:focus {
+    outline: none;
+    border-color: #d8b76d;
+    box-shadow: 0 0 6px rgba(255,220,150,0.7);
+}
+
+/* 手機響應式 */
+@media (max-width: 768px) {
+    .game-layout { flex-direction: column; }
+    
+    /* 讓三個主要區塊都佔 100% 寬度 */
+    #status-display, 
+    #hub-area, 
+    #log-and-controls-group { 
+        width: 100%; 
+        min-width: unset; /* 移除最小寬度限制 */
+        flex: unset;      /* 移除 flex 比例設定 */
+    }
+}
+
+
+/* 永久強化、兌換等功能按鈕統一樣式 */
+button,
+input[type="button"],
+input[type="submit"] {
+    cursor: pointer;
+    border: 2px solid #bfa76f;
+    font-size: 1em;
+    border-radius: 6px;
+    padding:4px 8px;
+    background: linear-gradient(#4e3b27, #2f1f15);
+    color: #f5e9c5;
+    transition: 0.25s ease;
+    min-width: 160px;
+    box-shadow: 0px 0px 6px rgba(255, 215, 90, 0.25);
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+    background: linear-gradient(#ab842d, #674e1a);
+    border-color: #e8c26a;
+    box-shadow: 0 0 10px rgba(255,255,150,0.6);
 }

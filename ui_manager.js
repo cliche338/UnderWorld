@@ -58,6 +58,7 @@ export const elements = {
         hubArea: document.getElementById('hub-area'),
         upgradeHpBtn: document.getElementById('upgrade-hp-btn'),
         upgradeAttackBtn: document.getElementById('upgrade-attack-btn'),
+        upgradeDefenseBtn: document.getElementById('upgrade-defense-btn'),
 
         classSelection: document.getElementById('class-selection'),
         adventureActions: document.getElementById('adventure-actions'),
@@ -261,16 +262,17 @@ export function updateDisplay() {
     updateExchangeDisplay(); //
 
     // 5. 按鈕文字更新 (例如永久升級按鈕)
-    elements.upgradeHpBtn.textContent = `永久 HP+5 (消耗 ${UPGRADE_COST} 💎) [當前加成: +${permanentData.hpBonus}]`; //
-    elements.upgradeAttackBtn.textContent = `永久 攻擊+5 (消耗 ${UPGRADE_COST} 💎) [當前加成: +${permanentData.attackBonus}]`; //
+    elements.upgradeHpBtn.textContent = `永久 HP+5 (消耗 ${UPGRADE_COST} 💎) [當前加成: +${permanentData.hpBonus}]`; 
+    elements.upgradeAttackBtn.textContent = `永久 ATK+5 (消耗 ${UPGRADE_COST} 💎) [當前加成: +${permanentData.attackBonus}]`; 
+    elements.upgradeDefenseBtn.textContent = `永久 DEF+5 (消耗 ${UPGRADE_COST} 💎) [當前加成: +${permanentData.defenseBonus}]`;
 }
 
 export function updateExchangeDisplay() {
-    let goldToExchange = parseInt(elements.goldAmountInput.value); //
+    let goldToExchange = parseInt(elements.goldAmountInput.value); 
     
-    if (isNaN(goldToExchange) || goldToExchange <= 0) { //
-        goldToExchange = 0; //
+    if (isNaN(goldToExchange) || goldToExchange <= 0) { 
+        goldToExchange = 0; 
     }
-    const stonesResult = Math.floor(goldToExchange / STONE_CONVERSION_RATE); //
-    elements.exchangeResult.textContent = stonesResult; //
+    const stonesResult = Math.floor(goldToExchange / STONE_CONVERSION_RATE); 
+    elements.exchangeResult.textContent = stonesResult; 
 }

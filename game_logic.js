@@ -39,6 +39,9 @@ export function showHowToPlay() {
         
         🎯目標 : 
         在地城中探索得越深越好，並收集稀有裝備！
+        抵達第10000層時，挑戰奧利哈鋼之神！
+        祝你遊戲愉快！🎉
+        
     `;
     
     // 使用 alert 簡潔地顯示說明，您也可以使用更複雜的 Modal 介面
@@ -340,7 +343,7 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
 
     State.player.depth = 1;
     State.player.className = className;
-    State.player.defense = 0; // 確保有初始值
+    State.player.defense = 0 + State.permanentData.defenseBonus;
     
     // 【關鍵修正：統一且完整的設備初始化】
     State.player.equipment = { 
@@ -382,60 +385,74 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
 
 export function getRandomMonster() {
     
-    // 1. Boss 檢查
     const currentDepth = State.player.depth;
-
-    if (currentDepth > 0 && currentDepth % 20 === 0) { // 【修正 1：每 20 層觸發 Boss】
+    
+    // 1. Boss 檢查 (只在 20 的倍數時運行)
+    if (currentDepth > 0 && currentDepth % 20 === 0) { 
         
         let bossId = null;
         
-        if (currentDepth % 250 === 0) { 
-            bossId = 'ori-shadow'; // 奧利哈鋼幻影
-        } else {
-            // 處理一般 Boss 難度 (20, 40, 60, 80 層)
-            logMessage(`🚨 警報！地城深處傳來強大壓力...`, 'red');
-            let bossDifficulty = currentDepth >= 60 ? 5 : 4; // 調整 Boss 難度門檻
+        // 【特殊 Boss 優先級判斷】
+        if (currentDepth === 10000) { 
+            bossId = 'ori-god'; 
+            logMessage('🚨 警報！奧利哈鋼神即將降臨...', 'red'); 
+        } else if (currentDepth === 5000) { 
+            bossId = 'ori-body'; 
+            logMessage('🚨 警報！奧利哈鋼之軀準備就緒...', 'red'); 
+        } else if (currentDepth % 250 === 0) { 
+            bossId = 'ori-shadow'; 
+            logMessage('🚨 警報！奧利哈鋼幻影現身...', 'red');
+        } 
+        // 2. 處理一般 Boss 
+        else { 
+            let bossDifficulty = currentDepth >= 60 ? 5 : 4;
             const availableBosses = MONSTERS.filter(m => m.isBoss && m.difficulty === bossDifficulty);
             
             if (availableBosses.length > 0) {
                 const randomIndex = Math.floor(Math.random() * availableBosses.length);
                 bossId = availableBosses[randomIndex].id;
+                logMessage(`🚨 警報！地城深處傳來強大壓力...`, 'red'); // 移到這裡輸出
             }
         }
         
+        // 3. 返回 Boss 怪物
         if (bossId) {
             const boss = MONSTERS.find(m => m.id === bossId);
             if (boss) {
-                logMessage(`🚨 警報！你遭遇了 ${boss.name}！`, 'red');
                 return JSON.parse(JSON.stringify(boss));
             }
         }
+        
+        // 🚨 關鍵修正：如果 Boss 抽選失敗，但在 Boss 樓層，則返回 null 或最簡單的怪物，避免繼續執行普通怪物邏輯
+        // 這裡暫時讓它進入普通抽選，這部分是遊戲設計的權衡
     }
     
-    // 2. 普通怪物生成邏輯
-    let targetDifficulty = 1; // 預設為最低難度
+    // ----------------------------------------------------
+    // 普通怪物生成邏輯 (如果不是 Boss 樓層，或 Boss 抽選失敗)
+    // ----------------------------------------------------
+    
+    let targetDifficulty = 1;
 
     // 根據深度調整難度門檻
-    if (State.player.depth >= 30) { 
+    if (currentDepth >= 30) { 
         targetDifficulty = 3;
-    } else if (State.player.depth >= 5) { 
+    } else if (currentDepth >= 5) { 
         targetDifficulty = 2;
     }
     
-    // 過濾出所有符合條件的普通怪物 (MONSTERS 從 config.js 引入)
     const allAvailableMonsters = MONSTERS.filter(m => !m.isBoss && m.difficulty <= targetDifficulty);
     
     let weightedPool = [];
     
-    // 3. 根據難度設定權重 (確保難度分佈合理)
+    // 根據難度設定權重
     allAvailableMonsters.forEach(monster => {
         let weight = 0;
         if (monster.difficulty === 2) {
-            weight = 5; // 中階怪物權重最高
+            weight = 5; 
         } else if (monster.difficulty === 1) {
-            weight = 3; // 低階怪物權重中等
+            weight = 3; 
         } else if (monster.difficulty === 3) {
-            weight = 2; // 高階怪物權重最低
+            weight = 2; 
         }
         
         for (let i = 0; i < weight; i++) {
@@ -660,6 +677,24 @@ export function handleUpgradeAttack() {
     logMessage(`💪 永久攻擊力 +5 成功！[當前加成: +${State.permanentData.attackBonus}]`, 'lightgreen');
     savePermanentData();
     updateDisplay(); 
+}
+
+export function handleUpgradeDefense() {
+    if (State.permanentData.stones < UPGRADE_COST) {
+        logMessage(`❌ 耀魂石不足，需要 ${UPGRADE_COST} 💎。`, 'red');
+        return;
+    }
+    
+    State.permanentData.stones -= UPGRADE_COST;
+    State.permanentData.defenseBonus += 5; // 更新永久數據
+
+    // 套用即時效果到當前 Run Data
+    State.player.defense += 5; 
+
+    logMessage(`🛡️ 永久防禦力 +5 成功！[當前加成: +${State.permanentData.defenseBonus}]`, 'lightgreen');
+    savePermanentData(); // 儲存永久數據
+
+    updateDisplay(); // 統一更新畫面
 }
 
 export function handleAttack() {
@@ -959,7 +994,6 @@ export function handleRest(isAuto = false) {
     
     updateDisplay();
     
-    // 【關鍵修正：函式到此結束，移除所有可能導致錯誤訊息的檢查】
 }
 
 export function enterTownMode() {
@@ -994,8 +1028,7 @@ export function handleRevive() {
 
     if (success) {
         setGameActive(true); 
-        
-        // 【關鍵修正：強制將行動計數器歸零和血量補滿】
+
         State.player.actionsSinceTown = 0; 
         State.player.hp = State.player.maxHp; 
         
@@ -1029,7 +1062,6 @@ export function toggleTownAccess(canAccess) {
 
     // 顯示/隱藏鎖定訊息 (hubInteractiveContent 和 townLockoutMessage 需要在 HTML/UI Manager 中正確設置)
     if (elements.hubInteractiveContent && elements.townLockoutMessage) {
-        // ⚠ 這裡需要您檢查 HTML/UI Manager 是否有這兩個 ID，如果沒有，請註解掉
         if (canAccess) {
             elements.hubInteractiveContent.style.display = 'block';
             elements.townLockoutMessage.style.display = 'none';
