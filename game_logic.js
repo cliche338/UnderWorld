@@ -10,7 +10,7 @@ import {
 
 import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, } from './config.js';
 
-import { logMessage, updateDisplay, elements, } from './ui_manager.js';
+import { logMessage, updateDisplay, elements, renderInventoryList, renderMaterialInventory, updateExchangeDisplay } from './ui_manager.js';
 
 export let currentShopInventory = [];
 
@@ -43,30 +43,37 @@ export function showHowToPlay() {
 
 export function toggleInventory() {
     // 關鍵：獲取背包面板元素
-    const backpackPanel = elements.inventoryArea; // 從 ui_manager 的 elements 取得
+    const backpackPanel = elements.inventoryArea;
 
     if (!backpackPanel) {
         logMessage("❌ 致命錯誤：找不到背包區塊！", 'red');
         return; 
     }
     
-    // 這些是需要被隱藏的區塊
+    // 這些是需要被隱藏的區塊 (簡化列表，但確保遊戲核心內容隱藏)
     let contentToHide = [
         elements.messages,
         elements.hubArea, 
         elements.adventureActions, 
         elements.gameLog,
+        elements.controlsArea,
     ];
     
-    if (!isInventoryOpen) {
+    if (!State.isInventoryOpen) {
         // --- [背包開啟] ---
         setIsInventoryOpen(true);
         backpackPanel.style.display = 'block'; 
 
+        // 隱藏所有與背包衝突的介面
         contentToHide.forEach(el => {
             if (el) el.style.display = 'none';
         });
         
+        // 額外隱藏按鈕區塊，避免在背包打開時看到
+        elements.exploreModeButtons.style.display = 'none';
+        elements.combatModeButtons.style.display = 'none';
+        
+        // 渲染背包內容
         renderInventoryList(); 
         renderMaterialInventory(); 
         logMessage("🎒 背包已開啟。", 'white');
@@ -76,17 +83,26 @@ export function toggleInventory() {
         setIsInventoryOpen(false); 
         backpackPanel.style.display = 'none'; 
         
-        // 恢復被隱藏的區塊 (簡化邏輯)
+        // 1. 恢復所有核心 UI 區塊 (日誌、控制台總區)
+        if (elements.controlsArea) elements.controlsArea.style.display = 'block'; // 恢復「下一步行動」總容器
         if (elements.messages) elements.messages.style.display = 'block';
         if (elements.gameLog) elements.gameLog.style.display = 'block';
-        if (elements.adventureActions) elements.adventureActions.style.display = 'block';
-        if (elements.hubArea) elements.hubArea.style.display = 'block';
-        
-        // 根據當前狀態恢復按鈕模式
-        if (isCombatActive) {
+
+        // 【關鍵修正 1：無條件恢復城鎮區塊】
+        if (elements.hubArea) elements.hubArea.style.display = 'block'; 
+
+        // 2. 根據狀態精確恢復按鈕模式
+        if (State.isCombatActive) {
+            // 戰鬥中：只顯示戰鬥按鈕
             elements.combatModeButtons.style.display = 'block';
+            elements.exploreModeButtons.style.display = 'none';
+            if (elements.adventureActions) elements.adventureActions.style.display = 'block'; 
+            
         } else {
+            // 探索/城鎮狀態 (非戰鬥)：
             elements.exploreModeButtons.style.display = 'block';
+            elements.combatModeButtons.style.display = 'none';
+            if (elements.adventureActions) elements.adventureActions.style.display = 'block';
         }
         
         logMessage("🎒 背包已關閉。恢復遊戲介面。", 'white');
@@ -112,10 +128,7 @@ export function handleMaterialDrop(monsterId) {
             logMessage(`🧩 獲得素材 [${material.name}]！`, 'cyan');
         }
     });
-    
-    if (dropsLogged > 0) {
-        saveGame();
-    }
+   
 }
 
 export function getItemById(id) {
@@ -211,7 +224,7 @@ export function endGame(reason) {
         
         // --- 結算死亡懲罰 ---
         
-        // 1. 計算本次冒險多賺的金幣 (相對於上次存檔點)
+        // 1. 計算本次冒險多賺的金幣 相對於上次存檔
         // 🚨 關鍵修正：確保 player.gold 是數字
         let currentGold = parseFloat(State.player.gold) || 0; 
         let lastRestGold = parseFloat(State.player.goldAtLastRest) || 0; 
@@ -227,16 +240,13 @@ export function endGame(reason) {
         State.player.gold = lastRestGold + goldRetained;
         
         // 4. 計算並結算耀魂石 (使用遺失前的總金幣計算，但只用於顯示)
-        // 根據您的遊戲設計，死亡後應該不能結算，所以這裡只用於計算顯示，但不加入 permanentData
+   
         let stonesGained = Math.floor(newlyGainedGold / STONE_CONVERSION_RATE); 
 
-        // 🚨 修正：死亡後不結算耀魂石到永久數據中（但 log message 仍需要 stonesGained）
-        
-        saveGame(); // 將懲罰後的數據立即存檔 (覆蓋舊存檔)
+        saveGame(); 
 
         // 5. 輸出結束訊息
         logMessage(`💀 遊戲結束！你在地城第 ${State.player.depth} 層陣亡了。`, 'red');
-        logMessage(`本次冒險結算獲得 ${stonesGained} 💎 耀魂石。`, 'yellow'); // 顯示計算結果
         
         // 6. 切換到死亡介面
         enterDeathMode(); 
@@ -265,14 +275,14 @@ export function handleExplore() {
     }
 
     if (State.player.actionsSinceTown >= State.player.actionsToTownRequired) {
-        logMessage("🏠 行動目標已達成！英雄自動返回城鎮休息和存檔。", 'lightgreen');
+        logMessage("🏠 行動目標已達成！自動返回城鎮休息和存檔。", 'lightgreen');
         handleRest(true); // 呼叫 handleRest 執行返城邏輯
         return; // 立即結束，不觸發隨機事件
     }
 
     // 3. 記錄進入的層數
     if (State.player.actionsSinceTown >= State.player.actionsToTownRequired) {
-        logMessage("🏠 行動目標已達成！英雄自動返回城鎮休息和存檔。", 'lightgreen');
+        logMessage("🏠 行動目標已達成！自動返回城鎮休息和存檔。", 'lightgreen');
         handleRest(true); // 呼叫 handleRest 執行返城邏輯
         return; // 立即結束，不觸發隨機事件
     }
@@ -494,7 +504,7 @@ export function equipItem(inventoryIndex) {
     logMessage(`屬性變動：HP 上限 ${hpChange > 0 ? '+' : ''}${hpChange}，防禦 ${defenseChange > 0 ? '+' : ''}${defenseChange}，攻擊 ${attackChange > 0 ? '+' : ''}${attackChange}。`, 'yellow');
 
     // --- 3. 存檔與介面更新 ---
-    saveGame(); 
+    
     updateDisplay(); // 統一更新畫面
 }
 
@@ -574,14 +584,11 @@ export function enterAdventureMode() {
     elements.combatModeButtons.style.display = 'none';
     elements.deathModeButtons.style.display = 'none'; 
     
-    // 確保城鎮區塊隱藏
-    elements.hubArea.style.display = 'none'; 
+    // 確保城鎮區塊常駐顯示
+    if (elements.hubArea) elements.hubArea.style.display = 'block'; // 【關鍵修正 2：常駐顯示】
 
     // 確保主要遊戲內容顯示
     elements.gameContent.style.display = 'block'; 
-    
-    // 這裡可以根據 State.isInventoryOpen 決定是否顯示背包
-    // elements.inventoryArea.style.display = State.isInventoryOpen ? 'block' : 'none'; 
 }
 
 export function enterDeathMode() {
@@ -808,7 +815,7 @@ export function renderShop() {
         const shopDiv = document.createElement('div');
         shopDiv.classList.add('shop-item');
 
-        const displayType = item.type === 'weapon' ? '⚔️ 武器' : item.type === 'armor' ? '🛡️ 防具' : '🧪 藥水';
+        const displayType = item.type === 'weapon' ? '⚔️ 武器' : item.type === 'armor' ? '🛡️ 防具' : item.type === 'necklace' ? '📿 項鍊' : item.type === 'ring' ? '💍 戒指' : '🧪 藥水';
         const displayStat = item.attack ? `+${item.attack} 攻` : item.hp ? `+${item.hp} 生命` : item.heal ? `+${item.heal} 治療` : '';
 
         shopDiv.innerHTML = `${displayType}: **${item.name}** (${displayStat}) 價格: **${item.price}** 💰`;
@@ -867,46 +874,60 @@ export function handleBuyItem(itemId, index) {
     }
 }
 
-export function handleRest() {
+export function handleRest(isAuto = false) {
 
     if (!gameActive) return;
 
+    // 0. 檢查是否已經位於城鎮
+    if (State.player.actionsSinceTown === 0) {
+        // 如果是自動返回的，則繼續執行存檔邏輯；如果玩家手動點擊，則給出提示
+        if (!isAuto) {
+            logMessage("🏠 你已經在城鎮裡了！請點擊「繼續探險」開始新的冒險。", 'cyan');
+            return; // 已經在城鎮中，不需要再次執行存檔和重置
+        }
+    }
+    
     // 1. 檢查是否達到返回城鎮的行動要求
     if (State.player.actionsSinceTown < State.player.actionsToTownRequired) {
 
         const needed = State.player.actionsToTownRequired - State.player.actionsSinceTown;
         logMessage(`❌ 必須在地城中行動 ${needed} 次才能返回城鎮存檔！`, 'orange');
-        return;
+        return; // 檢查失敗，立即退出
     }
     
     // 2. 執行治療
-    const healAmount = 10;
+    const healAmount = State.player.maxHp - State.player.hp;
     State.player.hp = State.player.maxHp;
     
     // 3. 重置行動計數器並設定新目標
     State.player.actionsSinceTown = 0; 
-    setNewTownGoal(); // ⚠ 待實作：設定新的行動目標
+    setNewTownGoal(); 
+    
+    State.player.goldAtLastRest = State.player.gold; // 記錄當前金幣為上次存檔點
     
     // 4. 存檔 (這是遊戲的關鍵存檔點)
     saveGame(); 
 
     // 5. 啟用城鎮功能並刷新商店
-    toggleTownAccess(true); // 呼叫之前定義的函式
+    toggleTownAccess(true); 
 
     refreshShopInventory()
-    renderShop(); // ⚠ 待實作：渲染商店介面
+    renderShop();
 
-    if (!isAuto) {
+    if (isAuto) {
+        logMessage(`🏠 行動目標已達成！自動返回城鎮休息和存檔。`, 'lightgreen');
+    } else {
         logMessage(`🏠 成功返回城鎮，恢復了 ${healAmount} 點生命，進度已儲存。`, 'lightgreen');
     }
-
+    
     updateDisplay();
+    
+    // 【關鍵修正：函式到此結束，移除所有可能導致錯誤訊息的檢查】
 }
 
 export function enterTownMode() {
     
     // 1. 設置標題
-   
 
     // 2. 顯示 Town/Hub 區塊，隱藏戰鬥/死亡區塊
     if (elements.hubArea) elements.hubArea.style.display = 'block';
@@ -929,24 +950,36 @@ export function enterTownMode() {
 }
 
 export function handleRevive() {
-    // 1. 載入上次成功的存檔點
-    const success = loadGame(); // ⚠ 呼叫 State 模組的 loadGame
+    
+    // 1. 載入上次成功的存檔點 (不檢查 gameActive)
+    const success = loadGame(); // 呼叫 State 模組的 loadGame
 
     if (success) {
         // 2. 復原成功，將遊戲標記為活躍
-        setGameActive(true);
-        
+        setGameActive(true); // 【關鍵修正 1: 重新啟用遊戲】
+        State.player.actionsSinceTown = 0;
         // 3. 輸出訊息
-        logMessage(`✨ 復原成功！你回到了上一個城鎮存檔點 (深度 ${State.player.depth} 層)。`, 'green');
+        logMessage(`✨ 復原成功！你回到了上一個城鎮 (深度 ${State.player.depth} 層)。`, 'green');
         
         // 4. 切換回城鎮介面
-        enterTownMode(); 
+        enterTownMode();
         
     } else {
         logMessage(`❌ 無法找到存檔！請重新選擇職業開始新遊戲。`, 'red');
-        // 這裡可以導向職業選擇介面，邏輯會在 initializeGame 中處理
+        // 5. 如果沒有存檔，導向職業選擇介面
+        enterSelectionMode(); // 呼叫一個新的函式來處理 UI 切換
     }
     updateDisplay(); // 統一更新畫面
+}
+
+// 補上新的函式，用於在無存檔時導向職業選擇
+export function enterSelectionMode() {
+    if (elements.classSelection) elements.classSelection.style.display = 'flex'; 
+    if (elements.adventureActions) elements.adventureActions.style.display = 'none'; 
+    if (elements.hubArea) elements.hubArea.style.display = 'block';
+    if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'none';
+    if (elements.deathModeButtons) elements.deathModeButtons.style.display = 'none';
+    elements.currentStageTitle.textContent = "選擇你的職業";
 }
 
 export function toggleTownAccess(canAccess) {
@@ -960,13 +993,13 @@ export function toggleTownAccess(canAccess) {
     if (elements.hubInteractiveContent && elements.townLockoutMessage) {
         // ⚠ 這裡需要您檢查 HTML/UI Manager 是否有這兩個 ID，如果沒有，請註解掉
         if (canAccess) {
-            // elements.hubInteractiveContent.style.display = 'block';
-            // elements.townLockoutMessage.style.display = 'none';
-            // logMessage("🔓 已返回城鎮，可以使用升級與兌換功能。", 'green');
+            elements.hubInteractiveContent.style.display = 'block';
+            elements.townLockoutMessage.style.display = 'none';
+            logMessage("🔓 已返回城鎮，可以使用升級與兌換功能。", 'green');
         } else {
-            // elements.hubInteractiveContent.style.display = 'none';
-            // elements.townLockoutMessage.style.display = 'block';
-            // logMessage("🔒 離開城鎮，強化與交易功能已鎖定。", 'orange');
+            elements.hubInteractiveContent.style.display = 'none';
+            elements.townLockoutMessage.style.display = 'block';
+            logMessage("🔒 離開城鎮，強化與交易功能已鎖定。", 'orange');
         }
     }
 }

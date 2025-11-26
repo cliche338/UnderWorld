@@ -21,8 +21,10 @@ export const elements = {
         defenseValue: document.getElementById('defense-value'),
         equippedArmorName: document.getElementById('equipped-armor-name'),
         equippedWeaponName: document.getElementById('equipped-weapon-name'),
-        inventoryBtn: document.getElementById('inventory-btn'),
+        equippedNecklaceName: document.getElementById('equipped-necklace-name'), 
+        equippedRingName: document.getElementById('equipped-ring-name'),
 
+        inventoryBtn: document.getElementById('inventory-btn'),
         exploreModeButtons: document.getElementById('explore-mode-buttons'),
         attackBtn: document.getElementById('attack-btn'),
         runBtn: document.getElementById('run-btn'),
@@ -103,12 +105,23 @@ export function renderInventoryList() { //
             const itemDiv = document.createElement('div'); //
             itemDiv.classList.add('inventory-item'); //
             
-            const typeIcon = item.type === 'weapon' ? '⚔️' : item.type === 'armor' ? '🛡️' : '🧪'; //
+            const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
+                            item.type === 'armor' ? '🛡️ 防具' : 
+                            item.type === 'necklace' ? '📿 項鍊' : 
+                            item.type === 'ring' ? '💍 戒指' : 
+                            '🧪 藥水';
             
             let statInfo = ''; //
             if (item.type === 'weapon') statInfo = `+${item.attack} 攻擊`; //
             else if (item.type === 'armor') statInfo = `+${item.hp} 生命`; //
             else if (item.type === 'consumable') statInfo = `+${item.heal} 治療`; //
+            else if (item.type === 'necklace' || item.type === 'ring') {
+                const parts = [];
+                if (item.attack) parts.push(`+${item.attack} 攻擊`);
+                if (item.hp) parts.push(`+${item.hp} 生命`);
+                if (item.defense) parts.push(`+${item.defense} 防禦`);
+                statInfo = parts.join(', ');
+            }
 
             itemDiv.innerHTML = `${typeIcon} **${item.name}** (${statInfo}) `; // 顯示名稱和屬性
             
@@ -180,7 +193,6 @@ export function renderMaterialInventory() { //
                 handleSellMaterial(materialId, count, material.value); //
                 // 販賣後需要重新渲染，因為數量變為 0
                 renderMaterialInventory(); //
-                // renderInventoryList(); // ❌ 不再需要，因為 updateDisplay 會呼叫 renderInventoryList
             }; 
 
             // 只有在城鎮時才能販賣
@@ -230,8 +242,18 @@ export function updateDisplay() {
     elements.stonesValue.textContent = permanentData.stones; //
 
     // 3. 裝備名稱更新
-    elements.equippedWeaponName.textContent = player.equipment.weapon ? player.equipment.weapon.name : '無'; //
-    elements.equippedArmorName.textContent = player.equipment.armor ? player.equipment.armor.name : '無'; //
+    if (elements.equippedWeaponName) {
+        elements.equippedWeaponName.textContent = player.equipment.weapon ? player.equipment.weapon.name : '無';
+    }
+    if (elements.equippedArmorName) {
+        elements.equippedArmorName.textContent = player.equipment.armor ? player.equipment.armor.name : '無';
+    }
+    if (elements.equippedNecklaceName) {
+        elements.equippedNecklaceName.textContent = player.equipment.necklace ? player.equipment.necklace.name : '無';
+    }
+    if (elements.equippedRingName) {
+        elements.equippedRingName.textContent = player.equipment.ring ? player.equipment.ring.name : '無'; 
+    }
     
     // 4. 渲染列表 (將複雜的 HTML 生成邏輯獨立出來)
     renderInventoryList(); //

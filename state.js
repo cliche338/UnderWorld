@@ -107,7 +107,7 @@ export function loadGame() {
             const loadedPlayer = JSON.parse(savedDataString);
             Object.assign(player, loadedPlayer); 
             
-            logMessage("📂 載入本地進度成功。", 'lightgreen');
+            logMessage("📂 載入進度成功。", 'lightgreen');
             return true;
         }
         
@@ -124,7 +124,6 @@ export function saveGame() {
         const uniqueSaveKey = SAVE_KEY + '_' + currentUsername; 
         const playerDataString = JSON.stringify(player);
         
-        localStorage.setItem(uniqueSaveKey, playerDataString);
-        logMessage("💾 遊戲進度已存檔至本地！", 'lightgreen');
-
+        localStorage.setItem(uniqueSaveKey, playerDataString)
+        logMessage("💾 進度已存檔！", 'lightgreen');
     }

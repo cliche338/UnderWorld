@@ -87,6 +87,7 @@ export const ITEMS = [
         { id: 'wolf_skin', name: '狼皮', value: 25, dropRate: 0.6 },
         { id: 'broken_blade', name: '斷劍', value: 220, dropRate: 0.33 },
         { id: 'cloth', name: '布料纖維', value: 50, dropRate: 0.5 },
+        { id: 'cloth', name: '碎骨', value: 50, dropRate: 0.2 },
     ];
 
     export const STARTER_LOOT_IDS = [
