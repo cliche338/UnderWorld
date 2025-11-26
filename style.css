@@ -39,13 +39,13 @@ body {
 
 /* 第 2 欄：城鎮 */
 #hub-area { 
-    flex: 2; /* 佔 2 份比例 (較寬) */
+    flex: 3; /* 佔 2 份比例 (較寬) */
     min-width: 300px;
 }
 
 /* 第 3 欄：包裹日誌和控制區塊的新容器 */
 #log-and-controls-group { 
-    flex: 2; /* 佔 2 份比例 (較寬) */
+    flex: 1.5; /* 佔 2 份比例 (較寬) */
     display: flex; 
     flex-direction: column; /* 讓內部元素垂直堆疊 */
 }
@@ -98,6 +98,27 @@ body {
     border-color: #6e5a3d;
     color: #f5e9c5;
     max-height: 600px;
+}
+
+#shop-inventory-list > div {
+    display: flex;
+    align-items: center; 
+    /* 保持 flex-wrap: wrap; 允許商品名稱換行，或不設置。 */
+    /* 關鍵：確保商品描述 (文字) 和按鈕都在同一行。 */
+    
+    /* 使用 gap 來控制商品描述和按鈕之間的距離，這樣比 space-between 好控制 */
+    gap: 10px; 
+    margin-bottom: 7px; 
+}
+
+#shop-inventory-list > div > span {
+    flex-grow: 1;      /* 關鍵：允許文字容器佔滿所有剩餘空間 */
+    flex-shrink: 1;    /* 允許文字容器被壓縮 */
+    flex-basis: 0;     /* 讓寬度完全由 flex-grow 控制 */
+    
+    /* 確保文字可以換行，在 Flex 容器內這點很重要 */
+    white-space: normal; 
+    word-break: break-word; 
 }
 
 #messages {
@@ -171,7 +192,21 @@ body {
 
 #shop-area button,
 #shop-inventory-list button {
-    padding: 3px 9px; 
+    /* 使用固定寬度，而不是 min-width，強制其尺寸 */
+    width: 80px !important; /* **使用固定寬度，您可以調整此數值 (例如 70px ~ 85px)** */
+    
+    /* 保持其不被壓縮、不生長的屬性 */
+    flex-shrink: 0; 
+    flex-grow: 0;   
+    
+    /* 確保其優先級足夠高，可以覆蓋通用樣式 */
+    min-width: unset !important;
+    
+    /* 確保沒有不必要的水平外邊距干擾排列 */
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    
+    padding: 3px 9px; /* 保持垂直高度的縮減 */
 }
 
 /* 輸入框 */

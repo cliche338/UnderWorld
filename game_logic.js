@@ -890,7 +890,7 @@ export function renderShop() {
         }
 
         const rarityStars = '⭐'.repeat(item.rarity || 1); // 顯示稀有度
-        shopDiv.innerHTML = `${displayType}: **${item.name}** (${displayStat}) 價格: **${item.price}** 💰`;
+        shopDiv.innerHTML = `${displayType}: *${item.name}* (${displayStat}) 價格: *${item.price}* 💰`;
 
         const buyButton = document.createElement('button');
         buyButton.textContent = '購買';
