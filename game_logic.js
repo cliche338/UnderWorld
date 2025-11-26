@@ -314,9 +314,10 @@ export function handleExplore() {
 }
 
 export function startGame(className, hpBonus, attackBonus, goldBonus) {
-    if (gameActive) return;
+    // 檢查狀態
+    if (State.gameActive) return; 
 
-    // 1. 設置基礎屬性
+    // 1. 設置基礎屬性 (使用 const 是安全的，因為它們只在這裡被讀取)
     const baseHp = 100;
     const baseAttack = 5;
     const baseGold = 100;
@@ -331,31 +332,39 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
     State.player.className = className;
     State.player.defense = 0; // 確保有初始值
     
-    State.player.equipment = { weapon: null, armor: null };
+    // 【關鍵修正：統一且完整的設備初始化】
+    State.player.equipment = { 
+        weapon: null, 
+        armor: null, 
+        necklace: null, // 確保新欄位存在
+        ring: null,     // 確保新欄位存在
+    }; 
+    
     State.player.inventory = [];
-    player.materials = {};
+    State.player.materials = {};
+    State.player.goldAtLastRest = State.player.gold;
     
     // 3. 發放起始道具 
-    STARTER_LOOT_IDS.forEach(itemId => { // STARTER_LOOT_IDS 從 config.js 引入
-    const item = getItemById(itemId); // 呼叫 getItemById
-    if (item) { 
-            // 複製物件並加入背包
+    STARTER_LOOT_IDS.forEach(itemId => { 
+        const item = getItemById(itemId); 
+        if (item) { 
             const newItem = JSON.parse(JSON.stringify(item));
-            addItemToInventory(newItem); // 呼叫 addItemToInventory
+            addItemToInventory(newItem); 
         }
     });
     logMessage(`🎁 收到起始補給！`, 'lime');
 
     // 4. 設定城鎮計數器並啟動遊戲
     State.player.actionsSinceTown = 0; 
-    setNewTownGoal(); // 呼叫已定義的函式
-    gameActive = true;
+    setNewTownGoal(); 
+    State.setGameActive(true); // 使用 Setter 確保狀態更新
 
-    // 5. 切換 UI 進入 Adventure Mode
+    // 5. 切換 UI 進入 Adventure Mode (按鈕切換)
     if (elements.classSelection) elements.classSelection.style.display = 'none';
     if (elements.adventureActions) elements.adventureActions.style.display = 'block'; 
+    
     enterAdventureMode(); 
-    saveGame();
+    saveGame(); 
 
     updateDisplay();
     logMessage(`🎉 選擇了 ${className}！開始你的冒險，進入地牢第 ${State.player.depth} 層。`, 'lime');
@@ -585,7 +594,7 @@ export function enterAdventureMode() {
     elements.deathModeButtons.style.display = 'none'; 
     
     // 確保城鎮區塊常駐顯示
-    if (elements.hubArea) elements.hubArea.style.display = 'block'; // 【關鍵修正 2：常駐顯示】
+    if (elements.hubArea) elements.hubArea.style.display = 'block'; 
 
     // 確保主要遊戲內容顯示
     elements.gameContent.style.display = 'block'; 
@@ -972,7 +981,7 @@ export function handleRevive() {
     updateDisplay(); // 統一更新畫面
 }
 
-// 補上新的函式，用於在無存檔時導向職業選擇
+// 導向職業選擇
 export function enterSelectionMode() {
     if (elements.classSelection) elements.classSelection.style.display = 'flex'; 
     if (elements.adventureActions) elements.adventureActions.style.display = 'none'; 
@@ -1048,29 +1057,27 @@ export function initializeGame() {
 
     // 2. 嘗試載入 Run Data (上次的存檔)
     if (loadGame()) {
-        // 載入成功，直接進入冒險模式
-        logMessage(`歡迎回來，${currentUsername}！已載入角色 [${State.player.className}] 於地城第 ${State.player.depth} 層的進度。`, 'cyan');
+        // 載入成功
+        // ... (邏輯不變)
         
         setGameActive(true);
         enterTownMode(); 
         
     } else {
-        // 無存檔，顯示職業選擇介面
+        // 【關鍵修正：無存檔，進入職業選擇模式】
         logMessage("歡迎來到地下城冒險！請選擇你的職業來創建新角色。", 'white');
         
-        if (elements.classSelection) elements.classSelection.style.display = 'flex'; 
-        if (elements.adventureActions) elements.adventureActions.style.display = 'none'; 
-        if (elements.hubArea) elements.hubArea.style.display = 'block';
-        if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'none';
+        enterSelectionMode(); // 呼叫輔助函式設定 UI
         
+        // 初始化 player 數據
         const initialPlayerState = { 
             hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, 
-            className: "", equipment: { weapon: null, armor: null }, 
-            inventory: [], materials: {},
+            className: "", equipment: { weapon: null, armor: null, necklace: null, ring: null }, 
+            inventory: [], materials: {}, goldAtLastRest: 0,
             actionsSinceTown: 0, actionsToTownRequired: 0 
         };
         
-        Object.assign(State.player, initialPlayerState); // 覆蓋現有物件的屬性，不會引發 TypeError
+        Object.assign(State.player, initialPlayerState); 
     }
 
     // 介面更新
