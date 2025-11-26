@@ -17,8 +17,10 @@ export let player = {
         depth: 0,
         className: "",
         equipment: {
-            weapon: null, // 儲存當前裝備的物品物件或 null
-            armor: null,  // 儲存當前裝備的物品物件或 null
+            weapon: null, //武器
+            armor: null,  //防具
+            necklace: null, //項鍊
+            ring: null, //戒指
         },
 
         goldAtLastRest: 0,
@@ -42,7 +44,7 @@ export function setCurrentMonster(monsterObject) {
 }
 
 export function setCurrentUsername(username) {
-    currentUsername = username; 
+    currentUsername = username;
 }
 
 export function setIsInventoryOpen(value) {
@@ -66,13 +68,19 @@ export function loadPermanentData() {
     const savedDataString = localStorage.getItem(uniquePermKey);
 
     if (savedDataString) {
-        // 步驟 2: 成功載入，將數據寫入 permanentData
+        // 成功載入，將數據寫入 permanentData
         const loadedData = JSON.parse(savedDataString);
-        loadedData.stones = loadedData.stones || 0;
-        Object.assign(permanentData, loadedData);
-    } else {
-        // 步驟 3: 新帳號，則初始化 permanentData
-        permanentData = { stones: 0, hpBonus: 0, attackBonus: 0 };
+        
+        // 【關鍵修正：使用 parseInt 確保數據是數字，如果解析失敗則設為 0】
+        permanentData.stones = parseInt(loadedData.stones) || 0;
+        permanentData.hpBonus = parseInt(loadedData.hpBonus) || 0;
+        permanentData.attackBonus = parseInt(loadedData.attackBonus) || 0;
+
+    }else {
+        // 新帳號或無存檔，則初始化為 0
+        permanentData.stones = 0;
+        permanentData.hpBonus = 0;
+        permanentData.attackBonus = 0;
     }
 }
 

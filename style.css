@@ -109,8 +109,10 @@ body {
     min-width: 180px; 
 }
 
-input[type="text"], input[type="number"] {
+input[type="text"], input[type="number"], input[type="password"] {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    width: 200px; 
+    box-sizing: border-box; 
 }

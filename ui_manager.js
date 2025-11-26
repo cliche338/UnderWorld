@@ -1,9 +1,9 @@
 import { 
     player, permanentData, isCombatActive, 
     isInventoryOpen, currentUsername 
-} from './state.js';
+} from './state.js'; //
 
-import { ITEMS, MATERIALS_DATA, STONE_CONVERSION_RATE, UPGRADE_COST } from './config.js';
+import { ITEMS, MATERIALS_DATA, STONE_CONVERSION_RATE, UPGRADE_COST } from './config.js'; //
 
 import { 
     calculateTotalAttack, 
@@ -12,10 +12,10 @@ import {
     handleSellItem,
     getMaterialById,
     handleSellMaterial,
-} from './game_logic.js';
+} from './game_logic.js'; //
 
 export const elements = {
-
+    // ... (elements 保持不變)
         howToPlayBtn: document.getElementById('how-to-play-btn'),
 
         defenseValue: document.getElementById('defense-value'),
@@ -85,73 +85,133 @@ export const elements = {
         combatModeButtons : document.getElementById('combat-mode-buttons'),
         deathModeButtons : document.getElementById('death-mode-buttons'), 
         reviveBtn : document.getElementById('revive-btn'), 
+};
 
-    };
+// =========================================================
+// 將渲染函式移至頂部，確保所有地方都能呼叫
+// =========================================================
 
-export function renderMaterialInventory() {
-    const list = elements.materialInventoryList;
-    list.innerHTML = ''; // 清空列表
-    
-    const materials = player.materials || {};
-    const materialIds = Object.keys(materials);
+export function renderInventoryList() { //
+        elements.inventoryList.innerHTML = ''; //
 
-    if (materialIds.length === 0) {
-        list.textContent = '目前沒有可販售的素材。';
-        return;
+        if (player.inventory.length === 0) { //
+            elements.inventoryList.textContent = '你的背包裡空空的。'; //
+            return; //
+        }
+
+        player.inventory.forEach((item, index) => { //
+            const itemDiv = document.createElement('div'); //
+            itemDiv.classList.add('inventory-item'); //
+            
+            const typeIcon = item.type === 'weapon' ? '⚔️' : item.type === 'armor' ? '🛡️' : '🧪'; //
+            
+            let statInfo = ''; //
+            if (item.type === 'weapon') statInfo = `+${item.attack} 攻擊`; //
+            else if (item.type === 'armor') statInfo = `+${item.hp} 生命`; //
+            else if (item.type === 'consumable') statInfo = `+${item.heal} 治療`; //
+
+            itemDiv.innerHTML = `${typeIcon} **${item.name}** (${statInfo}) `; // 顯示名稱和屬性
+            
+            // ----------------------------------------------------
+            // --- 裝備或使用按鈕 ---
+            const actionButton = document.createElement('button'); //
+            actionButton.style.marginLeft = '10px'; //
+
+            if (item.type === 'consumable') { //
+                actionButton.textContent = '使用'; //
+                actionButton.onclick = () => useConsumable(index); //
+            } else {
+                actionButton.textContent = '裝備'; //
+                actionButton.onclick = () => equipItem(index); //
+            }
+            itemDiv.appendChild(actionButton); //
+
+            // ----------------------------------------------------
+            // --- 販賣按鈕 ---
+            const sellPrice = item.value || 0; // 使用 item.value 作為基礎售價
+            if (sellPrice > 0) { //
+                const sellButton = document.createElement('button'); //
+                sellButton.textContent = `販賣 (${sellPrice} 💰)`; //
+                sellButton.style.marginLeft = '5px'; //
+                sellButton.style.backgroundColor = '#9b59b6'; // 販賣按鈕使用紫色
+                sellButton.onclick = () => handleSellItem(index, sellPrice); //
+
+                itemDiv.appendChild(sellButton); //
+            }
+            // ----------------------------------------------------
+            
+            elements.inventoryList.appendChild(itemDiv); //
+        });
     }
 
-    materialIds.forEach(materialId => {
-        const count = materials[materialId];
-        if (count > 0) {
+export function renderMaterialInventory() { //
+    const list = elements.materialInventoryList; //
+    list.innerHTML = ''; // 清空列表
+    
+    // 確保 player.materials 存在，因為 loadGame 已確保它是 {}
+    const materials = player.materials; 
+    const materialIds = Object.keys(materials); //
+
+    if (materialIds.length === 0) { //
+        list.textContent = '目前沒有可販售的素材。'; //
+        return; //
+    }
+
+    materialIds.forEach(materialId => { //
+        const count = materials[materialId]; //
+        if (count > 0) { //
             const material = getMaterialById(materialId); // 從 game_logic 引入
             if (!material) return; // 找不到資料就跳過
 
-            const div = document.createElement('div');
-            div.classList.add('material-item');
+            const div = document.createElement('div'); //
+            div.classList.add('material-item'); //
             
-            const totalSellPrice = count * material.value;
+            const totalSellPrice = count * material.value; //
 
-            div.innerHTML = `**${material.name}** x ${count} (總價值: ${totalSellPrice} 💰)`;
+            div.innerHTML = `**${material.name}** x ${count} (總價值: ${totalSellPrice} 💰)`; //
 
-            const sellButton = document.createElement('button');
-            sellButton.textContent = '全部販賣';
-            sellButton.style.marginLeft = '10px';
-            sellButton.style.backgroundColor = '#2ecc71';
+            const sellButton = document.createElement('button'); //
+            sellButton.textContent = '全部販賣'; //
+            sellButton.style.marginLeft = '10px'; //
+            sellButton.style.backgroundColor = '#2ecc71'; //
             
             // 🚨 綁定販賣事件
-            sellButton.onclick = () => {
-                handleSellMaterial(materialId, count, material.value);
+            sellButton.onclick = () => { //
+                handleSellMaterial(materialId, count, material.value); //
                 // 販賣後需要重新渲染，因為數量變為 0
-                renderMaterialInventory(); 
-                renderInventoryList(); // 重新渲染物品列表 (如果需要)
+                renderMaterialInventory(); //
+                // renderInventoryList(); // ❌ 不再需要，因為 updateDisplay 會呼叫 renderInventoryList
             }; 
 
             // 只有在城鎮時才能販賣
-            if (player.actionsSinceTown > 0) {
-                sellButton.disabled = true;
-                div.style.opacity = '0.7';
+            if (player.actionsSinceTown > 0) { //
+                sellButton.disabled = true; //
+                div.style.opacity = '0.7'; //
             }
             
-            div.appendChild(sellButton);
-            list.appendChild(div);
+            div.appendChild(sellButton); //
+            list.appendChild(div); //
         }
     });
 }
+// =========================================================
+// 其他導出函式在底部 (保持不變)
+// =========================================================
 
 export function logMessage(message, color = 'white') {
-        const p = document.createElement('p');
-        p.innerHTML = message;
-        p.style.color = color;
+        const p = document.createElement('p'); //
+        p.innerHTML = message; //
+        p.style.color = color; //
         
         // 確保只保留最新的訊息
-        if (elements.messages.children.length > 100) { 
-            elements.messages.removeChild(elements.messages.children[0]);
+        if (elements.messages.children.length > 100) { //
+            elements.messages.removeChild(elements.messages.children[0]); //
         }
-        elements.messages.appendChild(p);
+        elements.messages.appendChild(p); //
         
         // 自動滾動到底部
-        if (elements.gameLog) {
-        elements.gameLog.scrollTop = elements.gameLog.scrollHeight;
+        if (elements.gameLog) { //
+        elements.gameLog.scrollTop = elements.gameLog.scrollHeight; //
     }
     }
 
@@ -160,88 +220,35 @@ export function updateDisplay() {
     const totalAttack = calculateTotalAttack();
 
     // 2. 核心數值更新
-    elements.hpValue.textContent = player.hp;
-    elements.maxHpValue.textContent = player.maxHp;
-    elements.attackValue.textContent = totalAttack;
+    elements.hpValue.textContent = player.hp; //
+    elements.maxHpValue.textContent = player.maxHp; //
+    elements.attackValue.textContent = totalAttack; //
     
-    elements.defenseValue.textContent = player.defense;
-    elements.goldValue.textContent = player.gold;
-    elements.depthValue.textContent = player.depth;
-    elements.stonesValue.textContent = permanentData.stones;
+    elements.defenseValue.textContent = player.defense; //
+    elements.goldValue.textContent = player.gold; //
+    elements.depthValue.textContent = player.depth; //
+    elements.stonesValue.textContent = permanentData.stones; //
 
     // 3. 裝備名稱更新
-    elements.equippedWeaponName.textContent = player.equipment.weapon ? player.equipment.weapon.name : '無';
-    elements.equippedArmorName.textContent = player.equipment.armor ? player.equipment.armor.name : '無';
+    elements.equippedWeaponName.textContent = player.equipment.weapon ? player.equipment.weapon.name : '無'; //
+    elements.equippedArmorName.textContent = player.equipment.armor ? player.equipment.armor.name : '無'; //
     
     // 4. 渲染列表 (將複雜的 HTML 生成邏輯獨立出來)
-    renderInventoryList();
-    // renderMaterialInventory(); // 暫時註解，避免找不到函式
-    updateExchangeDisplay();
+    renderInventoryList(); //
+    renderMaterialInventory(); // 【修正：恢復素材背包渲染】
+    updateExchangeDisplay(); //
 
     // 5. 按鈕文字更新 (例如永久升級按鈕)
-    elements.upgradeHpBtn.textContent = `永久 HP+5 (消耗 ${UPGRADE_COST} 💎) [當前加成: +${permanentData.hpBonus}]`;
-    elements.upgradeAttackBtn.textContent = `永久 攻擊+5 (消耗 ${UPGRADE_COST} 💎) [當前加成: +${permanentData.attackBonus}]`;
+    elements.upgradeHpBtn.textContent = `永久 HP+5 (消耗 ${UPGRADE_COST} 💎) [當前加成: +${permanentData.hpBonus}]`; //
+    elements.upgradeAttackBtn.textContent = `永久 攻擊+5 (消耗 ${UPGRADE_COST} 💎) [當前加成: +${permanentData.attackBonus}]`; //
 }
 
 export function updateExchangeDisplay() {
-    let goldToExchange = parseInt(elements.goldAmountInput.value);
+    let goldToExchange = parseInt(elements.goldAmountInput.value); //
     
-    if (isNaN(goldToExchange) || goldToExchange <= 0) {
-        goldToExchange = 0;
+    if (isNaN(goldToExchange) || goldToExchange <= 0) { //
+        goldToExchange = 0; //
     }
-    const stonesResult = Math.floor(goldToExchange / STONE_CONVERSION_RATE);
-    elements.exchangeResult.textContent = stonesResult;
+    const stonesResult = Math.floor(goldToExchange / STONE_CONVERSION_RATE); //
+    elements.exchangeResult.textContent = stonesResult; //
 }
-
-export function renderInventoryList() {
-        elements.inventoryList.innerHTML = ''; 
-
-        if (player.inventory.length === 0) {
-            elements.inventoryList.textContent = '你的背包裡空空的。';
-            return;
-        }
-
-        player.inventory.forEach((item, index) => {
-            const itemDiv = document.createElement('div');
-            itemDiv.classList.add('inventory-item');
-            
-            const typeIcon = item.type === 'weapon' ? '⚔️' : item.type === 'armor' ? '🛡️' : '🧪';
-            
-            let statInfo = '';
-            if (item.type === 'weapon') statInfo = `+${item.attack} 攻擊`;
-            else if (item.type === 'armor') statInfo = `+${item.hp} 生命`;
-            else if (item.type === 'consumable') statInfo = `+${item.heal} 治療`;
-
-            itemDiv.innerHTML = `${typeIcon} **${item.name}** (${statInfo}) `; // 顯示名稱和屬性
-            
-            // ----------------------------------------------------
-            // --- 裝備或使用按鈕 ---
-            const actionButton = document.createElement('button');
-            actionButton.style.marginLeft = '10px';
-
-            if (item.type === 'consumable') {
-                actionButton.textContent = '使用';
-                actionButton.onclick = () => useConsumable(index);
-            } else {
-                actionButton.textContent = '裝備';
-                actionButton.onclick = () => equipItem(index);
-            }
-            itemDiv.appendChild(actionButton);
-
-            // ----------------------------------------------------
-            // --- 販賣按鈕 ---
-            const sellPrice = item.value || 0; // 使用 item.value 作為基礎售價
-            if (sellPrice > 0) {
-                const sellButton = document.createElement('button');
-                sellButton.textContent = `販賣 (${sellPrice} 💰)`;
-                sellButton.style.marginLeft = '5px';
-                sellButton.style.backgroundColor = '#9b59b6'; // 販賣按鈕使用紫色
-                sellButton.onclick = () => handleSellItem(index, sellPrice); 
-
-                itemDiv.appendChild(sellButton);
-            }
-            // ----------------------------------------------------
-            
-            elements.inventoryList.appendChild(itemDiv);
-        });
-    }

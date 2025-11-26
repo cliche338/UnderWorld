@@ -25,9 +25,10 @@ export function showHowToPlay() {
         6. 🏠 行動步數達到目標後，英雄會自動「返回城鎮」。
 
         🏠城鎮功能：
-        * 返回城鎮時會存檔、治療少量生命。
+        * 返回城鎮時會存檔、治療生命。
         * 使用金幣兌換 💎 耀魂石。
         * 使用耀魂石永久強化HP和攻擊力，增強下一次冒險的能力。
+        * 防禦力會減少所受傷害，無法永久升級，最小所受傷害為5。
         
         🎯目標：
         在地城中探索得越深越好，並收集稀有裝備！
@@ -126,11 +127,8 @@ export function getMaterialById(id) {
 }
 
 export function addItemToInventory(item) {
-    // 這裡我們只將物品加入到主庫存列表 (player.inventory)
-    // ⚠ 注意：使用 State.player
     
     State.player.inventory.push(item);
-    saveGame(); // 呼叫 state.js 的儲存函式
     logMessage(`🎁 你獲得了 [${item.name}]！`, 'cyan');
 }
 
@@ -204,6 +202,55 @@ export function getLootItem() {
     return JSON.parse(JSON.stringify(selectedItem));
 }
 
+export function endGame(reason) {
+    // 1. 關鍵：更新遊戲狀態旗標
+    setGameActive(false);
+    
+    // 死亡懲罰邏輯
+    if (reason === "death") {
+        
+        // --- 結算死亡懲罰 ---
+        
+        // 1. 計算本次冒險多賺的金幣 (相對於上次存檔點)
+        // 🚨 關鍵修正：確保 player.gold 是數字
+        let currentGold = parseFloat(State.player.gold) || 0; 
+        let lastRestGold = parseFloat(State.player.goldAtLastRest) || 0; 
+        
+        let newlyGainedGold = currentGold - lastRestGold;
+        if (newlyGainedGold < 0) newlyGainedGold = 0; 
+
+        // 2. 應用懲罰：遺失一半多賺的金幣
+        const goldLost = Math.floor(newlyGainedGold / 2);
+        const goldRetained = newlyGainedGold - goldLost;
+        
+        // 3. 更新玩家金幣總額：恢復到上次存檔點金幣 + 保留的金幣
+        State.player.gold = lastRestGold + goldRetained;
+        
+        // 4. 計算並結算耀魂石 (使用遺失前的總金幣計算，但只用於顯示)
+        // 根據您的遊戲設計，死亡後應該不能結算，所以這裡只用於計算顯示，但不加入 permanentData
+        let stonesGained = Math.floor(newlyGainedGold / STONE_CONVERSION_RATE); 
+
+        // 🚨 修正：死亡後不結算耀魂石到永久數據中（但 log message 仍需要 stonesGained）
+        
+        saveGame(); // 將懲罰後的數據立即存檔 (覆蓋舊存檔)
+
+        // 5. 輸出結束訊息
+        logMessage(`💀 遊戲結束！你在地城第 ${State.player.depth} 層陣亡了。`, 'red');
+        logMessage(`本次冒險結算獲得 ${stonesGained} 💎 耀魂石。`, 'yellow'); // 顯示計算結果
+        
+        // 6. 切換到死亡介面
+        enterDeathMode(); 
+        
+    } else {
+        // 非死亡結束
+        logMessage(`🎉 恭喜！冒險結束。`, 'gold');
+        enterAdventureMode(); 
+    }
+    
+    // 7. 統一更新畫面
+    updateDisplay(); 
+}
+
 export function handleExplore() {
     if (!gameActive) { logMessage("請先選擇職業開始冒險！", 'red'); return; }
     if (isCombatActive) return;
@@ -233,13 +280,12 @@ export function handleExplore() {
     // 4. 隨機事件生成與執行
     const eventChance = Math.random(); 
     
-    if (eventChance < 0.75) { // 戰鬥機率 75%
-        startCombat(); // ⚠ 待實作：啟動戰鬥函式
+    if (eventChance < 0.75) { // 遭遇戰鬥機率 75%
+        startCombat();
     } else if (eventChance < 0.85) { // 找到金幣機率 10%
         const foundGold = Math.floor(Math.random() * 20) + 10;
         State.player.gold += foundGold;
         logMessage(`💰 你找到了 ${foundGold} 金幣。`, 'yellow');
-        saveGame();
     } else if (eventChance < 0.95) { // 找到裝備機率 10%
         const newItem = getLootItem(); // 呼叫剛定義的函式
         if (newItem) addItemToInventory(newItem);
@@ -268,7 +314,7 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
     // 2. 初始化 Run 數據 
     State.player.maxHp = baseHp + State.permanentData.hpBonus + hpBonus;
     State.player.hp = State.player.maxHp;
-    State.player.attack = baseAttack + State.permanentData.attackBonus + attackBonus;
+    State.player.attack = baseAttack + attackBonus;
     State.player.gold = baseGold + goldBonus;
 
     State.player.depth = 1;
@@ -307,19 +353,33 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
 
 export function getRandomMonster() {
     
-    // 1. Boss 檢查 (深度是 5 的倍數時有 Boss)
-    if (State.player.depth > 0 && State.player.depth % 5 === 0) {
-        logMessage(`🚨 警報！地城深處傳來強大壓力...`, 'red');
+    // 1. Boss 檢查
+    const currentDepth = State.player.depth;
+
+    if (currentDepth > 0 && currentDepth % 20 === 0) { // 【修正 1：每 20 層觸發 Boss】
         
-        let bossDifficulty = State.player.depth >= 15 ? 5 : 4; // 根據深度決定 Boss 難度
+        let bossId = null;
         
-        // 從 MONSTERS 中過濾 Boss
-        const availableBosses = MONSTERS.filter(m => m.isBoss && m.difficulty === bossDifficulty);
+        if (currentDepth % 100 === 0) { // 【修正 2：每 100 層鎖定幻影 Boss】
+            bossId = 'ori-shadow'; // 奧利哈鋼幻影
+        } else {
+            // 處理一般 Boss 難度 (20, 40, 60, 80 層)
+            logMessage(`🚨 警報！地城深處傳來強大壓力...`, 'red');
+            let bossDifficulty = currentDepth >= 60 ? 5 : 4; // 調整 Boss 難度門檻
+            const availableBosses = MONSTERS.filter(m => m.isBoss && m.difficulty === bossDifficulty);
+            
+            if (availableBosses.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableBosses.length);
+                bossId = availableBosses[randomIndex].id;
+            }
+        }
         
-        if (availableBosses.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableBosses.length);
-            // 複製物件並返回 (避免修改原始數據)
-            return JSON.parse(JSON.stringify(availableBosses[randomIndex]));
+        if (bossId) {
+            const boss = MONSTERS.find(m => m.id === bossId);
+            if (boss) {
+                logMessage(`🚨 警報！你遭遇了 ${boss.name}！`, 'red');
+                return JSON.parse(JSON.stringify(boss));
+            }
         }
     }
     
@@ -381,7 +441,7 @@ export function startCombat() {
     setCurrentMonster(monster); // 🚨 修正點：只使用隨機生成的怪物
 
     // 🚨 修正點：Log 函式的大小寫
-    logMessage(`🚨 你遭遇了 ${State.currentMonster.name} (HP: ${State.currentMonster.hp})！`, 'orange'); 
+    logMessage(`🚨 你遭遇了 ${State.currentMonster.name} (HP: ${State.currentMonster.hp}, 攻擊: ${State.currentMonster.attack})！`, 'orange'); 
     logMessage(`--- 請選擇行動 ---`, 'white');
 
     switchUIMode(true); 
@@ -411,6 +471,7 @@ export function equipItem(inventoryIndex) {
     
     let hpChange = 0;
     let defenseChange = 0;
+    let attackChange = 0;
 
     // 計算 HP 變動
     if (itemToEquip.hp) hpChange += itemToEquip.hp;
@@ -419,14 +480,18 @@ export function equipItem(inventoryIndex) {
     // 計算 Defense 變動
     if (itemToEquip.defense) defenseChange += itemToEquip.defense;
     if (oldItem && oldItem.defense) defenseChange -= oldItem.defense;
+
+    // 計算 Attack 變動
+    if (itemToEquip.attack) attackChange += itemToEquip.attack;
+    if (oldItem && oldItem.attack) attackChange -= oldItem.attack;
     
     // 套用變動
     State.player.maxHp += hpChange;
-    // 確保當前 HP 不超過上限
     State.player.hp = Math.min(State.player.hp, State.player.maxHp);
-    State.player.defense += defenseChange; // 更新玩家的總防禦值
+    State.player.defense += defenseChange;
+    State.player.attack += attackChange; 
     
-    logMessage(`屬性變動：HP 上限 ${hpChange > 0 ? '+' : ''}${hpChange}，防禦 ${defenseChange > 0 ? '+' : ''}${defenseChange}。`, 'yellow');
+    logMessage(`屬性變動：HP 上限 ${hpChange > 0 ? '+' : ''}${hpChange}，防禦 ${defenseChange > 0 ? '+' : ''}${defenseChange}，攻擊 ${attackChange > 0 ? '+' : ''}${attackChange}。`, 'yellow');
 
     // --- 3. 存檔與介面更新 ---
     saveGame(); 
@@ -534,41 +599,14 @@ export function enterDeathMode() {
     if (elements.inventoryArea) elements.inventoryArea.style.display = 'none';
 }
 
-export function handleUpgradeHp() {
-    
-    if (State.permanentData.stones >= UPGRADE_COST) {
-        State.permanentData.stones -= UPGRADE_COST; 
-        State.permanentData.hpBonus += 5; 
-
-        savePermanentData(); 
-
-        updateDisplay();
-        logMessage(`恭喜！您消耗了 ${UPGRADE_COST} 💎，永久 HP 上限提升了 5 點。`, 'yellow');
-
-    } else {
-        logMessage(`耀魂石不足！需要 ${UPGRADE_COST} 💎 才能升級。`, 'red');
-    }
-}
-
-export function handleUpgradeAttack() {
-    if (State.permanentData.stones >= UPGRADE_COST) {
-        State.permanentData.stones -= UPGRADE_COST; 
-        State.permanentData.attackBonus += 5;
-
-        savePermanentData(); 
-
-        updateDisplay();
-        logMessage(`恭喜！您消耗了 ${UPGRADE_COST} 💎，永久攻擊力提升了 5 點。`, 'yellow');
-
-    } else {
-        logMessage(`耀魂石不足！需要 ${UPGRADE_COST} 💎 才能升級。`, 'red');
-    }
-}
-
 export function calculateTotalAttack() {
-    // ⚠ 注意：使用 State.player 替換原本的 player
+    
+    // 基礎攻擊力
     let totalAttack = State.player.attack; 
     
+    // 永久攻擊加成
+    totalAttack += State.permanentData.attackBonus || 0; 
+
     // 裝備加成
     if (State.player.equipment.weapon) {
         totalAttack += State.player.equipment.weapon.attack || 0;
@@ -577,8 +615,22 @@ export function calculateTotalAttack() {
     return totalAttack;
 }
 
+export function handleUpgradeAttack() {
+    if (State.permanentData.stones < UPGRADE_COST) {
+        logMessage(`❌ 耀魂石不足，需要 ${UPGRADE_COST} 💎。`, 'red');
+        return;
+    }
+    
+    State.permanentData.stones -= UPGRADE_COST;
+    State.permanentData.attackBonus += 5; 
+
+    logMessage(`💪 永久攻擊力 +5 成功！[當前加成: +${State.permanentData.attackBonus}]`, 'lightgreen');
+    savePermanentData();
+    updateDisplay(); 
+}
+
 export function handleAttack() {
-    // ⚠ 注意：使用 State.isCombatActive 和 State.currentMonster 替換原本的變數
+    
     if (!isCombatActive) return;
 
     const totalAttack = calculateTotalAttack();
@@ -620,6 +672,26 @@ export function handleAttack() {
     logMessage(`--- 請選擇下一回合行動 ---`, 'white'); 
 }
 
+export function handleUpgradeHp() {
+    
+    if (State.permanentData.stones < UPGRADE_COST) {
+        logMessage(`❌ 耀魂石不足，需要 ${UPGRADE_COST} 💎。`, 'red');
+        return;
+    }
+    
+    State.permanentData.stones -= UPGRADE_COST; 
+    State.permanentData.hpBonus += 5; 
+
+    // 【關鍵修正：立即將永久加成套用到當前角色】
+    State.player.maxHp += 5; 
+    State.player.hp = State.player.maxHp; // 順便補滿血
+
+    logMessage(`❤️ 永久 HP 上限 +5 成功！[當前加成: +${State.permanentData.hpBonus}]`, 'lightgreen');
+    savePermanentData(); 
+
+    updateDisplay(); 
+}
+
 export function endCombat(isVictory) {
     setIsCombatActive(false);
     
@@ -631,11 +703,34 @@ export function endCombat(isVictory) {
         State.player.gold += gold;
         logMessage(`💰 擊敗 ${enemy.name}，獲得 ${gold} 金幣。`, 'yellow');
 
-        // 2. 物品掉落 
-        if (Math.random() < 0.1) {
-            const newItem = getLootItem(); // 呼叫剛定義的函式
-            if (newItem) addItemToInventory(newItem); // 呼叫 addItemToInventory
+        // 2. if 敵人是 Ori Shadow，掉落稀有物品
+        if (enemy.id === 'ori-shadow') { 
+            
+            const rareLootIds = [
+                'ori-sword',    // 武器
+                'ori-armor',    // 防具
+                'ori-necklace', // 項鍊
+                'ori-ring'      // 戒指
+            ];
+            
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+            
+            const newItem = getItemById(rareLootId); 
+            
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
         }
+        
+        // 3. 物品掉落 
+        else if (Math.random() < 0.1) {
+            const newItem = getLootItem(); 
+            if (newItem) addItemToInventory(newItem); 
+        }
+
         handleMaterialDrop(enemy.id);
 
         logMessage(`🏆 戰鬥勝利！進入下一層。`, 'lightgreen');
@@ -643,13 +738,9 @@ export function endCombat(isVictory) {
     }
     
     setCurrentMonster(null);
-    
     switchUIMode(false); 
-    saveGame(); 
     updateDisplay();
 }
-
-
 
 export function handleExchangeGold() {
 
@@ -687,40 +778,6 @@ export function handleExchangeGold() {
 
     updateDisplay();
     updateExchangeDisplay(); // ⚠ 這裡需要 updateExchangeDisplay (從 ui_manager.js 匯入)
-}
-
-export function endGame(reason) {
-    // 1. 關鍵：更新遊戲狀態旗標
-    setGameActive(false);
-    
-    // 死亡懲罰邏輯
-    if (reason === "death") {
-        
-        // --- 結算死亡懲罰 ---
-        
-        // 1. 計算本次冒險獲得的耀魂石 (從 State 和 Config 獲取)
-        let goldGainedInRun = State.player.gold;
-        let stonesGained = Math.floor(goldGainedInRun / State.STONE_CONVERSION_RATE);
-        
-        // 2. 更新永久貨幣並儲存
-        State.permanentData.stones += stonesGained;
-        savePermanentData(); // 呼叫 state.js 的儲存函式
-        
-        // 3. 輸出結束訊息
-        logMessage(`💀 遊戲結束！你在地城第 ${State.player.depth} 層陣亡了。`, 'red');
-        logMessage(`本次冒險結算獲得 ${stonesGained} 💎 耀魂石。`, 'yellow');
-        
-        // 4. 切換到死亡介面
-        enterDeathMode(); // 呼叫先前定義的介面切換函式
-        
-    } else {
-        // 非死亡結束 (例如成功返回城鎮)
-        logMessage(`🎉 恭喜！冒險結束。`, 'gold');
-        enterAdventureMode(); 
-    }
-    
-    // 5. 統一更新畫面
-    updateDisplay(); 
 }
 
 export function setNewTownGoal() {
@@ -936,9 +993,9 @@ export function handleEscape() {
         logMessage(`🛑 逃跑失敗！怪物趁機攻擊你！`, 'red');
         
         // 逃跑失敗懲罰：怪物免費攻擊一次
-        const damageReceived = Math.max(1, State.currentMonster.attack - State.player.defense);
+        const damageReceived = Math.max(5, State.currentMonster.attack - State.player.defense);
         State.player.hp -= damageReceived;
-        logMessage(`❌ ${State.currentMonster.name} 趁亂造成了 ${damageReceived} 點傷害！`, 'red');
+        logMessage(`❌ ${State.currentMonster.name} 趁亂造成了 ${damageReceived} 點傷害 (已減免 ${State.player.defense} 防禦)！`, 'red');
         
         // 檢查死亡
         if (State.player.hp <= 0) {
@@ -1071,29 +1128,31 @@ export function handleLogin() {
 }
 
 export function handleLogout() {
+    
     // 1. 清除本地儲存的登入狀態
     localStorage.removeItem('local_username');
 
     // 2. 重置 State 中的用戶名
-    currentUsername = null;
+    State.setCurrentUsername(null); // 【關鍵修正】使用 State 函式重置 currentUsername
     
-    // 3. 輸出訊息
-    logMessage(`👋 ${State.player.className} 已登出。`, 'white');
-
-    // 4. 切換介面回登入畫面
-    elements.loggedOutView.style.display = 'block';
-    elements.loggedInView.style.display = 'none';
-    elements.gameContent.style.display = 'none';
-    elements.classSelection.style.display = 'none';
-    
-    // 5. 清除遊戲數據 (確保下次登入是新進度)
+    // 3. 重置 player 數據為初始狀態（確保下次登入前是乾淨的）
     Object.assign(State.player, {
         hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, className: "", 
-        equipment: { weapon: null, armor: null }, inventory: [], materials: {}, 
+        equipment: { weapon: null, armor: null, necklace: null, ring: null }, // 【修正：包含新的裝備欄位】
+        inventory: [], materials: {}, goldAtLastRest: 0,
         actionsSinceTown: 0, actionsToTownRequired: 0 
     });
     
-    updateDisplay();
+    // 4. 輸出訊息
+    logMessage(`👋 您已登出。`, 'white');
+
+    // 5. 切換介面回登入畫面
+    elements.loggedOutView.style.display = 'block'; // 顯示登入框
+    elements.loggedInView.style.display = 'none';   // 隱藏登出狀態
+    elements.gameContent.style.display = 'none';    // 隱藏整個遊戲內容
+    elements.classSelection.style.display = 'none'; // 隱藏職業選擇按鈕
+    
+    updateDisplay(); // 統一更新畫面
 }
 
 export function checkLocalLogin() {
