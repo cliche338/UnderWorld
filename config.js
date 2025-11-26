@@ -31,7 +31,7 @@ export const MONSTERS = [
         { id: 'demon2', name: "火焰惡魔", hp: 80, attack: 35, goldReward: 90, difficulty: 3 },
 
     // Boss 怪物 (Difficulty 4 & 5)
-        { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 2240, attack: 85, goldReward: 700, difficulty: 10, isBoss: true },
+        { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 3700, attack: 370, goldReward: 370, difficulty: 10, isBoss: true },
         { id: 'boss1', name: "地城守衛者", hp: 200, attack: 40, goldReward: 300, difficulty: 4, isBoss: true },
         { id: 'boss2', name: "遠古巨龍", hp: 500, attack: 60, goldReward: 1000, difficulty: 5, isBoss: true },
         { id: 'boss3', name: "大樹守衛", hp: 1500, attack: 20, goldReward: 500, difficulty: 4, isBoss: true },

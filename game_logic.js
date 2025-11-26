@@ -389,7 +389,7 @@ export function getRandomMonster() {
         
         let bossId = null;
         
-        if (currentDepth % 100 === 0) { // 【修正 2：每 100 層鎖定幻影 Boss】
+        if (currentDepth % 250 === 0) { 
             bossId = 'ori-shadow'; // 奧利哈鋼幻影
         } else {
             // 處理一般 Boss 難度 (20, 40, 60, 80 層)
