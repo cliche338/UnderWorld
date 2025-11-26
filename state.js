@@ -1,5 +1,5 @@
 import { ACCOUNTS_KEY, SAVE_KEY, PERM_SAVE_KEY } from './config.js'; 
-import { logMessage, updateDisplay, elements } from './ui_manager.js';
+import { logMessage, updateDisplay } from './ui_manager.js';
 
 export let currentMonster = null;
 export let isCombatActive = false;
@@ -20,17 +20,17 @@ export let player = {
             weapon: null, // 儲存當前裝備的物品物件或 null
             armor: null,  // 儲存當前裝備的物品物件或 null
         },
-        
-        materials: {},
 
-        inventory: [], // 儲存未裝備的物品物件列表
+        goldAtLastRest: 0,
+        inventory: [], 
+        materials: {},
 
         actionsToTownRequired: 0,
         actionsSinceTown: 0,//行動計數器
     };
 
 export function setGameActive(value) {
-    gameActive = value; // 這裡可以直接修改
+    gameActive = value; 
 }
 
 export function setIsCombatActive(value) {
@@ -42,11 +42,11 @@ export function setCurrentMonster(monsterObject) {
 }
 
 export function setCurrentUsername(username) {
-    currentUsername = username; // 這裡可以直接修改，因為我們在 state.js 內部
+    currentUsername = username; 
 }
 
 export function setIsInventoryOpen(value) {
-    isInventoryOpen = value; // 這裡可以直接修改
+    isInventoryOpen = value; 
 }
 
 export function getStoredAccounts() {

@@ -50,7 +50,7 @@ export const ITEMS = [
         { id: 'a3', name: '泰坦合金板甲', type: 'armor', hp: 170, defense: 35, value: 200, price: 2500, rarity: 4 },
         { id: 'a4', name: '死者肩甲', type: 'armor', hp: 50, defense: 25, value: 80, price: 750, rarity: 3 },
         { id: 'a5', name: '奧利哈鋼之甲', type: 'armor', hp: 550, defense: 55, alue: 1500, price: 3700, rarity: 6 },
-        { id: 'a6', name: '僧侶袈裟', type: 'armor', hp: 120, defense: 20, value: 1500, price: 1300, rarity: 3 },
+        { id: 'a6', name: '僧侶袈裟', type: 'armor', hp: 120, defense: 20, value: 1000, price: 1500, rarity: 3 },
         
     // 藥水
         { id: 'c1', name: '輕型治療藥水', type: 'consumable', heal: 20, value: 10, price: 50, rarity: 1 },

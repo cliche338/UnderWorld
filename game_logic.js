@@ -96,7 +96,7 @@ export function handleMaterialDrop(monsterId) {
     let dropsLogged = 0;
 
     MATERIALS_DATA.forEach(material => { // MATERIALS_DATA 從 config.js 引入
-        if (Math.random() < material.dropRate) {
+        if (Math.random() < material.dropRate / 10) {
             
             const materialId = material.id;
             
@@ -265,7 +265,7 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
     const baseAttack = 5;
     const baseGold = 100;
     
-    // 2. 初始化 Run 數據 (應用永久加成和職業獎勵)
+    // 2. 初始化 Run 數據 
     State.player.maxHp = baseHp + State.permanentData.hpBonus + hpBonus;
     State.player.hp = State.player.maxHp;
     State.player.attack = baseAttack + State.permanentData.attackBonus + attackBonus;
@@ -277,9 +277,9 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
     
     State.player.equipment = { weapon: null, armor: null };
     State.player.inventory = [];
+    player.materials = {};
     
-    // 3. 發放起始道具 (⚠ 這裡需要 addItemToInventory 函式，稍後補上)
-    // STARTER_LOOT_IDS.forEach(itemId => { ... });
+    // 3. 發放起始道具 
     STARTER_LOOT_IDS.forEach(itemId => { // STARTER_LOOT_IDS 從 config.js 引入
     const item = getItemById(itemId); // 呼叫 getItemById
     if (item) { 
@@ -587,9 +587,9 @@ export function handleAttack() {
     State.currentMonster.hp -= totalAttack; 
     logMessage(`你攻擊了 ${State.currentMonster.name}，造成 ${totalAttack} 點傷害。`, 'white');
     
-    // 2. 檢查勝利 (如果怪物死亡，邏輯會跳到 endCombat(true) 並返回)
+    // 2. 檢查勝利 
     if (State.currentMonster.hp <= 0) {
-        endCombat(true); // 結束戰鬥，返回探索模式 (⚠ 待實作 endCombat)
+        endCombat(true); 
         return;
     }
     
@@ -626,13 +626,12 @@ export function endCombat(isVictory) {
     if (isVictory) {
         const enemy = State.currentMonster;
         
-        // 1. 金幣結算 (這裡假設您有怪物資料 MONSTERS)
+        // 1. 金幣結算 
         const gold = enemy.goldReward;
         State.player.gold += gold;
         logMessage(`💰 擊敗 ${enemy.name}，獲得 ${gold} 金幣。`, 'yellow');
 
-        handleMaterialDrop(enemy.id);
-        // 2. 物品掉落 (這裡簡化，稍後可以加上 getLootItem 邏輯)
+        // 2. 物品掉落 
         if (Math.random() < 0.1) {
             const newItem = getLootItem(); // 呼叫剛定義的函式
             if (newItem) addItemToInventory(newItem); // 呼叫 addItemToInventory
@@ -640,12 +639,13 @@ export function endCombat(isVictory) {
         handleMaterialDrop(enemy.id);
 
         logMessage(`🏆 戰鬥勝利！進入下一層。`, 'lightgreen');
+        
     }
     
     setCurrentMonster(null);
     
-    switchUIMode(false); // 切換回探索模式按鈕
-    saveGame(); // 儲存金幣變動
+    switchUIMode(false); 
+    saveGame(); 
     updateDisplay();
 }
 
