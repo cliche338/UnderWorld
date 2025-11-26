@@ -51,7 +51,7 @@ export const ITEMS = [
         { id: 'w7', name: '騎士槍盾', type: 'weapon', attack: 25, defense: 25, value: 320, price: 580, rarity: 4 },
         
     // 防具
-        { id: 'ori-armor', name: '奧利哈鋼之甲', type: 'armor', hp: 550, defense: 55, alue: 1500, price: 3700, rarity: 10 },
+        { id: 'ori-armor', name: '奧利哈鋼之甲', type: 'armor', hp: 550, defense: 55, value: 1500, price: 3700, rarity: 10 },
         { id: 'a1', name: '皮革護甲', type: 'armor', hp: 10, defense: 5, value: 15, price: 250, rarity: 1 },
         { id: 'a2', name: '鋼鐵胸甲', type: 'armor', hp: 25, defense: 15, value: 50, price: 500, rarity: 2 },
         { id: 'a3', name: '泰坦合金板甲', type: 'armor', hp: 170, defense: 35, value: 200, price: 2500, rarity: 4 },
@@ -75,9 +75,9 @@ export const ITEMS = [
     // 藥水
         { id: 'c1', name: '輕型治療藥水', type: 'consumable', heal: 20, value: 10, price: 50, rarity: 1 },
         { id: 'c2', name: '強效治療藥水', type: 'consumable', heal: 50, value: 40, price: 100, rarity: 2 },
-        { id: 'c3', name: '醫療箱', type: 'consumable', heal: 200, value: 150, price: 350, rarity: 3 },
+        { id: 'c3', name: '醫療箱', type: 'consumable', heal: 200, value: 150, price: 350, rarity: 4 },
         { id: 'c4', name: '普通藥草', type: 'consumable', heal: 30, value: 40, price: 75, rarity: 1 },
-        { id: 'c5', name: '大回復藥劑', type: 'consumable', heal: 120, value: 150, price: 280, rarity: 2 },
+        { id: 'c5', name: '大回復藥劑', type: 'consumable', heal: 120, value: 150, price: 280, rarity: 3 },
     ];
 
     export const MATERIALS_DATA = [
