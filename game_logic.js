@@ -147,13 +147,16 @@ export function addItemToInventory(item) {
 
 export function refreshShopInventory() {
     
-    // 1. 根據玩家深度決定商店能賣的最高稀有度
+    // 1. 根據玩家深度決定商店能賣的"最高"稀有度
     let maxRarityAvailable = 1; 
 
-    // 假設地城深度達到 5 層解鎖 Rarity 2，達到 15 層解鎖 Rarity 3
-    if (State.player.depth >= 15) {
+    if (State.player.depth >= 60) {
+        maxRarityAvailable = 5;
+    }else if (State.player.depth >= 40) {
+        maxRarityAvailable = 4;
+    }else if (State.player.depth >= 20) {
         maxRarityAvailable = 3;
-    } else if (State.player.depth >= 5) {
+    } else if (State.player.depth >= 10) {
         maxRarityAvailable = 2;
     }
 
@@ -274,36 +277,36 @@ export function handleExplore() {
         toggleTownAccess(false); 
     }
 
-    if (State.player.actionsSinceTown >= State.player.actionsToTownRequired) {
-        logMessage("🏠 行動目標已達成！自動返回城鎮休息和存檔。", 'lightgreen');
-        handleRest(true); // 呼叫 handleRest 執行返城邏輯
-        return; // 立即結束，不觸發隨機事件
-    }
-
-    // 3. 記錄進入的層數
+    // 3. 檢查是否達到自動回城條件
     if (State.player.actionsSinceTown >= State.player.actionsToTownRequired) {
         logMessage("🏠 行動目標已達成！自動返回城鎮休息和存檔。", 'lightgreen');
         handleRest(true); // 呼叫 handleRest 執行返城邏輯
         return; // 立即結束，不觸發隨機事件
     }
     
-    // 4. 隨機事件生成與執行
+    // 4. 【關鍵修正：強制記錄層數日誌，確保它在任何事件之前輸出】
+    const needed = State.player.actionsToTownRequired - State.player.actionsSinceTown;
+    logMessage(`--- 進入地城第 ${State.player.depth} 層 (需再行動 ${needed} 次才能返回城鎮) ---`, 'cyan'); 
+    
+    // 5. 隨機事件生成與執行 (這部分的 log 會在層數 log 之後)
     const eventChance = Math.random(); 
     
-    if (eventChance < 0.75) { // 遭遇戰鬥機率 75%
+    if (eventChance < 0.75) { 
         startCombat();
-    } else if (eventChance < 0.85) { // 找到金幣機率 10%
+    } else if (eventChance < 0.85) { 
+        // 找到金幣
         const foundGold = Math.floor(Math.random() * 20) + 10;
         State.player.gold += foundGold;
         logMessage(`💰 你找到了 ${foundGold} 金幣。`, 'yellow');
-    } else if (eventChance < 0.95) { // 找到裝備機率 10%
-        const newItem = getLootItem(); // 呼叫剛定義的函式
+    } else if (eventChance < 0.95) { 
+        // 找到裝備！
+        const newItem = getLootItem(); 
         if (newItem) addItemToInventory(newItem);
-    } else { // 什麼也沒發生機率 5%
+    } else { 
         logMessage("💨 什麼都沒有，繼續向下探索。", 'white');
     }
 
-    // 5. 檢查生命值
+    // 6. 檢查生命值
     if (State.player.hp <= 0) {
         State.player.hp = 0;
         endGame("death");
@@ -586,7 +589,7 @@ export function handleSellMaterial(materialId, count, sellPrice) {
 }
 
 export function enterAdventureMode() {
-    elements.currentStageTitle.textContent = "地城探險";
+    elements.currentStageTitle.textContent = "地城探險"; 
 
     // 顯示探索模式按鈕，隱藏戰鬥和死亡按鈕
     elements.exploreModeButtons.style.display = 'block';
@@ -598,19 +601,26 @@ export function enterAdventureMode() {
 
     // 確保主要遊戲內容顯示
     elements.gameContent.style.display = 'block'; 
+
+    // 確保動作容器顯示
+    if (elements.adventureActions) elements.adventureActions.style.display = 'block';
+    if (elements.controlsArea) elements.controlsArea.style.display = 'block';
 }
 
 export function enterDeathMode() {
-    elements.currentStageTitle.textContent = "💀 英雄陣亡";
     
-    // 必須隱藏探索和戰鬥模式的按鈕容器！
-    if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'none'; // 修正點
-    if (elements.combatModeButtons) elements.combatModeButtons.style.display = 'none';  // 修正點
+    // 1. 隱藏所有動作按鈕容器
+    if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'none'; 
+    if (elements.combatModeButtons) elements.combatModeButtons.style.display = 'none';
+    if (elements.adventureActions) elements.adventureActions.style.display = 'none'; // 確保探索按鈕總容器隱藏
     
-    // 顯示死亡模式按鈕
+    // 2. 顯示死亡模式按鈕
     if (elements.deathModeButtons) elements.deathModeButtons.style.display = 'block'; 
     
-    // 確保其他非動作區塊隱藏（例如城鎮區塊）
+    // 3. 確保總控制區塊顯示標題
+    if (elements.controlsArea) elements.controlsArea.style.display = 'block'; 
+
+    // 4. 確保其他非動作區塊隱藏
     if (elements.hubArea) elements.hubArea.style.display = 'none'; 
     if (elements.inventoryArea) elements.inventoryArea.style.display = 'none';
 }
@@ -825,8 +835,19 @@ export function renderShop() {
         shopDiv.classList.add('shop-item');
 
         const displayType = item.type === 'weapon' ? '⚔️ 武器' : item.type === 'armor' ? '🛡️ 防具' : item.type === 'necklace' ? '📿 項鍊' : item.type === 'ring' ? '💍 戒指' : '🧪 藥水';
-        const displayStat = item.attack ? `+${item.attack} 攻` : item.hp ? `+${item.hp} 生命` : item.heal ? `+${item.heal} 治療` : '';
+        let displayStat = '';
+        if (item.type === 'necklace' || item.type === 'ring') {
+            const parts = [];
+            if (item.attack) parts.push(`+${item.attack} 攻`);
+            if (item.hp) parts.push(`+${item.hp} 生命`);
+            if (item.defense) parts.push(`+${item.defense} 防禦`);
+            displayStat = parts.join(', ');
+        } else {
+            // 武器/防具/消耗品（沿用原來的單一顯示邏輯）
+            displayStat = item.attack ? `+${item.attack} 攻` : item.hp ? `+${item.hp} 生命` : item.heal ? `+${item.heal} 治療` : item.defense ? `+${item.defense} 防禦` : '';
+        }
 
+        const rarityStars = '⭐'.repeat(item.rarity || 1); // 顯示稀有度
         shopDiv.innerHTML = `${displayType}: **${item.name}** (${displayStat}) 價格: **${item.price}** 💰`;
 
         const buyButton = document.createElement('button');
@@ -935,50 +956,51 @@ export function handleRest(isAuto = false) {
 }
 
 export function enterTownMode() {
-    
-    // 1. 設置標題
 
-    // 2. 顯示 Town/Hub 區塊，隱藏戰鬥/死亡區塊
+    // 顯示 Town/Hub 區塊，隱藏戰鬥/死亡區塊
     if (elements.hubArea) elements.hubArea.style.display = 'block';
     
-    // 3. 顯示 Explore/Rest 按鈕
-    if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'block';
-    if (elements.combatModeButtons) elements.combatModeButtons.style.display = 'none';
-    if (elements.deathModeButtons) elements.deathModeButtons.style.display = 'none';
+    // 顯示 Explore/Rest 按鈕
+    if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'block'; 
+    if (elements.combatModeButtons) elements.combatModeButtons.style.display = 'none'; 
+    if (elements.deathModeButtons) elements.deathModeButtons.style.display = 'none'; 
     
-    // 4. 確保不該出現的元素被隱藏
+    // 確保主要的動作容器顯示 
+    if (elements.adventureActions) elements.adventureActions.style.display = 'block'; 
+    if (elements.controlsArea) elements.controlsArea.style.display = 'block'; 
+
+    // 確保不該出現的元素被隱藏
     if (elements.classSelection) elements.classSelection.style.display = 'none';
     if (elements.inventoryArea) elements.inventoryArea.style.display = 'none'; 
 
-    // 5. 確保城鎮功能開啟 (交易/升級)
+    // 確保城鎮功能開啟 (交易/升級)
     toggleTownAccess(true);
 
-    // 6. 刷新商店 (這兩個函式需要之後補齊)
+    // 刷新商店
     refreshShopInventory(); 
     renderShop();
 }
 
 export function handleRevive() {
     
-    // 1. 載入上次成功的存檔點 (不檢查 gameActive)
-    const success = loadGame(); // 呼叫 State 模組的 loadGame
+    const success = loadGame(); 
 
     if (success) {
-        // 2. 復原成功，將遊戲標記為活躍
-        setGameActive(true); // 【關鍵修正 1: 重新啟用遊戲】
-        State.player.actionsSinceTown = 0;
-        // 3. 輸出訊息
-        logMessage(`✨ 復原成功！你回到了上一個城鎮 (深度 ${State.player.depth} 層)。`, 'green');
+        setGameActive(true); 
         
-        // 4. 切換回城鎮介面
-        enterTownMode();
+        // 【關鍵修正：強制將行動計數器歸零和血量補滿】
+        State.player.actionsSinceTown = 0; 
+        State.player.hp = State.player.maxHp; 
+        
+        logMessage(`✨ 復原成功！你回到了上一個城鎮 (深度 ${State.player.depth} 層)，生命值已恢復！`, 'green');
+        
+        enterTownMode(); 
         
     } else {
         logMessage(`❌ 無法找到存檔！請重新選擇職業開始新遊戲。`, 'red');
-        // 5. 如果沒有存檔，導向職業選擇介面
-        enterSelectionMode(); // 呼叫一個新的函式來處理 UI 切換
+        enterSelectionMode(); 
     }
-    updateDisplay(); // 統一更新畫面
+    updateDisplay(); 
 }
 
 // 導向職業選擇

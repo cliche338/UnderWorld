@@ -68,7 +68,9 @@ export const ITEMS = [
         { id: 'ori-ring', name: '奧利哈鋼之眼', type: 'ring', attack: 70, value: 1500, price: 3700, rarity: 10 },
         { id: 'r1', name: '力量之戒', type: 'ring', attack: 10, value: 300, price: 600, rarity: 2 },
         { id: 'r2', name: '鐵壁指環', type: 'ring', defense: 10, value: 210, price: 550, rarity: 2 },
-        { id: 'r3', name: '全能徽章', type: 'ring', attack: 5, hp: 10, defense: 5, value: 400, price: 900, rarity: 3 },
+        { id: 'r3', name: '黯淡全能之石', type: 'ring', attack: 5, hp: 10, defense: 5, value: 400, price: 900, rarity: 3 },
+        { id: 'r4', name: '乾淨全能之石', type: 'ring', attack: 10, hp: 15, defense: 10, value: 600, price: 1200, rarity: 4 },
+        { id: 'r4', name: '閃耀全能之石', type: 'ring', attack: 20, hp: 25, defense: 20, value: 1000, price: 2000, rarity: 5 },
 
     // 藥水
         { id: 'c1', name: '輕型治療藥水', type: 'consumable', heal: 20, value: 10, price: 50, rarity: 1 },
