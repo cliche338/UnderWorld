@@ -24,7 +24,7 @@ function openModal(title, content, modalClass) {
         return; 
     }
     // 1. 清理舊的樣式類別
-    elements.modalBody.classList.remove('rules-modal', 'update-modal'); 
+    elements.modalBody.classList.remove('rules-modal', 'update-modal', 'codex-modal'); // 確保 codex-modal 被清理
     
     // 2. 應用新的類別，這會觸發 style.css 中的獨立樣式
     elements.modalBody.classList.add(modalClass);
@@ -37,6 +37,8 @@ function openModal(title, content, modalClass) {
     // 4. 重新綁定關閉邏輯
     elements.modalCloseBtn.onclick = () => {
         elements.modalBackdrop.style.display = 'none';
+        // 額外保險：關閉時隱藏篩選器（針對可能的圖鑑殘留）
+        if (elements.codexFilters) elements.codexFilters.style.display = 'none';
     };
     
     logMessage(`🔔 顯示模態框: ${title}`, 'orange');
@@ -60,7 +62,7 @@ export function showHowToPlay() {
         
     🗡️戰鬥守則 :
         * 每次攻擊會根據裝備加成對怪物造成傷害。
-        * 防禦力會減少所受傷害，無法永久升級，最小所受傷害為5。
+        * 防禦力會減少所受傷害，最小所受傷害為5。
         * 逃跑有機率失敗，失敗會讓怪物免費攻擊一次(全額傷害)。
         * 每20層會遇到一個Boss怪物。
         * 每250層會遇見奧利哈鋼幻影Boss，擊敗會掉落專屬道具。
@@ -70,6 +72,10 @@ export function showHowToPlay() {
         * 祝你遊戲愉快！🎉
         
     `;
+
+    if (elements.codexFilters) {
+        elements.codexFilters.style.display = 'none'; 
+    }
     
     const title = "❓ 遊戲提示與規則";
     openModal(title, rules, 'rules-modal'); 
@@ -83,9 +89,14 @@ export function showUpdateLog() {
         - 新增道具介紹
         - 修正藥水無法觸發永久強化的bug
         - 調整藥水強度
+        - 修正圖鑑按鈕的顯示錯誤
 
     `;
     
+    if (elements.codexFilters) {
+        elements.codexFilters.style.display = 'none'; 
+    }
+
     const title = "V2.4 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
@@ -171,9 +182,9 @@ export function toggleCodex() {
 
     if (!isCodexOpen) {
         // --- 開啟圖鑑 ---
-        try { // 【關鍵修正 1：Try-Catch 確保開啟時不崩潰】
+        try { 
             updateCodexDisplay('all'); // 預設顯示所有道具
-
+            elements.codexFilters.style.display = 'block';
             // 設置模態框樣式
             elements.modalBody.classList.remove('rules-modal', 'update-modal'); 
             elements.modalBody.classList.add('codex-modal');
@@ -220,6 +231,7 @@ export function toggleCodex() {
         elements.modalContent.innerHTML = ''; // 清理內容
         elements.modalBody.classList.remove('codex-modal');
         
+        elements.codexFilters.style.display = 'none';
         // 移除事件綁定
         elements.codexFilters.onclick = null; 
         
