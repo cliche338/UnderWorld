@@ -9,6 +9,62 @@ body {
     color: #f7f3e9;
 }
 
+.update-modal {
+    border-color: #f39c12; 
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.5); 
+}
+
+.update-modal #modal-title {
+    color: #f39c12 !important; 
+}
+
+#update-log-modal.rules-modal { 
+    background: #252d3d; /* 藍灰色背景 */
+    border-color: #3498db; /* 藍色邊框 */
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5); 
+    
+    /* 確保寬度被正確覆蓋 */
+    max-width: 800px; 
+}
+
+#custom-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* 深色背景遮罩 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#update-log-modal {
+    background: #1b1b1b;
+    border: 3px solid #6b5d4d;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 450px; 
+    width: 90%;
+    box-shadow: 0 0 20px rgba(255, 210, 87, 0.4);
+    text-align: center; 
+    font-size: 1.6em; 
+    margin-bottom: 20px;
+}
+
+#modal-content {
+    /* 處理內容格式 */
+    white-space: pre-wrap; /* 保留 JavaScript 字符串中的換行和空格 */
+    text-align: left; /* 內容文字靠左 */
+    padding: 10px 0;
+    max-height: 400px; /* 限制最大高度，允許滾動 */
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
 /* 主框架 */
 .game-container {
     width: 95%;
@@ -27,33 +83,43 @@ body {
     align-items: flex-start;
 }
 
-/* 範圍比例 */
-/*.left-panel { flex: 2; min-width: 260px; }
-.right-panel { flex: 3; }*/
+#auth-area {
+    /* 縮減頂部面板的垂直填充空間 */
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 10px !important; /* 減少面板下方的空間 */
+}
+#auth-area #logged-in-view,
+#auth-area #logged-out-view {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
 
-/* 第 1 欄：冒險家狀態 */
+#auth-area > div:first-child {
+    margin-bottom: 5px; 
+}
+
+/* 冒險家狀態 */
 #status-display { 
     flex: 1; /* 佔 1 份比例 (最窄) */
     min-width: 200px;
 }
 
-/* 第 2 欄：城鎮 */
+/* 城鎮 */
 #hub-area { 
-    flex: 3; /* 佔 2 份比例 (較寬) */
+    flex: 3; /* 佔 3 份比例 (較寬) */
     min-width: 300px;
 }
 
-/* 第 3 欄：包裹日誌和控制區塊的新容器 */
+/* 包裹日誌和控制區塊的新容器 */
 #log-and-controls-group { 
     flex: 1.5; /* 佔 2 份比例 (較寬) */
     display: flex; 
     flex-direction: column; /* 讓內部元素垂直堆疊 */
 }
 
-/* 確保 #game-log 在新的容器內能夠擴展 */
 #game-log {
     flex-grow: 1; /* 讓日誌區塊盡可能佔滿上方剩餘空間 */
-    /* 保持 height: 450px; 的設定，或是移除它讓 flex-grow 作用 */
     margin-bottom: 15px; /* 與下方的控制區塊保持間距 */
 }
 
@@ -134,32 +200,23 @@ body {
 
 #hub-area > div:last-child > button[id^="upgrade-"] {
     display: block;        /* 【關鍵】讓按鈕成為塊級元素，強制垂直堆疊 */
-    width: 80%;           /* 讓按鈕寬度盡可能拉伸，美觀對齊 */
+    width: 100%;           /* 讓按鈕寬度盡可能拉伸 */
     margin: 5px 0 10px 0;  /* 設置按鈕間隔 */
     min-width: unset;      /* 移除最小寬度限制 */
     text-align: center;    /* 內容居中 */
     box-sizing: border-box; 
-}
-
-#hub-area > div:last-child > button[id^="upgrade-"] {
-    flex-grow: 1; 
-    flex-shrink: 1;
-    /* 讓三個按鈕平均分配寬度，略小於 33.33% 以預留 gap 空間 */
-    flex-basis: calc(33.33% - 7px); 
+    
+    /* 移除所有 Flex 屬性，確保 display: block 生效 */
+    flex-grow: unset; 
+    flex-shrink: unset;
+    flex-basis: unset;
     
     /* 調整內距 (padding) 來控制方塊大小，增加垂直空間 */
     padding: 15px 5px; 
     
-    /* 移除通用樣式中的最小寬度限制 */
-    min-width: 100px; 
-    
-    /* 確保文字居中 */
-    text-align: center; 
-    
-    /* 讓文字可以換行，這樣按鈕不會過寬 */
-    white-space: normal; 
+    /* 確保文字不會被強制壓縮到單行 */
+    white-space: normal;
     line-height: 1.2;
-    white-space: pre-wrap;
 }
 
 /* ---------------- 按鈕樣式 ---------------- */

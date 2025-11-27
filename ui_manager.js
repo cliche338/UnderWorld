@@ -15,8 +15,15 @@ import {
 } from './game_logic.js'; //
 
 export const elements = {
-    // ... (elements 保持不變)
+
+        modalBackdrop: document.getElementById('custom-modal-backdrop'),
+        modalContent: document.getElementById('modal-content'),
+        modalCloseBtn: document.getElementById('modal-close-btn'),
+        modalTitle: document.getElementById('modal-title'),
+        modalBody: document.getElementById('update-log-modal'),
+
         howToPlayBtn: document.getElementById('how-to-play-btn'),
+        updateLogBtn: document.getElementById('update-log-btn'),
 
         defenseValue: document.getElementById('defense-value'),
         equippedArmorName: document.getElementById('equipped-armor-name'),

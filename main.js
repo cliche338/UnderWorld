@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.upgradeDefenseBtn.onclick = GameLogic.handleUpgradeDefense;
     
     elements.howToPlayBtn.onclick = GameLogic.showHowToPlay;
+    elements.updateLogBtn.onclick = GameLogic.showUpdateLog; 
+    
 });
 
 

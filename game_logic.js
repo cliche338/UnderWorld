@@ -14,41 +14,77 @@ import { logMessage, updateDisplay, elements, renderInventoryList, renderMateria
 
 export let currentShopInventory = [];
 
+function openModal(title, content, modalClass) {
+    // 1. 清理舊的樣式類別
+    elements.modalBody.classList.remove('rules-modal', 'update-modal'); 
+    
+    // 2. 應用新的類別，這會觸發 style.css 中的獨立樣式
+    elements.modalBody.classList.add(modalClass);
+
+    // 3. 注入內容並顯示
+    elements.modalTitle.textContent = title;
+    elements.modalContent.textContent = content;
+    elements.modalBackdrop.style.display = 'flex'; 
+
+    // 4. 重新綁定關閉邏輯
+    elements.modalCloseBtn.onclick = () => {
+        elements.modalBackdrop.style.display = 'none';
+    };
+    
+    logMessage(`🔔 顯示模態框: ${title}`, 'orange');
+}
+
 export function showHowToPlay() {
     const rules = `
-        💧基本流程 : 
+    💧基本流程 : 
         1. 🛡️ 選擇職業並開始冒險。
         2. 🎒 點選背包可使用道具和販賣道具，遊戲初期有基本裝備。
         3. 🎲 點擊「繼續探險」進入地城。
         4. ⚔️ 遭遇怪物時，點擊「攻擊」進行回合制戰鬥。
         5. 💰 收集金幣和物品。
-        6. 🏠 行動步數達到目標後，英雄會自動返回城鎮。
+        6. 🏠 每完成7次行動，會自動返回城鎮。
 
-        🏠城鎮功能 : 
+    🏠城鎮功能 : 
         * 返回城鎮時會存檔、治療生命。
         * 使用金幣兌換 💎 耀魂石。
         * 使用耀魂石永久強化HP和攻擊力，增強下一次冒險的能力。
         * 刷新商店以購買更強力的裝備，層數越深可遇見道具稀有度越高。
         
-        🗡️戰鬥守則 :
+    🗡️戰鬥守則 :
         * 每次攻擊會根據裝備加成對怪物造成傷害。
         * 防禦力會減少所受傷害，無法永久升級，最小所受傷害為5。
         * 逃跑有機率失敗，失敗會讓怪物免費攻擊一次(全額傷害)。
         * 每20層會遇到一個Boss怪物。
         * 每250層會遇見奧利哈鋼幻影Boss，擊敗會掉落專屬道具。
         
-        🎯目標 : 
-        在地城中探索得越深越好，並收集稀有裝備！
-        抵達第10000層時，挑戰奧利哈鋼之神！
-        祝你遊戲愉快！🎉
+    🎯目標 : 
+        * 在地城中探索得越深越好，並收集稀有裝備！
+        * 抵達第10000層時，挑戰奧利哈鋼之神！
+        * 祝你遊戲愉快！🎉
         
     `;
     
-    // 使用 alert 簡潔地顯示說明，您也可以使用更複雜的 Modal 介面
-    alert(rules);
+    const title = "❓ 遊戲提示與規則";
+    
+    openModal(title, rules, 'rules-modal'); 
+}
 
-    // 可以在日誌中也記錄一條訊息
-    logMessage("❓ 玩法說明已顯示。", 'orange');
+export function showUpdateLog() {
+    const updateLog = `
+        ---------------------------------------------------
+        - 回城步數固定為7
+        - 死亡時回到上一個城鎮紀錄點修正
+        - 新增玩家道具
+        - 新增怪物
+        - 怪物整體強度上調
+        - 玩家道具強度調整
+        - 優化介面顯示
+
+    `;
+    
+    const title = "V2.0 遊戲更新日誌";
+    
+    openModal(title, updateLog, 'update-modal'); 
 }
 
 export function toggleInventory() {
@@ -849,9 +885,7 @@ export function handleExchangeGold() {
 }
 
 export function setNewTownGoal() {
-    // Math.random() * (最大值 - 最小值 + 1) + 最小值
-    // 範圍 5 到 10
-    State.player.actionsToTownRequired = Math.floor(Math.random() * 6) + 5; 
+    State.player.actionsToTownRequired = 7; 
     
     logMessage(`✅ 距離下一次返回城鎮，你必須完成 ${State.player.actionsToTownRequired} 次探險。`, 'cyan');
 }
@@ -975,6 +1009,7 @@ export function handleRest(isAuto = false) {
     State.player.actionsSinceTown = 0; 
     setNewTownGoal(); 
     
+    State.player.lastRestDepth = State.player.depth;
     State.player.goldAtLastRest = State.player.gold; // 記錄當前金幣為上次存檔點
     
     // 4. 存檔 (這是遊戲的關鍵存檔點)
@@ -1029,6 +1064,7 @@ export function handleRevive() {
     if (success) {
         setGameActive(true); 
 
+        State.player.depth = State.player.lastRestDepth;
         State.player.actionsSinceTown = 0; 
         State.player.hp = State.player.maxHp; 
         

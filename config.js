@@ -23,18 +23,28 @@ export const MONSTERS = [
         { id: 's-slime3', name: "菁英-劇毒史萊姆", hp: 120, attack: 30, goldReward: 80, difficulty: 2 },
         { id: 's-slime4', name: "菁英-熔岩史萊姆", hp: 120, attack: 40, goldReward: 80, difficulty: 2 },
         { id: 's-slime5', name: "菁英-暗影史萊姆", hp: 130, attack: 40, goldReward: 100, difficulty: 2 },
+        { id: 'mo1', name: "魔能哨兵", hp: 220, attack: 50, goldReward: 150, difficulty: 2 },
+        { id: 'mo2', name: "魔能戰士", hp: 200, attack: 55, goldReward: 150, difficulty: 2 },
+        { id: 'mo3', name: "魔能獵犬", hp: 170, attack: 70, goldReward: 150, difficulty: 2 },
         
     // 強力怪物 (Difficulty 3)
         { id: 'rock1', name: "黑曜石頭人", hp: 100, attack: 30, goldReward: 80, difficulty: 3 },
         { id: 'rock2', name: "普通岩石頭人", hp: 60, attack: 25, goldReward: 50, difficulty: 3 },
         { id: 'demon1', name: "颱風惡魔", hp: 150, attack: 20, goldReward: 90, difficulty: 3 },
         { id: 'demon2', name: "火焰惡魔", hp: 80, attack: 35, goldReward: 90, difficulty: 3 },
+        { id: 'demon3', name: "暗影惡魔", hp: 280, attack: 35, goldReward: 90, difficulty: 3 },
+        { id: 'x-mo1', name: "混沌-魔能哨兵", hp: 420, attack: 150, goldReward: 150, difficulty: 2 },
+        { id: 'x-mo2', name: "混沌-魔能戰士", hp: 400, attack: 155, goldReward: 150, difficulty: 2 },
+        { id: 'x-mo3', name: "混沌-魔能獵犬", hp: 370, attack: 170, goldReward: 150, difficulty: 2 },
+        { id: 'mo4', name: "魔能戰魂", hp: 400, attack: 190, goldReward: 350, difficulty: 2 },
 
     // Boss 怪物 (Difficulty 4 & 5)
-        { id: 'boss1', name: "地城守衛者", hp: 200, attack: 40, goldReward: 300, difficulty: 4, isBoss: true },
-        { id: 'boss2', name: "遠古巨龍", hp: 500, attack: 60, goldReward: 1000, difficulty: 5, isBoss: true },
-        { id: 'boss3', name: "大樹守衛", hp: 1500, attack: 20, goldReward: 500, difficulty: 4, isBoss: true },
-        { id: 'boss4', name: "炸彈惡魔", hp: 200, attack: 75, goldReward: 200, difficulty: 5, isBoss: true },
+        { id: 'boss1', name: "地城守衛者", hp: 450, attack: 140, goldReward: 300, difficulty: 4, isBoss: true },
+        { id: 'boss2', name: "遠古巨龍", hp: 500, attack: 160, goldReward: 1000, difficulty: 5, isBoss: true },
+        { id: 'boss3', name: "大樹守衛", hp: 1500, attack: 120, goldReward: 500, difficulty: 4, isBoss: true },
+        { id: 'boss4', name: "炸彈惡魔", hp: 550, attack: 175, goldReward: 300, difficulty: 5, isBoss: true },
+        { id: 'boss5', name: "凋零女王", hp: 600, attack: 250, goldReward: 500, difficulty: 5, isBoss: true },
+        { id: 'x-mo4', name: "混沌-魔能戰魂", hp: 800, attack: 220, goldReward: 350, difficulty: 4 },
 
     // 世界級 Boss
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 3700, attack: 370, goldReward: 370, difficulty: 10, isBoss: true },
@@ -48,10 +58,12 @@ export const ITEMS = [
         { id: 'w1', name: '生鏽的短刀', type: 'weapon', attack: 3, value: 20, price: 50, rarity: 1 },
         { id: 'w2', name: '戰士長劍', type: 'weapon', attack: 8, value: 30, price: 400, rarity: 2 }, 
         { id: 'w3', name: '龍牙戰斧', type: 'weapon', attack: 15, value: 100, price: 800, rarity: 3 },
-        { id: 'w4', name: '狂暴利刃', type: 'weapon', attack: 50, value: 100, price: 1500, rarity: 4 },
+        { id: 'w4', name: '狂暴利刃', type: 'weapon', attack: 50, value: 340, price: 1500, rarity: 4 },
         { id: 'w5', name: '普通的長劍', type: 'weapon', attack: 5, value: 20, price: 100, rarity: 1 },
         { id: 'w6', name: '刺客短匕', type: 'weapon', attack: 25, value: 230, price: 400, rarity: 3 },
         { id: 'w7', name: '騎士槍盾', type: 'weapon', attack: 25, defense: 25, value: 320, price: 580, rarity: 4 },
+        { id: 'w8', name: '澄澈之鋒刃', type: 'weapon', attack: 75, value: 520, price: 1220, rarity: 4 },
+        
         
     // 防具
         { id: 'ori-armor', name: '奧利哈鋼之甲', type: 'armor', hp: 550, defense: 55, value: 1500, price: 3700, rarity: 10 },
@@ -60,6 +72,7 @@ export const ITEMS = [
         { id: 'a3', name: '泰坦合金板甲', type: 'armor', hp: 170, defense: 35, value: 200, price: 2500, rarity: 4 },
         { id: 'a4', name: '死者肩甲', type: 'armor', hp: 50, defense: 25, value: 80, price: 750, rarity: 3 },
         { id: 'a5', name: '僧侶袈裟', type: 'armor', hp: 120, defense: 20, value: 780, price: 1500, rarity: 3 },
+        { id: 'a6', name: '聖盾鐵鎧', type: 'armor', hp: 250, defense: 30, value: 1280, price: 3450, rarity: 5 },
          
     // 項鍊
         { id: 'ori-necklace', name: '奧利哈鋼之心', type: 'necklace', hp: 200, defense: 35, value: 1500, price: 3700, rarity: 10 },

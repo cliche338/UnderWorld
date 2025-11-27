@@ -24,6 +24,7 @@ export let player = {
         },
 
         goldAtLastRest: 0,
+        lastRestDepth: 1,
         inventory: [], 
         materials: {},
 
