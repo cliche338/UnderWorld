@@ -1,6 +1,6 @@
 
 <head>
-    <title>地下城冒險 RPG</title>
+    <title>地下城-奧利哈鋼</title>
     <link rel="icon" type="image/png" href="Orichalcum.png">
     <link rel="stylesheet" href="style.css"> 
 </head>
@@ -32,26 +32,10 @@
         
         <div id="auth-area" class="panel">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3>👤 帳號管理</h3>
-            
-            <div style="display: flex; flex-direction: column; align-items: flex-end;"> 
-                
-                <button id="how-to-play-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #f39c12; color: white; margin-bottom: 5px;">
-                    ❓ 遊戲提示
-                </button>
-                
-                <button id="update-log-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #2ecc71; color: white;">
-                    📢 最新更新
-                </button>
-
-                <button id="codex-toggle-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #7f8c8d; color: white; margin-top: 10px;">
-                    📜 道具圖鑑
-                </button>
-
-            </div>
-        </div>
-
-            <div id="logged-out-view">
+            <h3>👤 帳號管理
+                <div>
+                </div>
+                <div id="logged-out-view">
                 <p style="margin-bottom: 10px;">請輸入帳號密碼來登入或創建帳號：</p>
                 
                 <div style="margin-bottom: 8px;">
@@ -72,11 +56,33 @@
                     <a href="#" onclick="alert('請聯繫管理員重設密碼'); return false;">忘記密碼？</a>
                 </div>
             </div>
+
             <div id="logged-in-view" style="display: none;">
                 <p>歡迎回來，<span id="current-username"></span>！</p>
                 <button id="logout-btn">登出</button>
             </div>
+
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; align-items: flex-end;"> 
+                
+                <button id="how-to-play-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #f39c12; color: white; margin-top: 10px;">
+                    ❓ 遊戲提示
+                </button>
+                
+                <button id="update-log-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #2ecc71; color: white; margin-top: 10px;">
+                    📢 最新更新
+                </button>
+
+                <button id="codex-toggle-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #7f8c8d; color: white; margin-top: 10px;">
+                    📜 道具圖鑑
+                </button>
+
+            </div>
         </div>
+
+            
+    </div>
 
         <div id="game-content" style="display: none;">
             <div id="codex-panel" class="panel" style="display: none;">

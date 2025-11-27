@@ -82,10 +82,11 @@ export function showUpdateLog() {
         - 更新網頁logo
         - 調整裝備強度
         - 新增道具圖鑑
+        - 修正板塊排版
 
     `;
     
-    const title = "V2.2 遊戲更新日誌";
+    const title = "V2.3 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 
