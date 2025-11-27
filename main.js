@@ -34,8 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.upgradeAttackBtn.onclick = GameLogic.handleUpgradeAttack;
     elements.upgradeDefenseBtn.onclick = GameLogic.handleUpgradeDefense;
     
-    elements.howToPlayBtn.onclick = GameLogic.showHowToPlay;
-    elements.updateLogBtn.onclick = GameLogic.showUpdateLog; 
+    elements.howToPlayBtn.onclick = GameLogic.showHowToPlay;    //玩法說明
+    elements.updateLogBtn.onclick = GameLogic.showUpdateLog;    //更新日誌
+    elements.codexBtn.onclick = GameLogic.toggleCodex;          //圖鑑
+
+    if (elements.modalCloseBtn) {
+        elements.modalCloseBtn.onclick = () => {
+            elements.modalBackdrop.style.display = 'none';
+        };
+    }
     
 });
 

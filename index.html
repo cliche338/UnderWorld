@@ -1,6 +1,7 @@
 
 <head>
     <title>地下城冒險 RPG</title>
+    <link rel="icon" type="image/png" href="Orichalcum.png">
     <link rel="stylesheet" href="style.css"> 
 </head>
 
@@ -8,6 +9,17 @@
     <div id="update-log-modal" class="panel">
         
         <h3 id="modal-title" style="color: #f39c12; margin-top: 0;"></h3> 
+
+        <div id="codex-filters" style="margin-bottom: 15px; text-align: center;">
+            <button data-filter="all">所有道具</button>
+            <button data-filter="weapon">⚔️ 武器</button>
+            <button data-filter="armor">🛡️ 胸甲</button>
+            <button data-filter="helmet">🪖 頭盔</button>
+            <button data-filter="greaves">👢 護脛</button>
+            <button data-filter="necklace">📿 項鍊</button>
+            <button data-filter="ring">💍 戒指</button>
+            <button data-filter="consumable">🧪 藥水</button>
+        </div>
         
         <div id="modal-content">
             </div>
@@ -31,6 +43,11 @@
                 <button id="update-log-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #2ecc71; color: white;">
                     📢 最新更新
                 </button>
+
+                <button id="codex-toggle-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #7f8c8d; color: white; margin-top: 10px;">
+                    📜 道具圖鑑
+                </button>
+
             </div>
         </div>
 
@@ -62,7 +79,12 @@
         </div>
 
         <div id="game-content" style="display: none;">
-            
+            <div id="codex-panel" class="panel" style="display: none;">
+                <h3>📜 道具圖鑑</h3>
+                <div id="codex-list" style="display: flex; flex-wrap: wrap; gap: 15px;">
+                    </div>
+                <button id="close-codex-btn">關閉圖鑑</button>
+            </div>
             <div class="game-layout">
 
                 <div id="status-display" class="panel">

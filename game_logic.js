@@ -10,9 +10,12 @@ import {
 
 import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, } from './config.js';
 
-import { logMessage, updateDisplay, elements, renderInventoryList, renderMaterialInventory, updateExchangeDisplay } from './ui_manager.js';
+import { logMessage, updateDisplay, elements, 
+        renderInventoryList, renderMaterialInventory, 
+        updateExchangeDisplay, getItemIcon } from './ui_manager.js';
 
 export let currentShopInventory = [];
+let currentCodexFilter = 'all';
 
 function openModal(title, content, modalClass) {
 
@@ -69,7 +72,6 @@ export function showHowToPlay() {
     `;
     
     const title = "❓ 遊戲提示與規則";
-    
     openModal(title, rules, 'rules-modal'); 
 }
 
@@ -77,23 +79,163 @@ export function showUpdateLog() {
     const updateLog = `
         --------------------------------------------------------------------------
 
-        - 新增裝備欄位：頭盔、護脛
-        - 新增怪物防禦力屬性，並在戰鬥中計入傷害計算
-        - 修正指定層數未出現指定怪物的問題
-        - 修正戰鬥中怪物防禦力未計入傷害計算的問題
-        - 調整"奧利哈鋼之軀"出現層數,現為每1000層一次
-        - 調整"奧利哈鋼之神"出現層數,現為每10000層一次
-        - 調整"奧利哈鋼幻影"數值，現為 HP:37373, Attack:377, Defense:377
-        - 調整"奧利哈鋼之軀"數值，現為 HP:700700, Attack:777, Defense:777
-        - 調整"奧利哈鋼幻影"及"奧利哈鋼之軀"掉落道具
-        - 新增多樣道具
-        
+        - 更新網頁logo
+        - 調整裝備強度
+        - 新增道具圖鑑
 
     `;
     
-    const title = "V2.1 遊戲更新日誌";
-    
+    const title = "V2.2 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
+}
+
+function renderCodex() {
+    const list = elements.codexList;
+    list.innerHTML = ''; // 清空列表
+    
+    // ITEMS 從 config.js 導入
+    ITEMS.forEach(item => {
+        const itemCard = document.createElement('div');
+        itemCard.classList.add('codex-card');
+        
+        const icon = getItemIcon(item.type); // 獲取圖示 (從 ui_manager.js 導入)
+        const statInfo = (item.attack ? `+${item.attack} 攻 ` : '') +
+                         (item.hp ? `+${item.hp} 生命 ` : '') +
+                         (item.defense ? `+${item.defense} 防禦 ` : '') +
+                         (item.heal ? `+${item.heal} 治療` : '');
+
+        const rarityStars = '⭐'.repeat(item.rarity || 1); 
+
+        itemCard.innerHTML = `
+            <div style="font-size: 2em; margin-bottom: 5px;">${icon}</div>
+            <div style="font-weight: bold; color: #e8c26a;">${item.name}</div>
+            <div style="font-size: 0.85em; color: #ccc;">${rarityStars} | ${statInfo}</div>
+            <div style="font-size: 0.75em; color: #aaa;">Sell: ${item.value}💰 | Price: ${item.price}💰</div>
+        `;
+        
+        list.appendChild(itemCard);
+    });
+}
+
+function renderCodexContent(filter) {
+    // 1. 根據篩選條件過濾道具
+    const filteredItems = ITEMS.filter(item => {
+        if (filter === 'all') return true;
+        return item.type === filter;
+    });
+
+    let htmlContent = `<div id="codex-grid" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: flex-start;">`;
+
+    if (filteredItems.length === 0) {
+        return `<p style="text-align: center; color: #e74c3c;">該分類下沒有道具。</p>`;
+    }
+
+    // 2. 遍歷並建立卡片 HTML
+    filteredItems.forEach(item => {
+        // ... (此處放入原有的 itemCard.innerHTML 內容，但作為字符串)
+        const icon = getItemIcon(item.type);
+        const rarityStars = item.rarity + '⭐';
+        const statInfo = (item.attack ? `+${item.attack} 攻 ` : '') +
+                         (item.hp ? `+${item.hp} 生命 ` : '') +
+                         (item.defense ? `+${item.defense} 防禦 ` : '') +
+                         (item.heal ? `+${item.heal} 治療` : '');
+        
+        // 為了節省空間，我們在這裡使用內聯樣式來替代 CSS 類別
+        const itemCardHtml = `
+            <div class="codex-card" style="width: 150px; height: 160px; padding: 10px; background: #282828; border: 1px solid #6b5d4d; border-radius: 8px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="font-size: 2em; margin-bottom: 5px;">${icon}</div>
+                <div style="font-weight: bold; color: #e8c26a; line-height: 1.1;">${item.name}</div>
+                <div style="font-size: 0.85em; color: #ccc;">${rarityStars} </div>
+    
+            </div>
+        `;
+        htmlContent += itemCardHtml;
+    });
+
+    htmlContent += `</div>`;
+    return htmlContent;
+}
+
+function updateCodexDisplay(filterType) {
+    currentCodexFilter = filterType;
+    const contentHtml = renderCodexContent(filterType);
+    
+    const filteredItems = ITEMS.filter(item => {
+        if (filterType === 'all') return true;
+        return item.type === filterType;
+    });
+
+    // 設置標題和內容
+    elements.modalTitle.textContent = "📜 道具圖鑑";
+    elements.modalContent.innerHTML = contentHtml; // 使用 innerHTML 注入 HTML 網格
+}
+
+export function toggleCodex() {
+    // 檢查圖鑑面板是否已經開啟 (使用模態框的背景)
+    const isCodexOpen = elements.modalBackdrop.style.display === 'flex'; 
+
+    // 關鍵安全檢查：確保過濾器父容器存在
+    if (!elements.codexFilters) {
+        logMessage("❌ 錯誤：圖鑑篩選容器 (codexFilters) 未載入。", 'red');
+        return; 
+    }
+
+    if (!isCodexOpen) {
+        // --- 開啟圖鑑 ---
+        try { // 【關鍵修正 1：Try-Catch 確保開啟時不崩潰】
+            updateCodexDisplay('all'); // 預設顯示所有道具
+
+            // 設置模態框樣式
+            elements.modalBody.classList.remove('rules-modal', 'update-modal'); 
+            elements.modalBody.classList.add('codex-modal');
+            
+            elements.modalBackdrop.style.display = 'flex';
+            
+            // 綁定篩選按鈕事件 (使用事件委派)
+            elements.codexFilters.onclick = (e) => {
+                e.preventDefault(); 
+                
+                let target = e.target;
+                
+                // 向上查找，確保找到帶有 data-filter 屬性的按鈕
+                if (target.tagName !== 'BUTTON') {
+                    target = target.closest('BUTTON');
+                }
+                
+                const filter = target ? target.getAttribute('data-filter') : null;
+
+                if (filter) {
+                    try { // 【關鍵修正 2：在篩選點擊時加入 Try-Catch】
+                        // 添加視覺反饋
+                        document.querySelectorAll('#codex-filters button').forEach(btn => {
+                            btn.style.opacity = (btn.getAttribute('data-filter') === filter) ? '1.0' : '0.6';
+                        });
+                        
+                        updateCodexDisplay(filter); // 呼叫渲染
+                    } catch (err) {
+                        logMessage("❌ 篩選失敗，請檢查道具數據。", 'red');
+                        console.error("Codex Filter Execution Error:", err);
+                    }
+                }
+            };
+
+            logMessage("📜 道具圖鑑已開啟。", 'cyan');
+        } catch (error) {
+            logMessage("❌ 圖鑑啟動失敗，請檢查 HTML 結構。", 'red');
+            console.error("Codex Startup Error:", error);
+        }
+
+    } else {
+        // --- 關閉圖鑑 ---
+        elements.modalBackdrop.style.display = 'none';
+        elements.modalContent.innerHTML = ''; // 清理內容
+        elements.modalBody.classList.remove('codex-modal');
+        
+        // 移除事件綁定
+        elements.codexFilters.onclick = null; 
+        
+        logMessage("📜 道具圖鑑已關閉。", 'cyan');
+    }
 }
 
 export function toggleInventory() {
@@ -1261,7 +1403,7 @@ export function initializeGame() {
         // 初始化 player 數據
         const initialPlayerState = { 
             hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, 
-            className: "", equipment: { weapon: null, armor: null, necklace: null, ring: null }, 
+            className: "", equipment: { weapon: null, helmet: null, armor: null, greaves: null, necklace: null, ring: null }, 
             inventory: [], materials: {}, goldAtLastRest: 0,
             actionsSinceTown: 0, actionsToTownRequired: 0 
         };
@@ -1367,7 +1509,7 @@ export function handleLogout() {
     // 3. 重置 player 數據為初始狀態（確保下次登入前是乾淨的）
     Object.assign(State.player, {
         hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, className: "", 
-        equipment: { weapon: null, armor: null, necklace: null, ring: null }, // 【修正：包含新的裝備欄位】
+        equipment: { weapon: null, helmet: null, armor: null, greaves: null, necklace: null, ring: null }, // 【修正：包含新的裝備欄位】
         inventory: [], materials: {}, goldAtLastRest: 0,
         actionsSinceTown: 0, actionsToTownRequired: 0 
     });

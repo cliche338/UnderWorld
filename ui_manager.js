@@ -30,7 +30,7 @@ export const elements = {
         equippedArmorName: document.getElementById('equipped-armor-name'),
         equippedWeaponName: document.getElementById('equipped-weapon-name'),
         equippedHelmetName: document.getElementById('equipped-helmet-name'), 
-        quippedGreavesName: document.getElementById('equipped-greaves-name'),
+        equippedGreavesName: document.getElementById('equipped-greaves-name'),
         equippedNecklaceName: document.getElementById('equipped-necklace-name'), 
         equippedRingName: document.getElementById('equipped-ring-name'),
 
@@ -86,18 +86,24 @@ export const elements = {
         createAccountBtn: document.getElementById('create-account-btn'),
         currentStageTitle: document.getElementById('current-stage-title'),
 
-        authArea : document.getElementById('auth-area'),
-        loggedOutView : document.getElementById('logged-out-view'),
-        loggedInView : document.getElementById('logged-in-view'),
-        usernameInput : document.getElementById('username-input'),
+        authArea: document.getElementById('auth-area'),
+        loggedOutView: document.getElementById('logged-out-view'),
+        loggedInView: document.getElementById('logged-in-view'),
+        usernameInput: document.getElementById('username-input'),
 
-        currentUsernameDisplay : document.getElementById('current-username'),
-        loginBtn : document.getElementById('login-btn'),
-        logoutBtn : document.getElementById('logout-btn'),
-        gameContent : document.getElementById('game-content'),
-        combatModeButtons : document.getElementById('combat-mode-buttons'),
-        deathModeButtons : document.getElementById('death-mode-buttons'), 
-        reviveBtn : document.getElementById('revive-btn'), 
+        currentUsernameDisplay: document.getElementById('current-username'),
+        loginBtn: document.getElementById('login-btn'),
+        logoutBtn: document.getElementById('logout-btn'),
+        gameContent: document.getElementById('game-content'),
+        combatModeButtons: document.getElementById('combat-mode-buttons'),
+        deathModeButtons: document.getElementById('death-mode-buttons'), 
+        reviveBtn: document.getElementById('revive-btn'), 
+
+        codexPanel: document.getElementById('codex-panel'),
+        codexBtn: document.getElementById('codex-toggle-btn'),
+        codexList: document.getElementById('codex-list'), 
+        codexFilters: document.getElementById('codex-filters'),
+
 };
 
 // =========================================================
@@ -258,18 +264,23 @@ export function updateDisplay() {
     if (elements.equippedWeaponName) {
         elements.equippedWeaponName.textContent = player.equipment.weapon ? player.equipment.weapon.name : '無';
     }
-    if (elements.equippedArmorName) {
-        elements.equippedArmorName.textContent = player.equipment.armor ? player.equipment.armor.name : '無';
-    }
+
     if (elements.equippedHelmetName) {
         elements.equippedHelmetName.textContent = player.equipment.helmet ? player.equipment.helmet.name : '無';
     }
+
+    if (elements.equippedArmorName) {
+        elements.equippedArmorName.textContent = player.equipment.armor ? player.equipment.armor.name : '無';
+    }
+    
     if (elements.equippedGreavesName) {
         elements.equippedGreavesName.textContent = player.equipment.greaves ? player.equipment.greaves.name : '無';
     }
+
     if (elements.equippedNecklaceName) {
         elements.equippedNecklaceName.textContent = player.equipment.necklace ? player.equipment.necklace.name : '無';
     }
+
     if (elements.equippedRingName) {
         elements.equippedRingName.textContent = player.equipment.ring ? player.equipment.ring.name : '無'; 
     }
@@ -293,4 +304,17 @@ export function updateExchangeDisplay() {
     }
     const stonesResult = Math.floor(goldToExchange / STONE_CONVERSION_RATE); 
     elements.exchangeResult.textContent = stonesResult; 
+}
+
+export function getItemIcon(itemType) {
+    switch (itemType) {
+        case 'weapon': return '⚔️';
+        case 'helmet': return '🪖';
+        case 'armor': return '🛡️';
+        case 'greaves': return '👢';
+        case 'necklace': return '📿';
+        case 'ring': return '💍';
+        case 'consumable': return '🧪';
+        default: return '❓';
+    }
 }

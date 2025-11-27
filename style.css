@@ -53,6 +53,42 @@ body {
     margin-bottom: 20px;
 }
 
+#codex-list {
+    display: flex;
+    flex-wrap: wrap; /* 允許項目換行 */
+    gap: 15px;      /* 卡片之間的間隔 */
+    padding: 10px;
+    justify-content: center; /* 讓整個圖鑑網格居中 */
+    /* 繼承自 index.html 的 id="codex-list" */
+}
+
+.codex-card {
+    /* 使用內聯樣式來確保卡片基礎樣式，但為了美觀，可以將 hover 效果保留在 CSS */
+    transition: transform 0.2s;
+}
+.codex-card:hover {
+    transform: translateY(-3px);
+    border-color: #f39c12;
+}
+
+/* 道具圖鑑模態框 (最寬) */
+#update-log-modal.codex-modal {
+    background: #101010;
+    border-color: #f39c12;
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.5); 
+    
+    /* 【關鍵修正：設定極寬，以容納網格】 */
+    max-width: 750px; 
+    width: 90%;
+}
+
+#codex-list {
+    /* 確保內容可以滾動 */
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
 #modal-content {
     /* 處理內容格式 */
     white-space: pre-wrap; /* 保留 JavaScript 字符串中的換行和空格 */

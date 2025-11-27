@@ -127,7 +127,7 @@ export const ITEMS = [
 
     // 戒指
         { id: 'ori-broken-ring', name: '污濁的奧利哈鋼之眼', type: 'ring', attack: 35, value: 1500, price: 3700, rarity: 10 },
-        { id: 'ori-ring', name: '奧利哈鋼魔眼', type: 'ring', attack: 70, defense: 30, value: 1500, price: 3700, rarity: 10 },
+        { id: 'ori-ring', name: '奧利哈鋼魔眼', type: 'ring', attack: 140, defense: 30, value: 1500, price: 3700, rarity: 10 },
         { id: 'r1', name: '力量之戒', type: 'ring', attack: 10, value: 300, price: 600, rarity: 2 },
         { id: 'r2', name: '鐵壁指環', type: 'ring', defense: 10, value: 210, price: 550, rarity: 2 },
         { id: 'r3', name: '黯淡全能之石', type: 'ring', attack: 5, hp: 10, defense: 5, value: 400, price: 900, rarity: 3 },
@@ -138,7 +138,7 @@ export const ITEMS = [
         { id: 'r8', name: '泰坦防護環', type: 'ring', hp: 80, defense: 50, value: 800, price: 1600, rarity: 6 },
         { id: 'r9', name: '嗜血魔戒', type: 'ring', attack: 70, hp: -20, defense: 15, value: 1200, price: 2200, rarity: 7 },
         { id: 'r10', name: '賢者之眼', type: 'ring', attack: 50, hp: 60, defense: 40, value: 1800, price: 3500, rarity: 8 },
-        { id: 'r11', name: '毀滅指輪', type: 'ring', attack: 220, value: 2500, price: 5000, rarity: 9 },
+        { id: 'r11', name: '毀滅指輪', type: 'ring', attack: 120, value: 2500, price: 5000, rarity: 9 },
 
     // 藥水
         { id: 'ori-blood', name: '奧利哈鋼之血', type: 'consumable', hp: 300, value: 10, price: 50, rarity: 10 },
