@@ -18,7 +18,9 @@ export let player = {
         className: "",
         equipment: {
             weapon: null, //武器
-            armor: null,  //防具
+            helmet: null, //頭盔
+            armor: null,  //胸甲
+            greaves: null, //護脛
             necklace: null, //項鍊
             ring: null, //戒指
         },

@@ -17,17 +17,20 @@ import {
 export const elements = {
 
         modalBackdrop: document.getElementById('custom-modal-backdrop'),
+        modalBody: document.getElementById('update-log-modal'), 
+        modalTitle: document.getElementById('modal-title'), 
         modalContent: document.getElementById('modal-content'),
         modalCloseBtn: document.getElementById('modal-close-btn'),
-        modalTitle: document.getElementById('modal-title'),
-        modalBody: document.getElementById('update-log-modal'),
 
         howToPlayBtn: document.getElementById('how-to-play-btn'),
         updateLogBtn: document.getElementById('update-log-btn'),
 
         defenseValue: document.getElementById('defense-value'),
+
         equippedArmorName: document.getElementById('equipped-armor-name'),
         equippedWeaponName: document.getElementById('equipped-weapon-name'),
+        equippedHelmetName: document.getElementById('equipped-helmet-name'), 
+        quippedGreavesName: document.getElementById('equipped-greaves-name'),
         equippedNecklaceName: document.getElementById('equipped-necklace-name'), 
         equippedRingName: document.getElementById('equipped-ring-name'),
 
@@ -114,10 +117,12 @@ export function renderInventoryList() { //
             itemDiv.classList.add('inventory-item'); //
             
             const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
-                            item.type === 'armor' ? '🛡️ 防具' : 
-                            item.type === 'necklace' ? '📿 項鍊' : 
-                            item.type === 'ring' ? '💍 戒指' : 
-                            '🧪 藥水';
+                        item.type === 'armor' ? '🛡️ 防具' : 
+                        item.type === 'necklace' ? '📿 項鍊' : 
+                        item.type === 'ring' ? '💍 戒指' : 
+                        item.type === 'helmet' ? '🪖 頭盔' :     
+                        item.type === 'greaves' ? '👖 護脛' :   
+                        '🧪 藥水';
             
             let statInfo = ''; //
             if (item.type === 'weapon') statInfo = `+${item.attack} 攻擊`; //
@@ -255,6 +260,12 @@ export function updateDisplay() {
     }
     if (elements.equippedArmorName) {
         elements.equippedArmorName.textContent = player.equipment.armor ? player.equipment.armor.name : '無';
+    }
+    if (elements.equippedHelmetName) {
+        elements.equippedHelmetName.textContent = player.equipment.helmet ? player.equipment.helmet.name : '無';
+    }
+    if (elements.equippedGreavesName) {
+        elements.equippedGreavesName.textContent = player.equipment.greaves ? player.equipment.greaves.name : '無';
     }
     if (elements.equippedNecklaceName) {
         elements.equippedNecklaceName.textContent = player.equipment.necklace ? player.equipment.necklace.name : '無';

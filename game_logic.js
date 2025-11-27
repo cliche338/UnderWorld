@@ -15,6 +15,11 @@ import { logMessage, updateDisplay, elements, renderInventoryList, renderMateria
 export let currentShopInventory = [];
 
 function openModal(title, content, modalClass) {
+
+    if (!elements.modalBody || !elements.modalContent || !elements.modalTitle) {
+        alert("模態框元素載入失敗，請檢查 index.html 的 modal 結構。");
+        return; 
+    }
     // 1. 清理舊的樣式類別
     elements.modalBody.classList.remove('rules-modal', 'update-modal'); 
     
@@ -59,7 +64,6 @@ export function showHowToPlay() {
         
     🎯目標 : 
         * 在地城中探索得越深越好，並收集稀有裝備！
-        * 抵達第10000層時，挑戰奧利哈鋼之神！
         * 祝你遊戲愉快！🎉
         
     `;
@@ -71,18 +75,23 @@ export function showHowToPlay() {
 
 export function showUpdateLog() {
     const updateLog = `
-        ---------------------------------------------------
-        - 回城步數固定為7
-        - 死亡時回到上一個城鎮紀錄點修正
-        - 新增玩家道具
-        - 新增怪物
-        - 怪物整體強度上調
-        - 玩家道具強度調整
-        - 優化介面顯示
+        --------------------------------------------------------------------------
+
+        - 新增裝備欄位：頭盔、護脛
+        - 新增怪物防禦力屬性，並在戰鬥中計入傷害計算
+        - 修正指定層數未出現指定怪物的問題
+        - 修正戰鬥中怪物防禦力未計入傷害計算的問題
+        - 調整"奧利哈鋼之軀"出現層數,現為每1000層一次
+        - 調整"奧利哈鋼之神"出現層數,現為每10000層一次
+        - 調整"奧利哈鋼幻影"數值，現為 HP:37373, Attack:377, Defense:377
+        - 調整"奧利哈鋼之軀"數值，現為 HP:700700, Attack:777, Defense:777
+        - 調整"奧利哈鋼幻影"及"奧利哈鋼之軀"掉落道具
+        - 新增多樣道具
+        
 
     `;
     
-    const title = "V2.0 遊戲更新日誌";
+    const title = "V2.1 遊戲更新日誌";
     
     openModal(title, updateLog, 'update-modal'); 
 }
@@ -196,13 +205,21 @@ export function refreshShopInventory() {
     // 1. 根據玩家深度決定商店能賣的"最高"稀有度
     let maxRarityAvailable = 1; 
 
-    if (State.player.depth >= 60) {
+    if (State.player.depth >= 250) { 
+        maxRarityAvailable = 9; // 150 層或以上解鎖最高販賣級別 Rarity 9
+    } else if (State.player.depth >= 200) { 
+        maxRarityAvailable = 8;
+    } else if (State.player.depth >= 120) { 
+        maxRarityAvailable = 7;
+    } else if (State.player.depth >= 90) { 
+        maxRarityAvailable = 6;
+    } else if (State.player.depth >= 60) { 
         maxRarityAvailable = 5;
-    }else if (State.player.depth >= 40) {
+    } else if (State.player.depth >= 40) { 
         maxRarityAvailable = 4;
-    }else if (State.player.depth >= 20) {
+    } else if (State.player.depth >= 20) { 
         maxRarityAvailable = 3;
-    } else if (State.player.depth >= 10) {
+    } else if (State.player.depth >= 10) { 
         maxRarityAvailable = 2;
     }
 
@@ -215,15 +232,26 @@ export function refreshShopInventory() {
     
     // 確保清單中有足夠的物品
     if (sellableItems.length > 0) {
+    let weightedPool = [];
+
+    sellableItems.forEach(item => {
+        // 使用道具的 Rarity 數值作為權重 
+        let weight = item.rarity || 1; 
+        for (let i = 0; i < weight; i++) {
+            weightedPool.push(item.id); // 將 ID 加入加權池，次數等於權重
+        }
+    });
+
+    if (weightedPool.length > 0) {
         for (let i = 0; i < SHOP_SLOTS; i++) {
-            const randomIndex = Math.floor(Math.random() * sellableItems.length);
-            const item = sellableItems[randomIndex];
-            
-            // 儲存物品的 ID
-            newShopIds.push(item.id); 
+            // 從加權池中隨機選一個
+            const randomIndex = Math.floor(Math.random() * weightedPool.length);
+            const itemId = weightedPool[randomIndex];
+
+            newShopIds.push(itemId);
         }
     }
-
+}
     // 4. 更新商店庫存狀態
     currentShopInventory = newShopIds; 
     logMessage(`🛒 雜貨鋪已刷新，販賣 ${currentShopInventory.length} 種物品。`, 'yellow');
@@ -330,26 +358,39 @@ export function handleExplore() {
         return; // 立即結束，不觸發隨機事件
     }
     
-    // 4. 【關鍵修正：強制記錄層數日誌，確保它在任何事件之前輸出】
+    // 4. 記錄進入的層數
     const needed = State.player.actionsToTownRequired - State.player.actionsSinceTown;
     logMessage(`--- 進入地城第 ${State.player.depth} 層 (需再行動 ${needed} 次才能返回城鎮) ---`, 'cyan'); 
     
-    // 5. 隨機事件生成與執行 (這部分的 log 會在層數 log 之後)
+    // 5. 隨機事件生成與執行
     const eventChance = Math.random(); 
+    let eventHappened = false; 
+
+    // 檢查是否為 Boss 樓層 (20的倍數)】
+    const isBossLayer = State.player.depth > 0 && (State.player.depth % 20 === 0);
     
-    if (eventChance < 0.75) { 
-        startCombat();
-    } else if (eventChance < 0.85) { 
+    // 5a. 戰鬥事件 (Boss 樓層必須戰鬥，或有 75% 機率戰鬥)
+    if (isBossLayer || eventChance < 0.75) { 
+        startCombat(); // getRandomMonster() 會在內部確保是 Boss
+        eventHappened = true;
+    } 
+    // 5b. 非戰鬥事件 (只有在非 Boss 樓層且隨機檢查失敗時才執行)
+    else if (eventChance < 0.85) { 
         // 找到金幣
         const foundGold = Math.floor(Math.random() * 20) + 10;
         State.player.gold += foundGold;
         logMessage(`💰 你找到了 ${foundGold} 金幣。`, 'yellow');
+        eventHappened = true;
     } else if (eventChance < 0.95) { 
         // 找到裝備！
         const newItem = getLootItem(); 
-        if (newItem) addItemToInventory(newItem);
+        if (newItem) {
+             addItemToInventory(newItem); 
+             eventHappened = true;
+        }
     } else { 
         logMessage("💨 什麼都沒有，繼續向下探索。", 'white');
+        eventHappened = true;
     }
 
     // 6. 檢查生命值
@@ -383,10 +424,12 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
     
     // 【關鍵修正：統一且完整的設備初始化】
     State.player.equipment = { 
-        weapon: null, 
-        armor: null, 
-        necklace: null, // 確保新欄位存在
-        ring: null,     // 確保新欄位存在
+        weapon: null, //武器
+        helmet: null, //頭盔
+        armor: null,  //胸甲
+        greaves: null, //護脛
+        necklace: null, //項鍊
+        ring: null, //戒指
     }; 
     
     State.player.inventory = [];
@@ -432,7 +475,7 @@ export function getRandomMonster() {
         if (currentDepth === 10000) { 
             bossId = 'ori-god'; 
             logMessage('🚨 警報！奧利哈鋼神即將降臨...', 'red'); 
-        } else if (currentDepth === 5000) { 
+        } else if (currentDepth % 1000 === 0) { 
             bossId = 'ori-body'; 
             logMessage('🚨 警報！奧利哈鋼之軀準備就緒...', 'red'); 
         } else if (currentDepth % 250 === 0) { 
@@ -447,11 +490,11 @@ export function getRandomMonster() {
             if (availableBosses.length > 0) {
                 const randomIndex = Math.floor(Math.random() * availableBosses.length);
                 bossId = availableBosses[randomIndex].id;
-                logMessage(`🚨 警報！地城深處傳來強大壓力...`, 'red'); // 移到這裡輸出
+                logMessage(`🚨 警報！地城深處傳來強大壓力...`, 'red'); 
             }
         }
         
-        // 3. 返回 Boss 怪物
+        // 3. 返回 Boss 怪物 (如果找到了 Boss)
         if (bossId) {
             const boss = MONSTERS.find(m => m.id === bossId);
             if (boss) {
@@ -459,12 +502,13 @@ export function getRandomMonster() {
             }
         }
         
-        // 🚨 關鍵修正：如果 Boss 抽選失敗，但在 Boss 樓層，則返回 null 或最簡單的怪物，避免繼續執行普通怪物邏輯
-        // 這裡暫時讓它進入普通抽選，這部分是遊戲設計的權衡
+        // 🚨 修正：如果在 Boss 樓層但找不到 Boss 數據（如 ID 拼寫錯誤），則返回最簡單的怪物作為保險
+        // 這是防止 Boss 樓層邏輯執行失敗後，繼續執行下面的普通怪物抽選。
+        return JSON.parse(JSON.stringify(MONSTERS.find(m => m.id === 'goblin1'))); 
     }
     
     // ----------------------------------------------------
-    // 普通怪物生成邏輯 (如果不是 Boss 樓層，或 Boss 抽選失敗)
+    // 普通怪物生成邏輯 (只有在不是 Boss 樓層時運行)
     // ----------------------------------------------------
     
     let targetDifficulty = 1;
@@ -520,13 +564,21 @@ export function startCombat() {
         return;
     }
     
-    setCurrentMonster(monster); // 🚨 修正點：只使用隨機生成的怪物
+    setCurrentMonster(monster); 
 
-    // 🚨 修正點：Log 函式的大小寫
-    logMessage(`🚨 你遭遇了 ${State.currentMonster.name} (HP: ${State.currentMonster.hp}, 攻擊: ${State.currentMonster.attack})！`, 'orange'); 
+    // 強制切換按鈕 UI
+    if (elements.exploreModeButtons) {
+        elements.exploreModeButtons.style.display = 'none';
+    }
+    if (elements.combatModeButtons) {
+        elements.combatModeButtons.style.display = 'block';
+    }
+    
+    // 輸出遭遇日誌
+    logMessage(`🚨 你遭遇了 ${State.currentMonster.name} (HP: ${State.currentMonster.hp}, 攻擊: ${State.currentMonster.attack}, 防禦: ${State.currentMonster.defense || 0})！`, 'orange'); 
     logMessage(`--- 請選擇行動 ---`, 'white');
 
-    switchUIMode(true); 
+    // 這裡只需要 updateDisplay，因為按鈕已經手動切換
     updateDisplay();
 }
 
@@ -738,10 +790,16 @@ export function handleAttack() {
     if (!isCombatActive) return;
 
     const totalAttack = calculateTotalAttack();
-
-    // 1. 玩家先攻
-    State.currentMonster.hp -= totalAttack; 
-    logMessage(`你攻擊了 ${State.currentMonster.name}，造成 ${totalAttack} 點傷害。`, 'white');
+    const monsterDefense = parseInt(State.currentMonster.defense) || 0; 
+    
+    // 1. 玩家先攻：計算傷害，至少造成 5點傷害 
+    const damageDealt = Math.max(5, totalAttack - monsterDefense);
+    
+    // 診斷日誌 (幫助您確認計算過程)
+    logMessage(`⚙️ 玩家攻擊: ${totalAttack} - 怪物防禦: ${monsterDefense} = ${damageDealt} 傷害`, 'gray'); 
+    
+    State.currentMonster.hp -= damageDealt; // 確保這裡扣除的是 damageDealt
+    logMessage(`你攻擊了 ${State.currentMonster.name}，造成 ${damageDealt} 點傷害。`, 'white');
     
     // 2. 檢查勝利 
     if (State.currentMonster.hp <= 0) {
@@ -802,19 +860,47 @@ export function endCombat(isVictory) {
     if (isVictory) {
         const enemy = State.currentMonster;
         
-        // 1. 金幣結算 
+        // 金幣結算 
         const gold = enemy.goldReward;
         State.player.gold += gold;
         logMessage(`💰 擊敗 ${enemy.name}，獲得 ${gold} 金幣。`, 'yellow');
 
-        // 2. if 敵人是 Ori Shadow，掉落稀有物品
+        // 擊敗奧利哈鋼幻影
         if (enemy.id === 'ori-shadow') { 
             
             const rareLootIds = [
+                'ori-broken-sword',         // 武器
+                'ori-broken-helmet',        // 頭盔
+                'ori-broken-armor',         // 胸甲
+                'ori-broken-greaves',       // 護脛
+                'ori-broken-necklace',      // 項鍊
+                'ori-broken-ring',          // 戒指
+                'ori-blood'                 // 消耗品
+            ];
+            
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+            
+            const newItem = getItemById(rareLootId); 
+            
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
+        }
+
+        //擊敗奧利哈鋼之軀
+        if (enemy.id === 'ori-body') { 
+            
+            const rareLootIds = [
                 'ori-sword',    // 武器
-                'ori-armor',    // 防具
+                'ori-helmet',   // 頭盔
+                'ori-armor',    // 胸甲
+                'ori-greaves',  // 護脛
                 'ori-necklace', // 項鍊
-                'ori-ring'      // 戒指
+                'ori-ring',     // 戒指
+                'ori-blood'     // 消耗品
             ];
             
             // 隨機選擇其中一件
@@ -829,7 +915,7 @@ export function endCombat(isVictory) {
             }
         }
         
-        // 3. 物品掉落 
+        // 物品掉落 
         else if (Math.random() < 0.1) {
             const newItem = getLootItem(); 
             if (newItem) addItemToInventory(newItem); 
@@ -910,7 +996,13 @@ export function renderShop() {
         const shopDiv = document.createElement('div');
         shopDiv.classList.add('shop-item');
 
-        const displayType = item.type === 'weapon' ? '⚔️ 武器' : item.type === 'armor' ? '🛡️ 防具' : item.type === 'necklace' ? '📿 項鍊' : item.type === 'ring' ? '💍 戒指' : '🧪 藥水';
+        const displayType = item.type === 'weapon' ? '⚔️ 武器' : 
+                            item.type === 'armor' ? '🛡️ 防具' : 
+                            item.type === 'necklace' ? '📿 項鍊' : 
+                            item.type === 'ring' ? '💍 戒指' : 
+                            item.type === 'helmet' ? '🪖 頭盔' :     
+                            item.type === 'greaves' ? '👖 護脛' :   
+                            '🧪 藥水';
         let displayStat = '';
         if (item.type === 'necklace' || item.type === 'ring') {
             const parts = [];
