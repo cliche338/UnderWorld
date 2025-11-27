@@ -380,3 +380,19 @@ input:focus {
     
     max-height: 500px;
     }
+
+.codex-card > div {
+    /* 強制文字內容置中，尤其是 introText div */
+    text-align: center !important;
+    /* 確保其佔滿父容器寬度，不因內容短小而偏置 */
+    width: 100% !important; 
+    /* 移除可能導致偏移的內邊距，除非您需要 */
+    padding: 0 !important;
+}
+
+/* 確保 codex-card 本身是 column flex 並水平置中 */
+.codex-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: left !important;
+}

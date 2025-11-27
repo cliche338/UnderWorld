@@ -79,43 +79,15 @@ export function showUpdateLog() {
     const updateLog = `
         --------------------------------------------------------------------------
 
-        - 更新網頁logo
-        - 調整裝備強度
-        - 新增道具圖鑑
-        - 修正板塊排版
+        - 調整圖鑑顯示
+        - 新增道具介紹
+        - 修正藥水無法觸發永久強化的bug
+        - 調整藥水強度
 
     `;
     
-    const title = "V2.3 遊戲更新日誌";
+    const title = "V2.4 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
-}
-
-function renderCodex() {
-    const list = elements.codexList;
-    list.innerHTML = ''; // 清空列表
-    
-    // ITEMS 從 config.js 導入
-    ITEMS.forEach(item => {
-        const itemCard = document.createElement('div');
-        itemCard.classList.add('codex-card');
-        
-        const icon = getItemIcon(item.type); // 獲取圖示 (從 ui_manager.js 導入)
-        const statInfo = (item.attack ? `+${item.attack} 攻 ` : '') +
-                         (item.hp ? `+${item.hp} 生命 ` : '') +
-                         (item.defense ? `+${item.defense} 防禦 ` : '') +
-                         (item.heal ? `+${item.heal} 治療` : '');
-
-        const rarityStars = '⭐'.repeat(item.rarity || 1); 
-
-        itemCard.innerHTML = `
-            <div style="font-size: 2em; margin-bottom: 5px;">${icon}</div>
-            <div style="font-weight: bold; color: #e8c26a;">${item.name}</div>
-            <div style="font-size: 0.85em; color: #ccc;">${rarityStars} | ${statInfo}</div>
-            <div style="font-size: 0.75em; color: #aaa;">Sell: ${item.value}💰 | Price: ${item.price}💰</div>
-        `;
-        
-        list.appendChild(itemCard);
-    });
 }
 
 function renderCodexContent(filter) {
@@ -136,18 +108,34 @@ function renderCodexContent(filter) {
         // ... (此處放入原有的 itemCard.innerHTML 內容，但作為字符串)
         const icon = getItemIcon(item.type);
         const rarityStars = item.rarity + '⭐';
-        const statInfo = (item.attack ? `+${item.attack} 攻 ` : '') +
-                         (item.hp ? `+${item.hp} 生命 ` : '') +
-                         (item.defense ? `+${item.defense} 防禦 ` : '') +
-                         (item.heal ? `+${item.heal} 治療` : '');
-        
+        const introText = (item.intro ? `${item.intro}` : '');
+
+        let nameColor = '#ccc';
+        let rarityColor = '#ccc';
+
+        if (item.rarity >= 10) {            // 神話
+            nameColor = '#d30e0eff'; 
+        }else if (item.rarity >= 7) {       //傳說
+            nameColor = '#c300ffce';      
+        } else if (item.rarity >= 5) {      //稀有
+            nameColor = '#1d62e2ff';      
+        } else if (item.rarity >= 3) {      //普通
+            nameColor = '#13a30eff';      
+        }
+
         // 為了節省空間，我們在這裡使用內聯樣式來替代 CSS 類別
         const itemCardHtml = `
-            <div class="codex-card" style="width: 150px; height: 160px; padding: 10px; background: #282828; border: 1px solid #6b5d4d; border-radius: 8px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+    <div class="codex-card" style="width: 150px; height: 160px; padding: 10px; background: #282828; border: 1px solid #6b5d4d; border-radius: 8px; text-align: center; display: flex; flex-direction: column; justify-content: space-around; align-items: center;">
+                
                 <div style="font-size: 2em; margin-bottom: 5px;">${icon}</div>
-                <div style="font-weight: bold; color: #e8c26a; line-height: 1.1;">${item.name}</div>
-                <div style="font-size: 0.85em; color: #ccc;">${rarityStars} </div>
-    
+                
+                <div style="font-weight: bold; color: ${nameColor}; line-height: 1.2; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${item.name}</div>
+                
+                <div style="font-size: 0.8em; color: ${rarityColor};">${rarityStars}</div>
+
+                <div style="font-size: 0.2em; color: #a9a9a9; height: 35px; overflow: hidden; text-overflow: ellipsis; font-style: italic; margin-top: 5px; text-align: center; width: 100%;">${introText}
+                </div>
+                
             </div>
         `;
         htmlContent += itemCardHtml;
@@ -780,18 +768,43 @@ export function useConsumable(inventoryIndex) {
     if (!itemToUse || itemToUse.type !== 'consumable') return; // 安全檢查
 
     const healAmount = itemToUse.heal || 0;
+    // 增加：獲取永久屬性值
+    const permanentHpGain = itemToUse.hp || 0;
+    const permanentDefenseGain = itemToUse.defense || 0;
+    
+    let effectLogged = false;
 
+    // 1. 執行治療效果
     if (healAmount > 0) {
-        // 執行治療
         const oldHp = State.player.hp;
         State.player.hp = Math.min(State.player.maxHp, State.player.hp + healAmount);
         const actualHealed = State.player.hp - oldHp;
         
         logMessage(`🧪 使用了 [${itemToUse.name}]，恢復了 ${actualHealed} 點生命。`, 'lightgreen');
-    } else {
-        logMessage(`[${itemToUse.name}] 沒有可用的治療效果。`, 'red');
+        effectLogged = true;
+    } 
+    
+    // 2. 執行永久 HP 上限增加 (ori-blood, c6)
+    if (permanentHpGain > 0) {
+        State.player.maxHp += permanentHpGain; 
+        State.player.hp += permanentHpGain; // 增加的上限也立即補滿
+        logMessage(`❤️ [${itemToUse.name}] 永久增加了 ${permanentHpGain} 點 HP 上限！`, 'gold');
+        effectLogged = true;
     }
 
+    // 3. 執行永久 Defense 增加 (c10)
+    if (permanentDefenseGain > 0) {
+        State.player.defense += permanentDefenseGain; 
+        logMessage(`🛡️ [${itemToUse.name}] 永久增加了 ${permanentDefenseGain} 點防禦力！`, 'gold');
+        effectLogged = true;
+    }
+
+    // 如果沒有任何效果（既不能治癒，也沒有永久屬性）
+    if (!effectLogged) {
+        logMessage(`[${itemToUse.name}] 沒有可用的效果。`, 'red');
+        return; // 不消耗物品
+    }
+    
     // --- 移除物品 ---
     State.player.inventory.splice(inventoryIndex, 1);
     
