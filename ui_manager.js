@@ -183,7 +183,7 @@ export function renderInventoryList() {
                          item.type === 'armor' ? '🛡️ 防具' : 
                          item.type === 'necklace' ? '📿 項鍊' : 
                          item.type === 'ring' ? '💍 戒指' : 
-                         item.type === 'helmet' ? '𪖈 頭盔' :     
+                         item.type === 'helmet' ? '🪖 頭盔' :     
                          item.type === 'greaves' ? '👢 護脛' : 
                          '🧪 藥水';
 
@@ -214,8 +214,8 @@ export function renderInventoryList() {
     });
 }
 
-export function renderMaterialInventory() { //
-    const list = elements.materialInventoryList; //
+export function renderMaterialInventory() { 
+    const list = elements.materialInventoryList; 
     list.innerHTML = ''; // 清空列表
     
     // 確保 player.materials 存在，因為 loadGame 已確保它是 {}
@@ -236,20 +236,26 @@ export function renderMaterialInventory() { //
             const div = document.createElement('div'); //
             div.classList.add('material-item'); //
             
+            // ⭐ 修正點 1: 設置 Flex 佈局
+            div.style.display = 'flex';
+            div.style.alignItems = 'center';
+            div.style.justifyContent = 'space-between'; // 讓按鈕和資訊分散開
+            
             const totalSellPrice = count * material.value; //
 
-            div.innerHTML = `**${material.name}** x ${count} (總價值: ${totalSellPrice} 💰)`; //
-
+            // ----------------------------------------------------
+            // --- 1. 販賣按鈕 (Sell All Button) ---
+            // ----------------------------------------------------
             const sellButton = document.createElement('button'); //
             sellButton.textContent = '全部販賣'; //
-            sellButton.style.marginLeft = '10px'; //
+            sellButton.style.marginLeft = '0px'; 
             sellButton.style.backgroundColor = '#2ecc71'; //
+            sellButton.style.flexShrink = '0'; // 防止按鈕被壓縮
             
             // 🚨 綁定販賣事件
             sellButton.onclick = () => { //
                 handleSellMaterial(materialId, count, material.value); //
-                // 販賣後需要重新渲染，因為數量變為 0
-                renderMaterialInventory(); //
+                renderMaterialInventory(); // 販賣後需要重新渲染
             }; 
 
             // 只有在城鎮時才能販賣
@@ -257,12 +263,25 @@ export function renderMaterialInventory() { //
                 sellButton.disabled = true; //
                 div.style.opacity = '0.7'; //
             }
+
+            div.appendChild(sellButton); // 
             
-            div.appendChild(sellButton); //
+            // ----------------------------------------------------
+            // --- 2. 材料資訊 Span (從 innerHTML 分離出來) ---
+            // ----------------------------------------------------
+            const materialInfoSpan = document.createElement('span');
+            materialInfoSpan.innerHTML = `**${material.name}** x ${count} (總價值: ${totalSellPrice} 💰)`;
+            materialInfoSpan.style.flexGrow = '1';
+            materialInfoSpan.style.textAlign = 'left'; 
+            materialInfoSpan.style.paddingLeft = '10px';
+
+            div.appendChild(materialInfoSpan);
+            
             list.appendChild(div); //
         }
     });
 }
+
 // =========================================================
 // 其他導出函式在底部 (保持不變)
 // =========================================================
