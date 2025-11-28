@@ -84,7 +84,7 @@ export function showHowToPlay() {
 export function showUpdateLog() {
     const updateLog = `
 
-        - 新增圖鑑內道具icon
+        - 調整初始職業強度
         
     `;
     
@@ -92,7 +92,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none'; 
     }
 
-    const title = "V2.8 遊戲更新日誌";
+    const title = "V2.9 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 
@@ -591,11 +591,10 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
     State.player.hp = State.player.maxHp;
     State.player.attack = baseAttack + attackBonus;
     State.player.gold = baseGold + goldBonus;
-    State.player.critChance = 0.05;
-
     State.player.depth = 1;
     State.player.className = className;
-    State.player.defense = 0 + State.permanentData.defenseBonus;
+    State.player.defense = 0 + State.permanentData.defenseBonus + defenseBonus; 
+    State.player.critChance = 0.05 + critChanceBonus;
     
     // 【關鍵修正：統一且完整的設備初始化】
     State.player.equipment = { 
@@ -624,7 +623,7 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
     // 4. 設定城鎮計數器並啟動遊戲
     State.player.actionsSinceTown = 0; 
     setNewTownGoal(); 
-    State.setGameActive(true); // 使用 Setter 確保狀態更新
+    State.setGameActive(true); 
 
     // 5. 切換 UI 進入 Adventure Mode (按鈕切換)
     if (elements.classSelection) elements.classSelection.style.display = 'none';
@@ -1501,34 +1500,31 @@ export function handleEscape() {
 export function initializeGame() {
     
     // 1. 載入永久數據
-    loadPermanentData(); 
+    State.loadPermanentData(); 
 
     // 2. 嘗試載入 Run Data (上次的存檔)
-    if (loadGame()) {
+    if (State.loadGame()) {
         // 載入成功
-        // ... (邏輯不變)
-        
-        setGameActive(true);
+        State.setGameActive(true);
         enterTownMode(); 
         
     } else {
-        // 【關鍵修正：無存檔，進入職業選擇模式】
+        // ⭐ 修正點：無存檔，進入職業選擇模式
         logMessage("歡迎來到地下城冒險！請選擇你的職業來創建新角色。", 'white');
         
-        enterSelectionMode(); // 呼叫輔助函式設定 UI
-        
-        // 初始化 player 數據
+        // 確保在調用 enterSelectionMode 前，player 狀態是乾淨的
         const initialPlayerState = { 
-            hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, 
-            className: "", equipment: { weapon: null, helmet: null, armor: null, greaves: null, necklace: null, ring: null }, 
+            hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, className: "", 
+            equipment: { weapon: null, helmet: null, armor: null, greaves: null, necklace: null, ring: null }, 
             inventory: [], materials: {}, goldAtLastRest: 0,
-            actionsSinceTown: 0, actionsToTownRequired: 0 
+            actionsSinceTown: 0, actionsToTownRequired: 0,
+            critChance: 0.05 // 基礎暴擊率
         };
-        
         Object.assign(State.player, initialPlayerState); 
+        
+        enterSelectionMode(); // 呼叫輔助函式設定 UI
     }
 
-    // 介面更新
     updateDisplay();
 }
 

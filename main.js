@@ -11,10 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.createAccountBtn.onclick = GameLogic.handleCreateAccount;
     elements.logoutBtn.onclick = GameLogic.handleLogout;
 
-    // 3. 綁定職業選擇 (假設您將 startGame 邏輯移入 game_logic.js)
-    elements.selectKnightBtn.onclick = () => GameLogic.startGame("騎士", 10, 0, 0); 
-    elements.selectMerchantBtn.onclick = () => GameLogic.startGame("商販", 0, 0, 50);
-    elements.selectThiefBtn.onclick = () => GameLogic.startGame("盜賊", 0, 5, 0);
+    // 3. 綁定職業選擇 
+    //HP,ATK,GOLD,DEF,CRIT
+    elements.selectKnightBtn.onclick = () => GameLogic.startGame("騎士", 50, 0, 0, 20, 0); 
+    elements.selectMerchantBtn.onclick = () => GameLogic.startGame("商人", 0, 0, 200, 0, -0,20);
+    elements.selectThiefBtn.onclick = () => GameLogic.startGame("刺客", 0, 25, 0, 0, 0.20);
 
     // 4. 綁定遊戲流程按鈕
     elements.exploreBtn.onclick = GameLogic.handleExplore; 
