@@ -626,8 +626,8 @@ export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBon
     State.setGameActive(true); 
 
     // 5. 切換 UI 進入 Adventure Mode (按鈕切換)
-    if (elements.classSelection) elements.classSelection.style.display = 'none';
-    if (elements.adventureActions) elements.adventureActions.style.display = 'block'; 
+    if (elements.classSelection) elements.classSelection.style.display = 'none'; 
+    if (elements.adventureActions) elements.adventureActions.style.display = 'block';
     
     enterAdventureMode(); 
     saveGame(); 
@@ -916,6 +916,7 @@ export function enterAdventureMode() {
     // 確保動作容器顯示
     if (elements.adventureActions) elements.adventureActions.style.display = 'block';
     if (elements.controlsArea) elements.controlsArea.style.display = 'block';
+    if (elements.classSelection) elements.classSelection.style.display = 'none';
 }
 
 export function enterDeathMode() {
