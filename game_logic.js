@@ -83,7 +83,6 @@ export function showHowToPlay() {
 
 export function showUpdateLog() {
     const updateLog = `
-        --------------------------------------------------------------------------
 
         - 調整背包版面配置
         
