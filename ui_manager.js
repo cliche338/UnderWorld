@@ -177,7 +177,7 @@ export function renderInventoryList() {
         itemInfoDiv.style.flexGrow = '1';
         itemInfoDiv.style.textAlign = 'left';
         
-        // --- 屬性計算邏輯 (保持不變) ---
+        // --- 屬性計算邏輯 ---
         let statInfo = '';
         const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
                          item.type === 'armor' ? '🛡️ 防具' : 
