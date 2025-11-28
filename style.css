@@ -404,3 +404,83 @@ input:focus {
     flex-direction: column !important;
     align-items: left !important;
 }
+
+/* ========================================= */
+/* 07. 手機/小螢幕優化 (MOBILE OPTIMIZATION) */
+/* ========================================= */
+
+@media (max-width: 900px) {
+    
+    /* 1. 全域容器調整 */
+    body {
+        padding: 10px; /* 減少邊緣填充 */
+    }
+
+    .game-container {
+        width: 100%;
+        padding: 10px;
+        box-shadow: none; /* 移除陰影以提升效能 */
+        max-width: unset;
+    }
+
+    /* 2. 核心佈局切換為垂直堆疊 */
+    .game-layout {
+        flex-direction: column; /* ⭐ 關鍵：將橫向佈局切換為垂直堆疊 */
+        gap: 10px; /* 減少區塊間距 */
+    }
+
+    /* 3. 狀態區調整 */
+    #status-display { 
+        /* 讓狀態區佔滿整個寬度 */
+        flex: none; 
+        min-width: unset;
+        max-height: unset;
+    }
+    
+    /* 4. 城鎮區調整 */
+    #hub-area {
+        flex: none;
+        min-width: unset;
+        max-height: unset;
+    }
+    
+    /* 5. 日誌與控制群組調整 (原右側欄) */
+    #log-and-controls-group { 
+        flex: none;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    /* 6. 遊戲日誌調整 */
+    #game-log {
+        height: 250px; /* 減少日誌高度，騰出更多空間 */
+    }
+    
+    /* 7. 控制按鈕區調整 */
+    #controls-area {
+        /* 確保按鈕區在手機上正常顯示 */
+        min-width: unset;
+    }
+    
+    /* 8. 按鈕寬度調整 (讓寬按鈕在手機上佔滿空間) */
+    button,
+    input[type="button"],
+    input[type="submit"],
+    #controls-area button,
+    #adventure-actions button {
+        min-width: 100%; /* 讓按鈕在手機上佔滿父容器寬度 */
+        margin-bottom: 5px;
+    }
+    
+    /* 讓城鎮的升級按鈕正確換行 */
+    #hub-area > div:last-child {
+        flex-wrap: wrap; /* 允許升級按鈕換行 */
+        justify-content: flex-start;
+    }
+
+    /* 調整登入區塊的按鈕佈局 */
+    #auth-area > div:first-child {
+        flex-direction: column; 
+        align-items: flex-start;
+    }
+}
