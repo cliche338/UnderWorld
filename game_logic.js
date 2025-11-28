@@ -632,8 +632,8 @@ export function getRandomMonster() {
     
     const currentDepth = State.player.depth;
     
-    // 1. Boss 檢查 (只在 20 的倍數時運行)
-    if (currentDepth > 0 && currentDepth % 20 === 0) { 
+    // 1. Boss 檢查 (只在 25 的倍數時運行)
+    if (currentDepth > 0 && currentDepth % 25 === 0) { 
         
         let bossId = null;
         

@@ -117,7 +117,7 @@ export const ITEMS = [
     
     // 項鍊
         { id: 'ori-broken-necklace', name: '碎裂的奧利哈鋼之心', type: 'necklace', hp: 100, defense: 15, value: 1500, price: 3700, rarity: 10, intro: '保存不良的龍心\n效果大打折扣'},
-        { id: 'ori-necklace', name: '奧利哈鋼龍心', type: 'necklace', hp: 200, defense: 35, value: 1500, price: 3700, rarity: 10, intro: '保存完好的龍心\n裝備後似乎可以獲得龍之力'},
+        { id: 'ori-necklace', name: '奧利哈鋼龍心', type: 'necklace', hp: 300, defense: 35, value: 1500, price: 3700, rarity: 10, intro: '保存完好的龍心\n裝備後似乎可以獲得龍之力'},
         { id: 'n1', name: '守護項鍊', type: 'necklace', hp: 20, defense: 5, value: 30, price: 500, rarity: 2, intro: '守護者的初級項鍊'},
         { id: 'n2', name: '狂暴掛墜', type: 'necklace', attack: 15, value: 40, price: 750, rarity: 2, intro: '狂戰士的護身符'},
         { id: 'n3', name: '生命吊墜', type: 'necklace', hp: 50, value: 20, price: 300, rarity: 1, intro: '保佑長壽的護符'},
