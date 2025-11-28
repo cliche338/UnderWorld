@@ -84,7 +84,7 @@ export function showHowToPlay() {
 export function showUpdateLog() {
     const updateLog = `
 
-        - 調整背包版面配置
+        - 新增圖鑑內道具icon
         
     `;
     
@@ -122,6 +122,21 @@ function renderCodexContent(filter) {
         let itemName = isKnown ? item.name : '???';
         let rarityColor = '#ccc';
 
+        let itemDisplayHtml = '';
+        if (isKnown) {
+            // 如果道具已知且有圖片路徑，則使用 <img>
+            if (item.image) {
+                // 設置圖片尺寸為 40x40 像素（根據卡片大小調整）
+                itemDisplayHtml = `<img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: contain;">`;
+            } else {
+                // 如果已知但沒有圖片路徑，則回退到通用圖示
+                itemDisplayHtml = getItemIcon(item.type); 
+            }
+        } else {
+            // 道具未知時顯示問號圖標
+            itemDisplayHtml = '❓'; 
+        }
+
         if (isKnown) {
             if (item.rarity >= 10) {            // 神話
                 nameColor = '#d30e0eff'; 
@@ -136,11 +151,9 @@ function renderCodexContent(filter) {
 
         // 為了節省空間，我們在這裡使用內聯樣式來替代 CSS 類別
         const itemCardHtml = `
-    <div class="codex-card" style="width: 150px; height: 160px; padding: 10px; background: #282828; border: 1px solid #6b5d4d; border-radius: 8px; text-align: center; display: flex; flex-direction: column; justify-content: space-around; align-items: center;">
+        <div class="codex-card" style="width: 150px; height: 160px; padding: 10px; background: #282828; border: 1px solid #6b5d4d; border-radius: 8px; text-align: center; display: flex; flex-direction: column; justify-content: space-around; align-items: center; ${isKnown ? '' : 'opacity: 0.5;'}">
                 
-                <div style="font-size: 2em; margin-bottom: 5px;">${icon}</div>
-                
-                <div style="font-weight: bold; color: ${nameColor}; line-height: 1.2; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${itemName}</div>
+                <div style="font-size: 2em; margin-bottom: 5px;">${itemDisplayHtml}</div> <div style="font-weight: bold; color: ${nameColor}; line-height: 1.2; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${itemName}</div>
                 
                 <div style="font-size: 0.8em; color: ${rarityColor};">${rarityStars}</div>
 
