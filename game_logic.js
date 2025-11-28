@@ -84,7 +84,9 @@ export function showHowToPlay() {
 export function showUpdateLog() {
     const updateLog = `
 
-        - 調整初始職業強度,讓新帳號能平穩度過遊戲前期
+        - 調整初始職業強度,讓新帳號能更好度過遊戲前期
+        - 背包內道具顯示icon修改
+        - 行動版版面配置更新
         
     `;
     
@@ -92,7 +94,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none'; 
     }
 
-    const title = "V2.9 遊戲更新日誌";
+    const title = "V3.0 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 
