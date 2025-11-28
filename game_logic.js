@@ -577,7 +577,7 @@ export function handleExplore() {
     updateDisplay();
 }
 
-export function startGame(className, hpBonus, attackBonus, goldBonus) {
+export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBonus, critChanceBonus) {
     // 檢查狀態
     if (State.gameActive) return; 
 
