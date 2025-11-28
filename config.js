@@ -77,8 +77,8 @@ export const ITEMS = [
         { id: 'w16', name: '噬魂七星劍', type: 'weapon', attack: 250, defense: -80,value: 1700, price: 2600, rarity: 9, intro: '「想獲得強大的力量就必須犧牲點什麼...」'},
        
     // 頭盔
-        { id: 'ori-broken-helmet', name: '碎裂的奧利哈鋼頭骨', type: 'helmet', hp: 100, defense: 85, value: 1500, price: 3700, rarity: 10, intro: '碎裂的龍骨頭盔'},
-        { id: 'ori-helmet', name: '奧利哈鋼龍骨', type: 'helmet', hp: 200, defense: 150, value: 1500, price: 3700, rarity: 10, intro: '完整龍骨製成的頭盔\n散發著王者的氣息'},
+        { id: 'ori-broken-helmet', name: '碎裂的奧利哈鋼頭骨', type: 'helmet', hp: 200, defense: 85, value: 1500, price: 3700, rarity: 10, intro: '碎裂的龍骨頭盔'},
+        { id: 'ori-helmet', name: '奧利哈鋼龍骨', type: 'helmet', hp: 400, defense: 150, value: 1500, price: 3700, rarity: 10, intro: '完整龍骨製成的頭盔\n散發著王者的氣息'},
         { id: 'h1', name: '皮革帽子', type: 'helmet', defense: 15, value: 70, price: 120, rarity: 1, intro: '一般的皮革帽'},
         { id: 'h2', name: '士兵鋼盔', type: 'helmet', defense: 25, value: 150, price: 250, rarity: 1, intro: '普通士兵的鋼盔\n還算堪用'},
         { id: 'h3', name: '軍官帽', type: 'helmet', defense: 30, value: 250, price: 300, rarity: 1, intro: '軍官階級才能獲得的帽子'},
@@ -106,7 +106,7 @@ export const ITEMS = [
          
     // 護脛
         { id: 'ori-broken-greaves', name: '碎裂的奧利哈鋼鱗甲', type: 'greaves', hp: 100, defense: 85, value: 1500, price: 3700, rarity: 10, intro: '破損的龍鱗護脛\n有幾處破損但仍堅韌'},
-        { id: 'ori-greaves', name: '奧利哈鋼龍鱗', type: 'greaves', hp: 200, defense: 150, value: 1500, price: 3700, rarity: 10, intro: '完整包覆下身的龍鱗甲\n閃耀且實用'},
+        { id: 'ori-greaves', name: '奧利哈鋼龍鱗', type: 'greaves', hp: 300, defense: 150, value: 1500, price: 3700, rarity: 10, intro: '完整包覆下身的龍鱗甲\n閃耀且實用'},
         { id: 'g1', name: '牛仔褲', type: 'greaves', defense: 15, value: 60, price: 100, rarity: 1, intro: '普通的緊身牛仔褲\n些許影響行動'},
         { id: 'g2', name: '厚皮腿甲', type: 'greaves', defense: 30, value: 70, price: 220, rarity: 1, intro: '厚重的腿甲\n但富有安全感'},
         { id: 'g3', name: '狂戰士護脛', type: 'greaves', defense: 55, hp:-30, value: 160, price: 340, rarity: 2, intro: '穿上他似乎會激起戰意'},
