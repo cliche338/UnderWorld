@@ -92,7 +92,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none'; 
     }
 
-    const title = "V2.7 遊戲更新日誌";
+    const title = "V2.8 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 
@@ -127,7 +127,7 @@ function renderCodexContent(filter) {
             // 如果道具已知且有圖片路徑，則使用 <img>
             if (item.image) {
                 // 設置圖片尺寸為 40x40 像素（根據卡片大小調整）
-                itemDisplayHtml = `<img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: contain;">`;
+                itemDisplayHtml = `<img src="${item.image}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: contain;">`;
             } else {
                 // 如果已知但沒有圖片路徑，則回退到通用圖示
                 itemDisplayHtml = getItemIcon(item.type); 
