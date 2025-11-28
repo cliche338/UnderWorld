@@ -595,6 +595,7 @@ export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBon
     State.player.className = className;
     State.player.defense = 0 + State.permanentData.defenseBonus + defenseBonus; 
     State.player.critChance = 0.05 + critChanceBonus;
+    State.player.materials = {};
     
     // 【關鍵修正：統一且完整的設備初始化】
     State.player.equipment = { 
