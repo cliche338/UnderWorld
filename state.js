@@ -13,6 +13,7 @@ export let player = {
         maxHp: 0,
         attack: 0,
         defense: 0,
+        critChance: 0.05,
         gold: 0,
         depth: 0,
         className: "",

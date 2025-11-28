@@ -57,24 +57,24 @@ export const MONSTERS = [
 export const ITEMS = [
 
     // 武器
-        { id: 'ori-broken-sword', name: '奧利哈鋼斷劍', type: 'weapon', attack: 60, value: 1500, price: 3700, rarity: 10, intro: '斷裂的聖劍'},
-        { id: 'ori-sword', name: '奧利哈鋼聖劍', type: 'weapon', attack: 220, value: 1500, price: 3700, rarity: 10, intro: '修復完好的聖劍\n蘊含巨大能量'},
+        { id: 'ori-broken-sword', name: '奧利哈鋼斷劍', type: 'weapon', attack: 60, critChance: 0.25, value: 1500, price: 3700, rarity: 10, intro: '斷裂的聖劍'},
+        { id: 'ori-sword', name: '奧利哈鋼聖劍', type: 'weapon', attack: 220, critChance: 0.45, value: 1500, price: 3700, rarity: 10, intro: '修復完好的聖劍\n蘊含巨大能量'},
         { id: 'w1', name: '生鏽的短刀', type: 'weapon', attack: 3, value: 20, price: 50, rarity: 1, intro: '普通的短刀但生鏽了' },
         { id: 'w2', name: '戰士長劍', type: 'weapon', attack: 8, value: 30, price: 400, rarity: 2, intro: '普通戰士們普遍使用的武器'}, 
         { id: 'w3', name: '龍牙戰斧', type: 'weapon', attack: 15, value: 100, price: 300, rarity: 3 , intro: '屠龍戰士曾使用過的斧頭'},
         { id: 'w4', name: '狂暴利刃', type: 'weapon', attack: 50, value: 340, price: 1500, rarity: 4 , intro: '脾氣差的劍士曾經的刀'},
         { id: 'w5', name: '普通的長劍', type: 'weapon', attack: 5, value: 20, price: 100, rarity: 1, intro: '就是普通的劍'},
-        { id: 'w6', name: '刺客短匕', type: 'weapon', attack: 25, value: 230, price: 550, rarity: 3, intro: '暗殺者常用的匕首'},
+        { id: 'w6', name: '刺客短匕', type: 'weapon', attack: 25, critChance: 0.65, value: 230, price: 550, rarity: 3, intro: '暗殺者常用的匕首\n大幅提升背刺暴擊概率'},
         { id: 'w7', name: '騎士槍盾', type: 'weapon', attack: 25, defense: 25, value: 320, price: 680, rarity: 4, intro: '舊城邦騎士的套裝'},
-        { id: 'w8', name: '澄澈之鋒刃', type: 'weapon', attack: 75, value: 520, price: 1220, rarity: 5 ,intro: '刀刃澄澈可透光的冰晶刀'},
-        { id: 'w9', name: '冰晶樹節枝', type: 'weapon', attack: 85, value: 620, price: 1320, rarity: 6 ,intro: '用冰晶樹的樹枝加工而成的武器'},
+        { id: 'w8', name: '澄澈之鋒刃', type: 'weapon', attack: 75, critChance: 0.15, value: 520, price: 1220, rarity: 5 ,intro: '刀刃澄澈可透光的冰晶刀'},
+        { id: 'w9', name: '冰晶樹節枝', type: 'weapon', attack: 85, critChance: -0.25, value: 620, price: 1320, rarity: 6 ,intro: '用冰晶樹的樹枝加工而成的武器'},
         { id: 'w10', name: '魔影之爪', type: 'weapon', attack: 155, defense: -40, value: 720, price: 1420, rarity: 7, intro: '暗影惡魔的爪子'},
-        { id: 'w11', name: '嵐切', type: 'weapon', attack: 50, value: 340, price: 1300, rarity: 8, intro: '御風劍士的寶刀'},
+        { id: 'w11', name: '嵐切', type: 'weapon', attack: 50, critChance: 0.35, value: 340, price: 1300, rarity: 8, intro: '御風劍士的寶刀'},
         { id: 'w12', name: '幽魂長弓', type: 'weapon', attack: 110, defense: 10, value: 950, price: 1950, rarity: 8, intro: '幽魂射手的弓箭'},
         { id: 'w13', name: '混沌魔刃', type: 'weapon', attack: 180, hp: -50, value: 1100, price: 2300, rarity: 9, intro: '被混沌之力侵蝕的古刀'},
-        { id: 'w14', name: '滅龍聖劍', type: 'weapon', attack: 190, defense: -25,value: 1400, price: 3000, rarity: 9, intro: '曾經對巨龍造成重創的劍'},
-        { id: 'w15', name: '解', type: 'weapon', attack: 550,value: 1400, price: 3000, rarity: 10, intro: '「龍麟 反發 成雙之流星」'},
-        { id: 'w16', name: '噬魂七星劍', type: 'weapon', attack: 250, defense: -80,value: 1700, price: 2600, rarity: 9, intro: '「想獲得強大的力量就必須犧牲點什麼...」'},
+        { id: 'w14', name: '滅龍聖劍', type: 'weapon', attack: 190, defense: -25, critChance: 0.35, value: 1400, price: 3000, rarity: 9, intro: '曾經對巨龍造成重創的劍'},
+        { id: 'w15', name: '解', type: 'weapon', attack: 550, critChance: 0.55, value: 1400, price: 3000, rarity: 10, intro: '「龍麟 反發 成雙之流星」'},
+        { id: 'w16', name: '噬魂七星劍', type: 'weapon', attack: 250, critChance: 0.65, defense: -150,value: 1700, price: 2600, rarity: 9, intro: '「想獲得強大的力量就必須犧牲點什麼...」'},
        
     // 頭盔
         { id: 'ori-broken-helmet', name: '碎裂的奧利哈鋼頭骨', type: 'helmet', hp: 200, defense: 85, value: 1500, price: 3700, rarity: 10, intro: '碎裂的龍骨頭盔'},
@@ -86,7 +86,7 @@ export const ITEMS = [
         { id: 'h5', name: '惡魔之眼', type: 'helmet', attack: 50, value: 350, price: 630, rarity: 3, intro: '和惡魔在激戰中拔下的惡魔眼睛'},
         { id: 'h6', name: '鋼鐵面罩', type: 'helmet', hp: 20, defense: 35, value: 300, price: 480, rarity: 2, intro: '鋼鐵戰士的面罩'},
         { id: 'h7', name: '堅韌戰盔', type: 'helmet', defense: 60, value: 450, price: 720, rarity: 3, intro: '身經百戰的鬥士頭盔'},
-        { id: 'h8', name: '影步兜帽', type: 'helmet', attack: 30, defense: 25, value: 600, price: 950, rarity: 4, intro: '暗影刺客的連帽披風'},
+        { id: 'h8', name: '影步兜帽', type: 'helmet', attack: 30, defense: 25, critChance: 0.15, value: 600, price: 950, rarity: 4, intro: '暗影刺客的連帽披風\n從暗夜中現行造成暴擊傷害'},
         { id: 'h9', name: '泰坦頭骨', type: 'helmet', hp: 120, defense: 50, value: 850, price: 1400, rarity: 5, intro: '泰坦戰甲的頭骨'},
         { id: 'h10', name: '王者頭冠', type: 'helmet', hp: 180, attack: 40, defense: 40, value: 1200, price: 2000, rarity: 6, intro: '古代失落國度帝王的頭冠'},
     
@@ -130,8 +130,8 @@ export const ITEMS = [
         { id: 'n10', name: '混沌之星', type: 'necklace', attack: 75, hp: 200, defense: 45, value: 2500, price: 4500, rarity: 9, intro: '造成怪物混沌化的主因\n淨化後可安全配戴'},
 
     // 戒指
-        { id: 'ori-broken-ring', name: '污濁的奧利哈鋼之眼', type: 'ring', attack: 35, value: 1500, price: 3700, rarity: 10, intro: '黯淡的眼睛\n似乎無法使出全力'},
-        { id: 'ori-ring', name: '奧利哈鋼魔眼', type: 'ring', attack: 140, defense: 30, value: 1500, price: 3700, rarity: 10, intro: '從奧利哈鋼身上取出的眼睛\n保存完好且散發不尋常的光芒'},
+        { id: 'ori-broken-ring', name: '污濁的奧利哈鋼之眼', type: 'ring', attack: 35, critChance: 0.10, value: 1500, price: 3700, rarity: 10, intro: '黯淡的眼睛\n似乎無法使出全力'},
+        { id: 'ori-ring', name: '奧利哈鋼魔眼', type: 'ring', attack: 140, defense: 30, critChance: 0.20, value: 1500, price: 3700, rarity: 10, intro: '從奧利哈鋼身上取出的眼睛\n保存完好且散發不尋常的光芒'},
         { id: 'r1', name: '力量之戒', type: 'ring', attack: 10, value: 300, price: 600, rarity: 2, intro: '配戴上後似乎充滿了力量'},
         { id: 'r2', name: '鐵壁指環', type: 'ring', defense: 10, value: 210, price: 550, rarity: 2 , intro: '鋼鐵合金製作的指環\n關鍵時刻可以當成指虎用'},
         { id: 'r3', name: '黯淡全能之石', type: 'ring', attack: 5, hp: 10, defense: 5, value: 400, price: 900, rarity: 3, intro: '失去光芒的全能之石\n甚至散發著黑暗氣息'},
@@ -140,9 +140,9 @@ export const ITEMS = [
         { id: 'r6', name: '束縛之戒', type: 'ring', attack: 70, hp: -55, value: 700, price: 1800, rarity: 5, intro: '和戒指訂製誓約\n以換取更強大力量'},
         { id: 'r7', name: '幻影之戒', type: 'ring', attack: 35, hp: 35, defense: 35, value: 1500, price: 2500, rarity: 5, intro: '半透明的紫色戒指\n似乎可以操控影子'}, 
         { id: 'r8', name: '泰坦防護環', type: 'ring', hp: 80, defense: 50, value: 800, price: 1600, rarity: 6, intro: '古代泰坦的防護星環'},
-        { id: 'r9', name: '嗜血魔戒', type: 'ring', attack: 70, hp: -20, defense: 15, value: 1200, price: 2200, rarity: 7, intro: '魔物將軍配戴的飾品\n藉由吸收巨量人類血液增強'},
-        { id: 'r10', name: '賢者之眼', type: 'ring', attack: 50, hp: 60, defense: 40, value: 1800, price: 3000, rarity: 8, intro: '古代賢者的眼睛\n似乎可以看穿魔物的行動'},
-        { id: 'r11', name: '毀滅指輪', type: 'ring', attack: 120, value: 2350, price: 3800, rarity: 9, intro: '具有強大力量的毀滅性戒指'},
+        { id: 'r9', name: '嗜血魔戒', type: 'ring', attack: 70, hp: -20, defense: 15, critChance: 0.15, value: 1200, price: 2200, rarity: 7, intro: '魔物將軍配戴的飾品\n藉由吸收巨量人類血液增強'},
+        { id: 'r10', name: '賢者之眼', type: 'ring', attack: 50, hp: 60, defense: 40, critChance: 0.05, value: 1800, price: 3000, rarity: 8, intro: '古代賢者的眼睛\n似乎可以看穿魔物的行動'},
+        { id: 'r11', name: '毀滅指輪', type: 'ring', attack: 120, critChance: 0.15, value: 2350, price: 3800, rarity: 9, intro: '具有強大力量的毀滅性戒指'},
 
     // 藥水
         { id: 'ori-blood', name: '奧利哈鋼之血', type: 'consumable', hp: 300, value: 10, price: 50, rarity: 10, intro: '從奧利哈鋼傷口蒐集的血液\n似乎對人體有益處'},

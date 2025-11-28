@@ -85,19 +85,19 @@ export function showUpdateLog() {
     const updateLog = `
         --------------------------------------------------------------------------
 
-        - 調整部分道具價格
-        - 修正商店道具屬性顯示錯誤
-        - 新增武器 : 噬魂七星劍
-        - 圖鑑顯示調整 未獲得過的武器只會顯示稀有度及說明
-        - 新增功能 : 圖鑑收集進度
-
+        - 新增屬性 : 暴擊率
+        - 暴擊傷害為2倍
+        - 玩家基礎暴擊率為5%
+        - 怪物暴擊機率固定為40%
+        - 部分道具獲得暴擊率屬性
+        
     `;
     
     if (elements.codexFilters) {
         elements.codexFilters.style.display = 'none'; 
     }
 
-    const title = "V2.5 遊戲更新日誌";
+    const title = "V2.6 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 
@@ -583,6 +583,7 @@ export function startGame(className, hpBonus, attackBonus, goldBonus) {
     State.player.hp = State.player.maxHp;
     State.player.attack = baseAttack + attackBonus;
     State.player.gold = baseGold + goldBonus;
+    State.player.critChance = 0.05;
 
     State.player.depth = 1;
     State.player.className = className;
@@ -976,6 +977,22 @@ export function handleUpgradeDefense() {
     updateDisplay(); // 統一更新畫面
 }
 
+export function calculateTotalCritChance() {
+    // 基礎暴擊率 (在 startGame 中設定的 0.05)
+    let totalCritChance = State.player.critChance || 0; 
+
+    // 加上所有裝備的暴擊率加成
+    for (const slot in State.player.equipment) {
+        const item = State.player.equipment[slot];
+        if (item && item.critChance) {
+            totalCritChance += item.critChance;
+        }
+    }
+    
+    // 確保暴擊率不超過 100% (1.0)
+    return Math.min(1.0, totalCritChance); 
+}
+
 export function handleAttack() {
     
     if (!isCombatActive) return;
@@ -983,32 +1000,57 @@ export function handleAttack() {
     const totalAttack = calculateTotalAttack();
     const monsterDefense = parseInt(State.currentMonster.defense) || 0; 
     
-    // 1. 玩家先攻：計算傷害，至少造成 5點傷害 
-    const damageDealt = Math.max(5, totalAttack - monsterDefense);
+    // --- 暴擊判定 ---
+    const finalCritChance = calculateTotalCritChance();
+    const isCritical = Math.random() < finalCritChance; 
+    const damageMultiplier = isCritical ? 2 : 1;
+    
+    // 1. 玩家先攻：計算基礎傷害
+    let damageDealt = Math.max(5, totalAttack - monsterDefense);
+    
+    // 2. 套用暴擊倍率
+    damageDealt *= damageMultiplier;
     
     // 診斷日誌 (幫助您確認計算過程)
-    logMessage(`⚙️ 玩家攻擊: ${totalAttack} - 怪物防禦: ${monsterDefense} = ${damageDealt} 傷害`, 'gray'); 
+    logMessage(`⚙️ 玩家攻擊: ${totalAttack} - 怪物防禦: ${monsterDefense} = 基礎 ${damageDealt / damageMultiplier} 傷害`, 'gray'); 
     
-    State.currentMonster.hp -= damageDealt; // 確保這裡扣除的是 damageDealt
+    // 輸出暴擊訊息
+    if (isCritical) {
+        logMessage(`💥 暴擊！你造成了雙倍傷害！`, 'red');
+    }
+    
+    State.currentMonster.hp -= damageDealt;
     logMessage(`你攻擊了 ${State.currentMonster.name}，造成 ${damageDealt} 點傷害。`, 'white');
     
-    // 2. 檢查勝利 
+    // 3. 檢查勝利 
     if (State.currentMonster.hp <= 0) {
         endCombat(true); 
         return;
     }
     
-    // 立即顯示怪物剩餘 HP
     logMessage(`💥 ${State.currentMonster.name} 剩餘 HP: ${State.currentMonster.hp}`, 'yellow');
-
-    // 3. 怪物反擊 - 關鍵修正：應用防禦力減免 最低傷害5點
-    const damageReceived = Math.max(5, State.currentMonster.attack - State.player.defense);
+    // 4. 怪物反擊 -
+    // 4-1. 怪物暴擊判定：固定為 40% 
+    const MONSTER_CRIT_CHANCE = 0.40; 
+    const isMonsterCritical = Math.random() < MONSTER_CRIT_CHANCE;
+    const monsterDamageMultiplier = isMonsterCritical ? 2 : 1;
     
-    // ⚠ 修正點：扣除的是減免後的傷害
+    // 4-2. 計算基礎傷害 (已減免玩家防禦)
+    let damageReceived = Math.max(5, State.currentMonster.attack - State.player.defense);
+    
+    // 4-3. 套用怪物暴擊倍率
+    damageReceived *= monsterDamageMultiplier;
+    
+    // 4-4. 輸出暴擊訊息
+    if (isMonsterCritical) {
+        logMessage(`🔥 怪物暴擊！${State.currentMonster.name} 對你造成了雙倍傷害！`, 'orange');
+    }
+    
+    // 5. 對玩家造成傷害
     State.player.hp -= damageReceived; 
     logMessage(`❌ ${State.currentMonster.name} 對你造成了 ${damageReceived} 點傷害 (已減免 ${State.player.defense} 防禦)！`, 'red');
 
-    // 4. 檢查死亡
+    // 6. 檢查死亡
     if (State.player.hp <= 0) {
         State.player.hp = 0;
         
@@ -1016,11 +1058,11 @@ export function handleAttack() {
         setIsCombatActive(false); 
         setCurrentMonster(null);
         
-        endGame("death"); // 執行死亡回溯邏輯 (
+        endGame("death");
         return; 
     }
     
-    // 5. 戰鬥繼續
+    // 6. 戰鬥繼續
     updateDisplay(); 
     logMessage(`--- 請選擇下一回合行動 ---`, 'white'); 
 }
@@ -1168,7 +1210,7 @@ export function setNewTownGoal() {
 }
 
 export function renderShop() {
-    // 獲取商店列表的 DOM 元素 (從 ui_manager.js 匯入)
+    
     elements.shopInventoryList.innerHTML = ''; 
 
     // 獲取當前的動態清單 (從 game_logic.js 頂部定義)
@@ -1188,7 +1230,7 @@ export function renderShop() {
         shopDiv.classList.add('shop-item');
 
         const displayType = item.type === 'weapon' ? '⚔️ 武器' : 
-                            item.type === 'armor' ? '🛡️ 防具' : 
+                            item.type === 'armor' ? '🛡️ 胸甲' : 
                             item.type === 'necklace' ? '📿 項鍊' : 
                             item.type === 'ring' ? '💍 戒指' : 
                             item.type === 'helmet' ? '🪖 頭盔' :     
@@ -1199,20 +1241,32 @@ export function renderShop() {
         if (item.type === 'necklace' || item.type === 'ring') {
             // 項鍊/戒指
             const parts = [];
-            if (item.attack) parts.push(`${item.attack > 0 ? '+' : ''}${item.attack} 攻`);
-            if (item.hp) parts.push(`${item.hp > 0 ? '+' : ''}${item.hp} 生命`);
-            if (item.defense) parts.push(`${item.defense > 0 ? '+' : ''}${item.defense} 防禦`);
+            if (item.attack) parts.push(`${item.attack > 0 ? '+' : ''}${item.attack} ATK`);
+            if (item.hp) parts.push(`${item.hp > 0 ? '+' : ''}${item.hp} HP`);
+            if (item.defense) parts.push(`${item.defense > 0 ? '+' : ''}${item.defense} DEF`);
+            if (item.critChance) {
+                
+                const sign = item.critChance >= 0 ? '+' : '';
+                const critPercent = (item.critChance * 100).toFixed(1);
+                parts.push(`${sign}${critPercent}% 暴擊率`);
+            }
+
             displayStat = parts.join(', ');
         } else {
             // 武器/防具/消耗品
-            if (item.attack) displayStat = `${item.attack > 0 ? '+' : ''}${item.attack} 攻`;
-            else if (item.hp) displayStat = `${item.hp > 0 ? '+' : ''}${item.hp} 生命`; 
+            if (item.attack) displayStat = `${item.attack > 0 ? '+' : ''}${item.attack} ATK`;
+            else if (item.hp) displayStat = `${item.hp > 0 ? '+' : ''}${item.hp} HP`; 
             else if (item.heal) displayStat = `+${item.heal} 治療`;
-            else if (item.defense) displayStat = `${item.defense > 0 ? '+' : ''}${item.defense} 防禦`;
+            else if (item.defense) displayStat = `${item.defense > 0 ? '+' : ''}${item.defense} DEF`;
+            else if (item.critChance) {
+                const sign = item.critChance >= 0 ? '+' : '';
+                const critPercent = (item.critChance * 100).toFixed(1);
+                parts.push(`${sign}${critPercent}% 暴擊率`);
+            }
+
             else displayStat = '';
         }
 
-        const rarityStars = '⭐'.repeat(item.rarity || 1); // 顯示稀有度
         shopDiv.innerHTML = `${displayType}: *${item.name}* (${displayStat}) 價格: *${item.price}* 💰`;
 
         const buyButton = document.createElement('button');

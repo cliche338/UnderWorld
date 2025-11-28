@@ -138,7 +138,7 @@ input:focus {
     min-width: 200px;
     background: #1e2d2f;
     border-color: #2c4749;
-    max-height: 580px;
+    max-height: 615px;
 }
 
 /* 3.2. 城鎮區 */
@@ -148,7 +148,7 @@ input:focus {
     background: #3d3326;
     border-color: #6e5a3d;
     color: #f5e9c5;
-    max-height: 580px;
+    max-height: 615px;
 }
 
 /* 3.3. 日誌與控制群組 (垂直容器) */

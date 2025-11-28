@@ -12,6 +12,7 @@ import {
     handleSellItem,
     getMaterialById,
     handleSellMaterial,
+    calculateTotalCritChance,
 } from './game_logic.js'; //
 
 export const elements = {
@@ -26,6 +27,7 @@ export const elements = {
         updateLogBtn: document.getElementById('update-log-btn'),
 
         defenseValue: document.getElementById('defense-value'),
+        critChanceValue: document.getElementById('crit-chance-value'),
 
         equippedArmorName: document.getElementById('equipped-armor-name'),
         equippedWeaponName: document.getElementById('equipped-weapon-name'),
@@ -131,15 +133,39 @@ export function renderInventoryList() { //
                         '🧪 藥水';
             
             let statInfo = ''; //
-            if (item.type === 'weapon') statInfo = `+${item.attack} 攻擊`; //
-            else if (item.type === 'armor') statInfo = `+${item.hp} 生命`; //
-            else if (item.type === 'consumable') statInfo = `+${item.heal} 治療`; //
-            else if (item.type === 'necklace' || item.type === 'ring') {
+            if (item.type === 'necklace' || item.type === 'ring') {
+                // 項鍊/戒指 (多屬性)
                 const parts = [];
-                if (item.attack) parts.push(`+${item.attack} 攻擊`);
-                if (item.hp) parts.push(`+${item.hp} 生命`);
-                if (item.defense) parts.push(`+${item.defense} 防禦`);
+                
+                // 輔助函式：確保正確的正負號，並轉換暴擊率為百分比
+                const getStatString = (value, unit) => {
+                    const sign = value >= 0 ? '+' : '';
+                    if (unit === '暴擊') {
+                        const percent = (value * 100).toFixed(1);
+                        return `${sign}${percent}% ${unit}`;
+                    }
+                    return `${sign}${value} ${unit}`;
+                };
+
+                if (item.attack) parts.push(getStatString(item.attack, 'ATK'));
+                if (item.hp) parts.push(getStatString(item.hp, 'HP'));
+                if (item.defense) parts.push(getStatString(item.defense, 'DEF'));
+                if (item.critChance) parts.push(getStatString(item.critChance, '暴擊率'));
+
                 statInfo = parts.join(', ');
+            } 
+            // 單一或主要屬性裝備
+            else {
+                // 優先處理暴擊率、攻擊、生命等單一屬性
+                if (item.critChance) {
+                    const sign = item.critChance >= 0 ? '+' : '';
+                    const critPercent = (item.critChance * 100).toFixed(1);
+                    statInfo = `${sign}${critPercent}% 暴擊率`;
+                }
+                else if (item.attack) statInfo = `${item.attack >= 0 ? '+' : ''}${item.attack} ATK`; 
+                else if (item.hp) statInfo = `${item.hp >= 0 ? '+' : ''}${item.hp} HP`; 
+                else if (item.heal) statInfo = `+${item.heal} 治療`;
+                else if (item.defense) statInfo = `${item.defense >= 0 ? '+' : ''}${item.defense} DEF`;
             }
 
             itemDiv.innerHTML = `${typeIcon} **${item.name}** (${statInfo}) `; // 顯示名稱和屬性
@@ -284,6 +310,12 @@ export function updateDisplay() {
     if (elements.equippedRingName) {
         elements.equippedRingName.textContent = player.equipment.ring ? player.equipment.ring.name : '無'; 
     }
+    const totalCritChance = calculateTotalCritChance();
+    if (elements.critChanceValue) {
+        // 將暴擊率 (例如 0.15) 轉換為百分比並顯示一位小數 (例如 "15.0%")
+        elements.critChanceValue.textContent = `${(totalCritChance * 100).toFixed(1)}%`;
+    }   
+
     
     // 4. 渲染列表 (將複雜的 HTML 生成邏輯獨立出來)
     renderInventoryList(); //
