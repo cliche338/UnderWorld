@@ -84,7 +84,7 @@ export function showHowToPlay() {
 export function showUpdateLog() {
     const updateLog = `
 
-        - 調整初始職業強度
+        - 調整初始職業強度,讓新帳號能平穩度過遊戲前期
         
     `;
     
