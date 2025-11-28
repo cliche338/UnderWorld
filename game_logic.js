@@ -84,9 +84,9 @@ export function showHowToPlay() {
 export function showUpdateLog() {
     const updateLog = `
 
-        - 調整初始職業強度,讓新帳號能更好度過遊戲前期
-        - 背包內道具顯示icon修改
-        - 行動版版面配置更新
+- 調整初始職業強度,讓新帳號能更好度過遊戲前期
+- 背包內道具顯示icon修改
+- 行動版版面配置更新
         
     `;
     
