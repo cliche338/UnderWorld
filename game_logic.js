@@ -85,11 +85,11 @@ export function showUpdateLog() {
     const updateLog = `
         --------------------------------------------------------------------------
 
-        - 調整圖鑑顯示
-        - 新增道具介紹
-        - 修正藥水無法觸發永久強化的bug
-        - 調整藥水強度
-        - 修正圖鑑按鈕的顯示錯誤
+        - 調整部分道具價格
+        - 修正商店道具屬性顯示錯誤
+        - 新增武器 : 噬魂七星劍
+        - 圖鑑顯示調整 未獲得過的武器只會顯示稀有度及說明
+        - 新增功能 : 圖鑑收集進度
 
     `;
     
@@ -97,18 +97,19 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none'; 
     }
 
-    const title = "V2.4 遊戲更新日誌";
+    const title = "V2.5 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 
 function renderCodexContent(filter) {
+
+    let htmlContent = `<div id="codex-grid" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: flex-start;">`;
+
     // 1. 根據篩選條件過濾道具
     const filteredItems = ITEMS.filter(item => {
         if (filter === 'all') return true;
         return item.type === filter;
     });
-
-    let htmlContent = `<div id="codex-grid" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: flex-start;">`;
 
     if (filteredItems.length === 0) {
         return `<p style="text-align: center; color: #e74c3c;">該分類下沒有道具。</p>`;
@@ -116,22 +117,26 @@ function renderCodexContent(filter) {
 
     // 2. 遍歷並建立卡片 HTML
     filteredItems.forEach(item => {
-        // ... (此處放入原有的 itemCard.innerHTML 內容，但作為字符串)
+        
+        const isKnown = State.permanentData.knownItems.includes(item.id);
         const icon = getItemIcon(item.type);
         const rarityStars = item.rarity + '⭐';
         const introText = (item.intro ? `${item.intro}` : '');
 
-        let nameColor = '#ccc';
+        let nameColor = isKnown ? '#ccc' : '#444';
+        let itemName = isKnown ? item.name : '???';
         let rarityColor = '#ccc';
 
-        if (item.rarity >= 10) {            // 神話
-            nameColor = '#d30e0eff'; 
-        }else if (item.rarity >= 7) {       //傳說
-            nameColor = '#c300ffce';      
-        } else if (item.rarity >= 5) {      //稀有
-            nameColor = '#1d62e2ff';      
-        } else if (item.rarity >= 3) {      //普通
-            nameColor = '#13a30eff';      
+        if (isKnown) {
+            if (item.rarity >= 10) {            // 神話
+                nameColor = '#d30e0eff'; 
+            }else if (item.rarity >= 7) {       //傳說
+                nameColor = '#c300ffce';      
+            } else if (item.rarity >= 5) {      //稀有
+                nameColor = '#1d62e2ff';      
+            } else if (item.rarity >= 3) {      //普通
+                nameColor = '#13a30eff';      
+            }
         }
 
         // 為了節省空間，我們在這裡使用內聯樣式來替代 CSS 類別
@@ -140,7 +145,7 @@ function renderCodexContent(filter) {
                 
                 <div style="font-size: 2em; margin-bottom: 5px;">${icon}</div>
                 
-                <div style="font-weight: bold; color: ${nameColor}; line-height: 1.2; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${item.name}</div>
+                <div style="font-weight: bold; color: ${nameColor}; line-height: 1.2; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${itemName}</div>
                 
                 <div style="font-size: 0.8em; color: ${rarityColor};">${rarityStars}</div>
 
@@ -160,14 +165,25 @@ function updateCodexDisplay(filterType) {
     currentCodexFilter = filterType;
     const contentHtml = renderCodexContent(filterType);
     
-    const filteredItems = ITEMS.filter(item => {
-        if (filterType === 'all') return true;
-        return item.type === filterType;
-    });
+    const totalItems = ITEMS.length; 
+    
+    // 計算已解鎖道具數 (從 state.js 的 permanentData.knownItems 取得)
+    const knownItemsCount = State.permanentData && 
+                            State.permanentData.knownItems && 
+                            Array.isArray(State.permanentData.knownItems) 
+                            ? State.permanentData.knownItems.length 
+                            : 0;
+    
+    // 創建進度顯示 HTML
+    const progressDisplay = `
+        <div style="text-align: center; margin: 0 0 2px 0; font-weight: bold; font-size: 1.1em; color: #f39c12; border-bottom: 2px solid #3d3326; padding-bottom: 5px;">
+            收集進度: ${knownItemsCount} / ${totalItems}
+        </div>
+    `;
 
     // 設置標題和內容
     elements.modalTitle.textContent = "📜 道具圖鑑";
-    elements.modalContent.innerHTML = contentHtml; // 使用 innerHTML 注入 HTML 網格
+    elements.modalContent.innerHTML = progressDisplay + contentHtml;
 }
 
 export function toggleCodex() {
@@ -341,6 +357,13 @@ export function addItemToInventory(item) {
     
     State.player.inventory.push(item);
     logMessage(`🎁 你獲得了 [${item.name}]！`, 'cyan');
+
+    // 確保 item.id 存在，且該 ID 尚未被記錄
+    if (item.id && !State.permanentData.knownItems.includes(item.id)) {
+        State.permanentData.knownItems.push(item.id);
+        logMessage(`📜 道具 [${item.name}] 已記錄到圖鑑！`, 'yellow');
+        State.savePermanentData(); // 儲存永久數據
+    }
 }
 
 export function refreshShopInventory() {
@@ -1171,16 +1194,22 @@ export function renderShop() {
                             item.type === 'helmet' ? '🪖 頭盔' :     
                             item.type === 'greaves' ? '👖 護脛' :   
                             '🧪 藥水';
+
         let displayStat = '';
         if (item.type === 'necklace' || item.type === 'ring') {
+            // 項鍊/戒指
             const parts = [];
-            if (item.attack) parts.push(`+${item.attack} 攻`);
-            if (item.hp) parts.push(`+${item.hp} 生命`);
-            if (item.defense) parts.push(`+${item.defense} 防禦`);
+            if (item.attack) parts.push(`${item.attack > 0 ? '+' : ''}${item.attack} 攻`);
+            if (item.hp) parts.push(`${item.hp > 0 ? '+' : ''}${item.hp} 生命`);
+            if (item.defense) parts.push(`${item.defense > 0 ? '+' : ''}${item.defense} 防禦`);
             displayStat = parts.join(', ');
         } else {
-            // 武器/防具/消耗品（沿用原來的單一顯示邏輯）
-            displayStat = item.attack ? `+${item.attack} 攻` : item.hp ? `+${item.hp} 生命` : item.heal ? `+${item.heal} 治療` : item.defense ? `+${item.defense} 防禦` : '';
+            // 武器/防具/消耗品
+            if (item.attack) displayStat = `${item.attack > 0 ? '+' : ''}${item.attack} 攻`;
+            else if (item.hp) displayStat = `${item.hp > 0 ? '+' : ''}${item.hp} 生命`; 
+            else if (item.heal) displayStat = `+${item.heal} 治療`;
+            else if (item.defense) displayStat = `${item.defense > 0 ? '+' : ''}${item.defense} 防禦`;
+            else displayStat = '';
         }
 
         const rarityStars = '⭐'.repeat(item.rarity || 1); // 顯示稀有度
