@@ -595,9 +595,10 @@ export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBon
     State.player.className = className;
     State.player.defense = 0 + State.permanentData.defenseBonus + defenseBonus; 
     State.player.critChance = 0.05 + critChanceBonus;
+    State.player.inventory = [];
     State.player.materials = {};
+    State.player.goldAtLastRest = State.player.gold;
     
-    // 【關鍵修正：統一且完整的設備初始化】
     State.player.equipment = { 
         weapon: null, //武器
         helmet: null, //頭盔
@@ -606,10 +607,6 @@ export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBon
         necklace: null, //項鍊
         ring: null, //戒指
     }; 
-    
-    State.player.inventory = [];
-    State.player.materials = {};
-    State.player.goldAtLastRest = State.player.gold;
     
     // 3. 發放起始道具 
     STARTER_LOOT_IDS.forEach(itemId => { 

@@ -120,7 +120,7 @@ export function renderInventoryList() {
         return; 
     }
 
-    // 輔助函式 (保持不變)
+    // 輔助函式
     const getStatString = (value, unit) => {
         const sign = value >= 0 ? '+' : '';
         if (unit === '暴擊率') {
@@ -179,13 +179,18 @@ export function renderInventoryList() {
         
         // --- 屬性計算邏輯 ---
         let statInfo = '';
-        const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
+        let itemDisplayHtml = '';
+        if (item.image) {
+            // 如果有圖片路徑，則使用 <img> 標籤
+            // 設置圖片尺寸為 20x20 像素（比圖鑑小，以適應清單）
+            itemDisplayHtml = `<img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: contain; vertical-align: middle; margin-right: 5px;">`;
+        } else {const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
                          item.type === 'armor' ? '🛡️ 防具' : 
                          item.type === 'necklace' ? '📿 項鍊' : 
                          item.type === 'ring' ? '💍 戒指' : 
                          item.type === 'helmet' ? '🪖 頭盔' :     
                          item.type === 'greaves' ? '👢 護脛' : 
-                         '🧪 藥水';
+                         '🧪 藥水';}
 
         if (item.type === 'necklace' || item.type === 'ring') {
             const parts = [];
@@ -204,11 +209,9 @@ export function renderInventoryList() {
             else if (item.defense) statInfo = getStatString(item.defense, 'DEF');
         }
         
-        itemInfoDiv.innerHTML = `${typeIcon} **${item.name}** (${statInfo}) `; 
+        itemInfoDiv.innerHTML = `${itemDisplayHtml} **${item.name}** (${statInfo}) `;
         
         itemDiv.appendChild(itemInfoDiv);
-        
-        // ----------------------------------------------------
         
         elements.inventoryList.appendChild(itemDiv); 
     });
