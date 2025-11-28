@@ -112,95 +112,107 @@ export const elements = {
 // 將渲染函式移至頂部，確保所有地方都能呼叫
 // =========================================================
 
-export function renderInventoryList() { //
-        elements.inventoryList.innerHTML = ''; //
+export function renderInventoryList() { 
+    elements.inventoryList.innerHTML = ''; 
 
-        if (player.inventory.length === 0) { //
-            elements.inventoryList.textContent = '你的背包裡空空的。'; //
-            return; //
-        }
-
-        player.inventory.forEach((item, index) => { //
-            const itemDiv = document.createElement('div'); //
-            itemDiv.classList.add('inventory-item'); //
-            
-            const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
-                        item.type === 'armor' ? '🛡️ 防具' : 
-                        item.type === 'necklace' ? '📿 項鍊' : 
-                        item.type === 'ring' ? '💍 戒指' : 
-                        item.type === 'helmet' ? '🪖 頭盔' :     
-                        item.type === 'greaves' ? '👖 護脛' :   
-                        '🧪 藥水';
-            
-            let statInfo = ''; //
-            if (item.type === 'necklace' || item.type === 'ring') {
-                // 項鍊/戒指 (多屬性)
-                const parts = [];
-                
-                // 輔助函式：確保正確的正負號，並轉換暴擊率為百分比
-                const getStatString = (value, unit) => {
-                    const sign = value >= 0 ? '+' : '';
-                    if (unit === '暴擊') {
-                        const percent = (value * 100).toFixed(1);
-                        return `${sign}${percent}% ${unit}`;
-                    }
-                    return `${sign}${value} ${unit}`;
-                };
-
-                if (item.attack) parts.push(getStatString(item.attack, 'ATK'));
-                if (item.hp) parts.push(getStatString(item.hp, 'HP'));
-                if (item.defense) parts.push(getStatString(item.defense, 'DEF'));
-                if (item.critChance) parts.push(getStatString(item.critChance, '暴擊率'));
-
-                statInfo = parts.join(', ');
-            } 
-            // 單一或主要屬性裝備
-            else {
-                // 優先處理暴擊率、攻擊、生命等單一屬性
-                if (item.critChance) {
-                    const sign = item.critChance >= 0 ? '+' : '';
-                    const critPercent = (item.critChance * 100).toFixed(1);
-                    statInfo = `${sign}${critPercent}% 暴擊率`;
-                }
-                else if (item.attack) statInfo = `${item.attack >= 0 ? '+' : ''}${item.attack} ATK`; 
-                else if (item.hp) statInfo = `${item.hp >= 0 ? '+' : ''}${item.hp} HP`; 
-                else if (item.heal) statInfo = `+${item.heal} 治療`;
-                else if (item.defense) statInfo = `${item.defense >= 0 ? '+' : ''}${item.defense} DEF`;
-            }
-
-            itemDiv.innerHTML = `${typeIcon} **${item.name}** (${statInfo}) `; // 顯示名稱和屬性
-            
-            // ----------------------------------------------------
-            // --- 裝備或使用按鈕 ---
-            const actionButton = document.createElement('button'); //
-            actionButton.style.marginLeft = '10px'; //
-
-            if (item.type === 'consumable') { //
-                actionButton.textContent = '使用'; //
-                actionButton.onclick = () => useConsumable(index); //
-            } else {
-                actionButton.textContent = '裝備'; //
-                actionButton.onclick = () => equipItem(index); //
-            }
-            itemDiv.appendChild(actionButton); //
-
-            // ----------------------------------------------------
-            // --- 販賣按鈕 ---
-            const sellPrice = item.value || 0; // 使用 item.value 作為基礎售價
-            if (sellPrice > 0) { //
-                const sellButton = document.createElement('button'); //
-                sellButton.textContent = `販賣 (${sellPrice} 💰)`; //
-                sellButton.style.marginLeft = '5px'; //
-                sellButton.style.backgroundColor = '#9b59b6'; // 販賣按鈕使用紫色
-                sellButton.onclick = () => handleSellItem(index, sellPrice); //
-
-                itemDiv.appendChild(sellButton); //
-            }
-            // ----------------------------------------------------
-            
-            elements.inventoryList.appendChild(itemDiv); //
-        });
+    if (player.inventory.length === 0) { 
+        elements.inventoryList.textContent = '你的背包裡空空的。'; 
+        return; 
     }
+
+    // 輔助函式 (保持不變)
+    const getStatString = (value, unit) => {
+        const sign = value >= 0 ? '+' : '';
+        if (unit === '暴擊率') {
+            const percent = (value * 100).toFixed(1);
+            return `${sign}${percent}% ${unit}`;
+        }
+        return `${sign}${value} ${unit}`;
+    };
+
+    player.inventory.forEach((item, index) => { 
+        const itemDiv = document.createElement('div'); 
+        itemDiv.classList.add('inventory-item'); 
+        
+        itemDiv.style.display = 'flex';
+        itemDiv.style.alignItems = 'center';
+        itemDiv.style.justifyContent = 'flex-start';
+        itemDiv.style.gap = '10px'; 
+
+        // ----------------------------------------------------
+        // --- 1. 動作按鈕容器 ---
+        // ----------------------------------------------------
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.flexShrink = '0'; 
+
+        // 裝備或使用按鈕
+        const actionButton = document.createElement('button');
+        if (item.type === 'consumable') { 
+            actionButton.textContent = '使用'; 
+            actionButton.onclick = () => useConsumable(index); 
+        } else {
+            actionButton.textContent = '裝備'; 
+            actionButton.onclick = () => equipItem(index); 
+        }
+        buttonContainer.appendChild(actionButton);
+
+        // 販賣按鈕
+        const sellPrice = item.value || 0; 
+        if (sellPrice > 0) { 
+            const sellButton = document.createElement('button'); 
+            sellButton.textContent = `販賣 (${sellPrice} 💰)`; 
+            sellButton.style.marginLeft = '5px'; 
+            sellButton.style.backgroundColor = '#9b59b6'; 
+            sellButton.onclick = () => handleSellItem(index, sellPrice); 
+            buttonContainer.appendChild(sellButton); 
+        }
+        
+        itemDiv.appendChild(buttonContainer);
+        
+        // ----------------------------------------------------
+        // --- 2. 道具資訊 Div (Item Info) ---
+        // ----------------------------------------------------
+        const itemInfoDiv = document.createElement('span');
+        itemInfoDiv.style.flexGrow = '1';
+        itemInfoDiv.style.textAlign = 'left';
+        
+        // --- 屬性計算邏輯 (保持不變) ---
+        let statInfo = '';
+        const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
+                         item.type === 'armor' ? '🛡️ 防具' : 
+                         item.type === 'necklace' ? '📿 項鍊' : 
+                         item.type === 'ring' ? '💍 戒指' : 
+                         item.type === 'helmet' ? '𪖈 頭盔' :     
+                         item.type === 'greaves' ? '👢 護脛' : 
+                         '🧪 藥水';
+
+        if (item.type === 'necklace' || item.type === 'ring') {
+            const parts = [];
+            if (item.attack) parts.push(getStatString(item.attack, 'ATK'));
+            if (item.hp) parts.push(getStatString(item.hp, 'HP'));
+            if (item.defense) parts.push(getStatString(item.defense, 'DEF'));
+            if (item.critChance) parts.push(getStatString(item.critChance, '暴擊率'));
+            statInfo = parts.join(', ');
+        } else {
+            if (item.critChance) {
+                statInfo = getStatString(item.critChance, '暴擊率');
+            }
+            else if (item.attack) statInfo = getStatString(item.attack, 'ATK'); 
+            else if (item.hp) statInfo = getStatString(item.hp, 'HP'); 
+            else if (item.heal) statInfo = `+${item.heal} 治療`;
+            else if (item.defense) statInfo = getStatString(item.defense, 'DEF');
+        }
+        
+        itemInfoDiv.innerHTML = `${typeIcon} **${item.name}** (${statInfo}) `; 
+        
+        itemDiv.appendChild(itemInfoDiv);
+        
+        // ----------------------------------------------------
+        
+        elements.inventoryList.appendChild(itemDiv); 
+    });
+}
 
 export function renderMaterialInventory() { //
     const list = elements.materialInventoryList; //

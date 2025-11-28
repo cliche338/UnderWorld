@@ -85,11 +85,7 @@ export function showUpdateLog() {
     const updateLog = `
         --------------------------------------------------------------------------
 
-        - 新增屬性 : 暴擊率
-        - 暴擊傷害為2倍
-        - 玩家基礎暴擊率為5%
-        - 怪物暴擊機率固定為40%
-        - 部分道具獲得暴擊率屬性
+        - 調整背包版面配置
         
     `;
     
@@ -97,7 +93,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none'; 
     }
 
-    const title = "V2.6 遊戲更新日誌";
+    const title = "V2.7 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 

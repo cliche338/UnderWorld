@@ -187,6 +187,14 @@ input:focus {
     padding-top: 5px;
 }
 
+#backpack-content-panel > button#close-inventory-btn {
+    /* 讓按鈕靠右顯示 */
+    display: block; 
+    margin-left: auto; /* ⭐ 關鍵：使用自動左邊距將其推到最右邊 */
+    margin-right: 0;
+    margin-top: 15px; /* 增加頂部間距 */
+}
+
 /* ========================================= */
 /* 04. 認證與功能按鈕區 (AUTH AREA & HUD) */
 /* ========================================= */
