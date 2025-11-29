@@ -1612,10 +1612,12 @@ export function handleRevive() {
 
     if (success) {
         setGameActive(true); 
-
+        
         State.player.depth = State.player.lastRestDepth;
         State.player.actionsSinceTown = 0; 
-        State.player.hp = State.player.maxHp; 
+        
+        const totalMaxHp = calculateTotalMaxHp();
+        State.player.hp = totalMaxHp; 
         
         logMessage(`✨ 復原成功！你回到了上一個城鎮 (深度 ${State.player.depth} 層)，生命值已恢復！`, 'green');
         
