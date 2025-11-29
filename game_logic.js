@@ -981,7 +981,7 @@ export function calculateTotalMaxHp() {
     let totalMaxHp = State.player.maxHp; 
 
     // 加上永久加成 (來自升級系統)
-    totalMaxHp += State.permanentData.hpBonus || 0; //
+    totalMaxHp += State.permanentData.hpBonus || 0;
 
     // 裝備加成 (這段保持不變)
     if (State.player.equipment.helmet) {
@@ -1005,7 +1005,9 @@ export function calculateTotalMaxHp() {
 }
 
 export function calculateTotalDefense() {
-    let totalDefense = State.player.defense; // 基礎+職業+永久加成
+    
+    let totalDefense = State.player.defense; 
+    totalDefense += State.permanentData.defenseBonus || 0;
 
     // 裝備加成
     if (State.player.equipment.helmet) {
@@ -1021,12 +1023,9 @@ export function calculateTotalDefense() {
 }
 
 export function calculateTotalAttack() {
-    
-    // 基礎攻擊力 (已包含在 State.player.attack 中)
+
     let totalAttack = State.player.attack; 
-    
-    // ⭐ 修正 ATK: 加上永久攻擊加成
-    totalAttack += State.permanentData.attackBonus || 0; 
+    totalAttack += State.permanentData.attackBonus || 0;
 
     // 裝備加成
     if (State.player.equipment.weapon) {
