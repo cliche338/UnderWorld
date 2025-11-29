@@ -114,8 +114,8 @@ export function loadGame() {
         console.log("GAME STATE: Found save data for user:", currentUsername);
         const loadedPlayer = JSON.parse(savedDataString);
         Object.assign(player, loadedPlayer);
-    
-        player.critChance = player.critChance || 0.05; 
+ 
+        player.critChance = player.critChance || baseCritChance; 
 
         logMessage("📂 載入進度成功。", 'lightgreen');
         return true;
