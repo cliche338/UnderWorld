@@ -717,15 +717,17 @@ export function getRandomMonster() {
     
     let weightedPool = [];
     
-    // 根據難度設定權重
     allAvailableMonsters.forEach(monster => {
         let weight = 0;
-        if (monster.difficulty === 2) {
-            weight = 5; 
-        } else if (monster.difficulty === 1) {
-            weight = 3; 
+        
+        if (monster.difficulty === 4) {
+            weight = 12; // Difficulty 3: 次高權重
         } else if (monster.difficulty === 3) {
-            weight = 2; 
+            weight = 8; // Difficulty 3: 次高權重
+        } else if (monster.difficulty === 2) {
+            weight = 4; // Difficulty 2: 中等權重
+        } else if (monster.difficulty === 1) {
+            weight = 2; // Difficulty 1: 最低權重
         }
         
         for (let i = 0; i < weight; i++) {
