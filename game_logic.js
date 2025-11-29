@@ -1530,8 +1530,9 @@ export function handleRest(isAuto = false) {
     }
     
     // 2. 執行治療
-    const healAmount = State.player.maxHp - State.player.hp;
-    State.player.hp = State.player.maxHp;
+    const totalMaxHp = calculateTotalMaxHp();
+    const healAmount = totalMaxHp - State.player.hp;
+    State.player.hp = totalMaxHp;
     
     // 3. 重置行動計數器並設定新目標
     State.player.actionsSinceTown = 0; 
