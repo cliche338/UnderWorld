@@ -579,14 +579,16 @@ export function handleExplore() {
     updateDisplay();
 }
 
-export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBonus, critChanceBonus) {
+export function startGame(className, hpBonus, attackBonus, defenseBonus, critChanceBonus, goldBonus,) {
     // 檢查狀態
     if (State.gameActive) return; 
 
     // 1. 設置基礎屬性 (使用 const 是安全的，因為它們只在這裡被讀取)
     const baseHp = 100;
     const baseAttack = 5;
+    const baseDefence = 0;
     const baseGold = 100;
+    const baseCrit = 0.05;
     
     // 2. 初始化 Run 數據 
     State.player.maxHp = baseHp + State.permanentData.hpBonus + hpBonus;
@@ -595,12 +597,11 @@ export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBon
     State.player.gold = baseGold + goldBonus;
     State.player.depth = 1;
     State.player.className = className;
-    State.player.defense = 0 + State.permanentData.defenseBonus + defenseBonus; 
-    State.player.critChance = 0.05 + critChanceBonus;
+    State.player.defense = baseDefence + State.permanentData.defenseBonus + defenseBonus; 
+    State.player.critChance = baseCrit + critChanceBonus;
     State.player.inventory = [];
     State.player.materials = {};
     State.player.goldAtLastRest = State.player.gold;
-    
     State.player.equipment = { 
         weapon: null, //武器
         helmet: null, //頭盔
@@ -610,6 +611,7 @@ export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBon
         ring: null, //戒指
     }; 
     
+
     // 3. 發放起始道具 
     STARTER_LOOT_IDS.forEach(itemId => { 
         const item = getItemById(itemId); 
@@ -633,7 +635,7 @@ export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBon
     saveGame(); 
 
     updateDisplay();
-    logMessage(`🎉 選擇了 ${className}！開始你的冒險，進入地牢第 ${State.player.depth} 層。`, 'lime');
+    logMessage(`🎉 選擇了 ${className}！開始你的冒險`, 'lime');
 }
 
 export function getRandomMonster() {
@@ -916,6 +918,8 @@ export function enterAdventureMode() {
     // 確保動作容器顯示
     if (elements.adventureActions) elements.adventureActions.style.display = 'block';
     if (elements.controlsArea) elements.controlsArea.style.display = 'block';
+    
+    // 確保 classSelection 被隱藏
     if (elements.classSelection) elements.classSelection.style.display = 'none';
 }
 

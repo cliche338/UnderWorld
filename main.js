@@ -12,10 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.logoutBtn.onclick = GameLogic.handleLogout;
 
     // 3. 綁定職業選擇 
-    //HP,ATK,GOLD,DEF,CRIT
-    elements.selectKnightBtn.onclick = () => GameLogic.startGame("騎士", 50, 0, 0, 20, 0); 
-    elements.selectMerchantBtn.onclick = () => GameLogic.startGame("商人", 0, 0, 200, 0, -0,20);
-    elements.selectThiefBtn.onclick = () => GameLogic.startGame("刺客", 0, 25, 0, 0, 0.20);
+    //HP, ATK, DEF, CRIT, GOLD
+    elements.selectKnightBtn.onclick = () => GameLogic.startGame("騎士", 50, 0, 20, 0, 0); 
+    elements.selectMerchantBtn.onclick = () => GameLogic.startGame("商人", 0, 0, 0, -0.20, 200);
+    elements.selectThiefBtn.onclick = () => GameLogic.startGame("刺客", 0, 25, 0, 0.20, 0);
 
     // 4. 綁定遊戲流程按鈕
     elements.exploreBtn.onclick = GameLogic.handleExplore; 
