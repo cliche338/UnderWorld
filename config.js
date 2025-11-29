@@ -59,9 +59,9 @@ export const MONSTERS = [
 export const ITEMS = [
 
     // 武器
-        { id: 'ori-broken-sword', name: '奧利哈鋼斷劍', type: 'weapon', attack: 60, critChance: 0.25, image: 'icon/weapon/ori_broken_sword.png',
+        { id: 'ori-broken-sword', name: '奧利哈鋼斷劍', type: 'weapon', attack: 60, critChance: 0.25, image: 'icon/weapon/ori-broken-sword.png',
                 value: 1500, price: 3700, rarity: 10, intro: '斷裂的聖劍'},
-        { id: 'ori-sword', name: '奧利哈鋼聖劍', type: 'weapon', attack: 220, critChance: 0.45, image: 'icon/weapon/ori_sword.png', 
+        { id: 'ori-sword', name: '奧利哈鋼聖劍', type: 'weapon', attack: 220, critChance: 0.45, image: 'icon/weapon/ori-sword.png', 
                 value: 1500, price: 3700, rarity: 10, intro: '修復完好的聖劍\n蘊含巨大能量'},
         { id: 'ori-god-sword', name: '奧利哈鋼之神劍-亞特蘭蒂斯', type: 'weapon', attack: 520, critChance: 0.60, image: 'icon/weapon/ori-god-sword.png', 
                 value: 1500, price: 3700, rarity: 10, intro: '蘊藏奧利哈鋼神力的劍\n是傲視群雄的存在'},
