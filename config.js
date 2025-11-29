@@ -255,8 +255,8 @@ export const ITEMS = [
                 value: 800, price: 1250, rarity: 7, intro: '鳳凰血液製成的藥劑\n些微繼承了鳳凰的恢復能力'},
         { id: 'c9', name: '涅槃藥劑', type: 'consumable', heal: 800, image: 'icon/consumable/c9.png',
                 value: 1500, price: 2800, rarity: 8, intro: '鳳凰血液製成的藥劑\n有效繼承了鳳凰的恢復能力'},
-        { id: 'c10', name: '賢者之心', type: 'consumable', defense: 500, image: 'icon/consumable/c10.png',
-                value: 3000, price: 5000, rarity: 9, intro: '古代賢者死後保存的心臟\n僅能給天選之人服用'},
+        { id: 'c10', name: '賢者之心', type: 'consumable', defense: 50, image: 'icon/consumable/c10.png',
+                value: 1700, price: 2400, rarity: 9, intro: '古代賢者死後保存的心臟\n僅能給天選之人服用'},
 
     ];
 

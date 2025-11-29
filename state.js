@@ -79,12 +79,14 @@ export function loadPermanentData() {
         permanentData.stones = parseInt(loadedData.stones) || 0;
         permanentData.hpBonus = parseInt(loadedData.hpBonus) || 0;
         permanentData.attackBonus = parseInt(loadedData.attackBonus) || 0;
+        permanentData.knownItems = Array.isArray(loadedData.knownItems) ? loadedData.knownItems : [];
 
     }else {
         // 新帳號或無存檔，則初始化為 0
         permanentData.stones = 0;
         permanentData.hpBonus = 0;
         permanentData.attackBonus = 0;
+        permanentData.knownItems = [];
     }
 }
 

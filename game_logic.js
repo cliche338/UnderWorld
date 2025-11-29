@@ -1622,20 +1622,18 @@ export function initializeGame() {
         enterTownMode(); 
         
     } else {
-        // ⭐ 修正點：無存檔，進入職業選擇模式
         logMessage("歡迎來到地下城冒險！請選擇你的職業來創建新角色。", 'white');
         
-        // 確保在調用 enterSelectionMode 前，player 狀態是乾淨的
         const initialPlayerState = { 
             hp: 0, maxHp: 0, attack: 0, defense: 0, gold: 0, depth: 0, className: "", 
             equipment: { weapon: null, helmet: null, armor: null, greaves: null, necklace: null, ring: null }, 
             inventory: [], materials: {}, goldAtLastRest: 0,
             actionsSinceTown: 0, actionsToTownRequired: 0,
-            critChance: 0.05 // 基礎暴擊率
+            critChance: 0.05
         };
         Object.assign(State.player, initialPlayerState); 
         
-        enterSelectionMode(); // 呼叫輔助函式設定 UI
+        enterSelectionMode();
     }
 
     updateDisplay();
