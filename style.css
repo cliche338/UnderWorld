@@ -409,66 +409,77 @@ input:focus {
 /* 07. 手機/小螢幕優化 (MOBILE OPTIMIZATION) */
 /* ========================================= */
 
-/* 當螢幕寬度小於或等於 900px 時應用 */
 @media (max-width: 900px) {
     
-    /* 1. 全域容器調整：減少邊緣填充，佔滿寬度 */
-    body {
-    font-family: "Cinzel", "Segoe UI", Arial, sans-serif;
-    background: #0d0d0d repeat;
-    background-size: cover;
-    margin: 0; 
-    display: flex;
-    justify-content: center;
-    padding: 25px;
-    color: #f7f3e9;
-    min-height: 100vh;
-    align-items: flex-start;
-}
+    /* 1. 全域容器調整：移除不必要的 padding，並確保 body 佔滿高度 */
+    body { 
+        padding: 5px; /* ⭐ 修正：將 padding 減少到最小 */
+        min-height: 100vh;
+        align-items: flex-start;
+        /* 移除 font-family, background 等全域屬性 */
+    }
 
-
+    /* 2. 遊戲主容器：確保佔滿寬度，並將高度計算修正為減去 2*body-padding */
     .game-container {
         width: 100%;
-        padding: 10px;
+        padding: 5px; /* 最小化內部填充 */
         max-width: unset;
         box-shadow: none; 
-        min-height: calc(100vh - 20px);
+        box-sizing: border-box; /* ⭐ 確保使用 border-box */
+        /* min-height: calc(100vh - 10px); 由於 body padding 是 5px，總減去 10px */
     }
 
-    /* 2. 核心佈局切換：將橫向 Flex 佈局切換為垂直堆疊 */
+    /* 3. 核心佈局切換：垂直堆疊 (Flex Direction) */
     .game-layout {
-        flex-direction: column; /* 垂直堆疊 */
-        gap: 10px; 
+        flex-direction: column; 
+        gap: 5px; /* ⭐ 減少區塊間距 */
         width: 100%;
     }
 
-    /* 3. 主要區塊屬性重置與排序 (ORDER FIX) */
+    /* 4. 主要區塊屬性重置與排序 */
     #status-display,
     #hub-area,
     #log-and-controls-group,
-    .right-panel {
+    .panel { /* 將 .panel 設為 border-box */
+        box-sizing: border-box; 
         flex: none; 
-        min-width: unset;
+        min-width: unset !important;
         max-height: unset;
         width: 100%; 
+        padding: 10px; /* 恢復基礎面板填充 */
     }
     
-    #status-display { order: 1; } /* 狀態區：排在第一個位置 (頂部) */
-    #hub-area { order: 2; }       /* 城鎮區：排在第二個位置 */
-    #log-and-controls-group { order: 3; } /* 日誌與控制群組：排在最後一個位置 (底部) */
+    /* ⭐ 排序 (ORDER FIX) */
+    #status-display { order: 1; } 
+    #hub-area { order: 2; } 
+    #log-and-controls-group { order: 3; } 
 
-    .panel,
-    #status-display,
-    #hub-area,
-    #log-and-controls-group {
-        box-sizing: border-box; /* 確保 padding 和 border 包含在 width 100% 內 */
-        width: 100%;
-        min-width: unset !important;
+    /* 5. 遊戲日誌調整 (縮小高度以適應單頁顯示) */
+    #game-log {
+        height: 180px; /* ⭐ 調整日誌高度，騰出空間 */
+        margin-bottom: 5px; 
+        padding: 5px;
     }
 
-    /* 4. 內嵌面板修正：處理擠壓問題 */
-
-    /* 耀魂石兌換所：確保輸入框和按鈕在手機上換行 */
+    /* 6. 按鈕調整 (統一且精簡) */
+    button,
+    input[type="button"],
+    input[type="submit"],
+    #controls-area button,
+    #adventure-actions button,
+    #class-selection button {
+        box-sizing: border-box; 
+        width: 100%; 
+        min-width: unset;
+        display: block; 
+        font-size: 0.9em; /* ⭐ 縮小字體 */
+        padding: 8px 10px; /* 調整填充 */
+        margin-bottom: 3px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* 7. 內嵌面板修正 (防止輸入框擠壓) */
     #stone-exchange {
         display: flex;
         flex-direction: column; 
@@ -480,69 +491,18 @@ input:focus {
         width: 100%;
         margin-bottom: 5px !important;
     }
-
-    /* 5. 遊戲日誌調整 */
-    #game-log {
-        height: 250px; 
-        margin-bottom: 10px; 
-    }
     
-    /* 6. 按鈕寬度調整：讓所有行動按鈕佔滿全寬 */
-    button,
-    input[type="button"],
-    input[type="submit"],
-    #controls-area button,
-    #adventure-actions button {
-        min-width: 100%; 
-        margin-bottom: 5px !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-    
-    /* 7. 登入/帳號區塊優化 (防止並排擠壓) */
+    /* 8. 登入/帳號區塊優化 */
     #auth-area > div:first-child {
         flex-direction: column; 
         align-items: flex-start;
     }
     
-    /* 8. 城鎮升級按鈕佈局調整 (確保佔滿全寬) */
+    /* 9. 城鎮升級按鈕佈局調整 */
     #hub-area > div:last-child {
         flex-wrap: wrap; 
         justify-content: flex-start;
         gap: 5px;
     }
     
-    #hub-area > div:last-child > button[id^="upgrade-"] {
-        width: 100%;
-        min-width: unset;
-        margin-left: 0;
-        margin-right: 0;
-    }
-
-    /* 9. 職業選擇按鈕調整 */
-    #class-selection button {
-        width: 100%;
-    }
-
-    button,
-    input[type="button"],
-    input[type="submit"],
-    #controls-area button,
-    #adventure-actions button,
-    #class-selection button {
-        box-sizing: border-box; /* 讓 padding 和 border 包含在 width 內 */
-        width: 100%; 
-        min-width: unset;
-        margin-bottom: 5px !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        /* 由於您的按鈕可能沒有設置 display: block，在這裡加上 */
-        display: block; 
-    }
-    
-    /* ⭐ 關鍵修正 B: 確保按鈕所在的父容器有足夠的填充 */
-    #adventure-actions,
-    #controls-area {
-        padding: 10px; /* 確保父容器有填充，防止按鈕緊貼邊緣 */
-    }
 }
