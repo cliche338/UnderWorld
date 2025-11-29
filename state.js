@@ -107,6 +107,7 @@ export function loadGame() {
     const savedDataString = localStorage.getItem(uniqueSaveKey);
 
     if (savedDataString) {
+
         console.log("GAME STATE: Found save data for user:", currentUsername);
         
         const loadedPlayer = JSON.parse(savedDataString);
@@ -114,16 +115,14 @@ export function loadGame() {
     
         const baseHp = 150;
         const baseAttack = 15;
-        const baseDefense = 10;
+        const baseDefense = 10; 
         const baseCritChance = 0.05;
         
         player.attack = baseAttack + permanentData.attackBonus;
-        player.defense = baseDefense + permanentData.defenseBonus; // 使用 baseDefense
+        player.defense = baseDefense + permanentData.defenseBonus; // 修正：必須加上 baseDefense
         player.maxHp = baseHp + permanentData.hpBonus;
         
-        // 確保 player.critChance 不低於基礎值
-        player.critChance = player.critChance > baseCritChance ? player.critChance : baseCritChance; 
-
+        player.critChance = player.critChance || baseCritChance; 
 
         logMessage("📂 載入進度成功。", 'lightgreen');
         return true;
