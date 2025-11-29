@@ -1045,19 +1045,17 @@ export function handleUpgradeAttack() {
     const attackIncrease = 5;
 
     if (State.permanentData.stones >= cost) {
-        // 1. 扣除費用
+        // 扣除費用
         State.permanentData.stones -= cost;
         State.permanentData.attackBonus += attackIncrease;
-        
-        // 2. 更新玩家狀態 (attack)
-        State.player.attack += attackIncrease;
 
-        // 3. 儲存遊戲和永久數據
+        // 儲存遊戲和永久數據
         State.savePermanentData();
         State.saveGame();
 
-        // 4. 更新介面和日誌
-        logMessage(`⚔️ 永久 攻擊 升級成功！ATK +${attackIncrease}，目前 ATK: ${State.player.attack}。`, 'yellow');
+        // 更新介面和日誌
+        const newTotalAttack = calculateTotalAttack(); 
+        logMessage(`⚔️ 永久 攻擊 升級成功！ATK +${attackIncrease}，目前 ATK: ${newTotalAttack}。`, 'yellow');
         updateDisplay();
     } else {
         logMessage(`❌ 您的耀魂石不足 (需要 ${cost} 💎)。`, 'red');
@@ -1069,20 +1067,18 @@ export function handleUpgradeDefense() {
     const defenseIncrease = 5;
 
     if (State.permanentData.stones >= cost) {
-        // 1. 扣除費用
+        // 扣除費用
         State.permanentData.stones -= cost;
         State.permanentData.defenseBonus += defenseIncrease;
-        
-        // 2. 更新玩家狀態 (defense)
-        State.player.defense += defenseIncrease;
 
-        // 3. 儲存遊戲和永久數據
+        // 儲存遊戲和永久數據
         State.savePermanentData();
         State.saveGame();
 
-        // 4. 更新介面和日誌
-        logMessage(`🛡️ 永久 防禦 升級成功！DEF +${defenseIncrease}，目前 DEF: ${State.player.defense}。`, 'yellow');
-        updateDisplay();
+        // 更新介面和日誌
+        const newTotalDefense = calculateTotalDefense(); // 獲取正確的總值
+        logMessage(`🛡️ 永久 防禦 升級成功！DEF +${defenseIncrease}，目前 DEF: ${newTotalDefense}。`, 'yellow');
+        updateDisplay()
     } else {
         logMessage(`❌ 您的奧術魔石不足 (需要 ${cost} 💎)。`, 'red');
     }

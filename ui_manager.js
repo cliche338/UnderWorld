@@ -315,7 +315,7 @@ export function updateDisplay() {
     const totalAttack = calculateTotalAttack();
     const totalDefense = calculateTotalDefense();
 
-    player.hp = Math.min(player.hp, player.maxHp); 
+    player.hp = Math.min(player.hp, totalMaxHp);
 
     // 2. 核心數值更新
     elements.hpValue.textContent = Math.round(player.hp);
