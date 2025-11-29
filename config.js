@@ -229,7 +229,7 @@ export const ITEMS = [
                 value: 40, price: 100, rarity: 2, intro: '藥效更強的藥水\n相對有效地治癒傷口'},
         { id: 'c3', name: '醫療箱', type: 'consumable', heal: 200, image: 'icon/consumable/c3.png',
                 value: 150, price: 350, rarity: 4, intro: '完整配置的醫療組\n可以大幅修復身上各處傷口'},
-        { id: 'c4', name: '普通藥草', type: 'consumable', heal: 30, image: 'icon/consumable/c4.png',
+        { id: 'c4', name: '普通藥草', type: 'consumable', heal: 40, image: 'icon/consumable/c4.png',
                 value: 40, price: 75, rarity: 1, intro: '路邊採摘的藥草\n可以簡單止血'},
         { id: 'c5', name: '大回復藥劑', type: 'consumable', heal: 120, image: 'icon/consumable/c5.png',
                 value: 150, price: 280, rarity: 3, intro: '500mL的藥水\n很甜很有用'},
