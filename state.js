@@ -115,17 +115,7 @@ export function loadGame() {
         const loadedPlayer = JSON.parse(savedDataString);
         Object.assign(player, loadedPlayer);
     
-        const baseHp = 150;
-        const baseAttack = 15;
-        const baseDefense = 10;
-        const baseCritChance = 0.05;
-
-
-        player.attack = baseAttack + permanentData.attackBonus;
-        player.defense = baseDefense + permanentData.defenseBonus;
-        player.maxHp = baseHp;
-        
-        player.critChance = player.critChance || baseCritChance;
+        player.critChance = player.critChance || 0.05; 
 
         logMessage("📂 載入進度成功。", 'lightgreen');
         return true;
