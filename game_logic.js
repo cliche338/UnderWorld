@@ -548,7 +548,7 @@ export function handleExplore() {
     
     // 4. 記錄進入的層數
     const needed = State.player.actionsToTownRequired - State.player.actionsSinceTown;
-    logMessage(`--- 進入地城第 ${State.player.depth} 層 (需再行動 ${needed} 次才能返回城鎮) ---`, 'cyan'); 
+    logMessage(`- 進入地城第 ${State.player.depth} 層 (需再行動 ${needed} 次才能返回城鎮) -`, 'cyan'); 
     
     // 5. 隨機事件生成與執行
     const eventChance = Math.random(); 
