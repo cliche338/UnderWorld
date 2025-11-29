@@ -67,21 +67,22 @@ export function saveAccounts(accounts) {
 export function loadPermanentData() {
     if (!currentUsername) return; 
     
-    // 步驟 1: 建立該用戶專屬的永久數據 KEY
     const uniquePermKey = PERM_SAVE_KEY + '_' + currentUsername;
     const savedDataString = localStorage.getItem(uniquePermKey);
 
     if (savedDataString) {
-        // 成功載入，將數據寫入 permanentData
         const loadedData = JSON.parse(savedDataString);
         
-        // 【關鍵修正：使用 parseInt 確保數據是數字，如果解析失敗則設為 0】
+        // 確保數值是數字
         permanentData.stones = parseInt(loadedData.stones) || 0;
-        permanentData.hpBonus = parseInt(loadedData.hpBonus) || 0;
+        permanentData.hpBonus = parseInt(loadedData.hpBonus) || 0; 
         permanentData.attackBonus = parseInt(loadedData.attackBonus) || 0;
         permanentData.defenseBonus = parseInt(loadedData.defenseBonus) || 0; 
-        permanentData.critChanceBonus = parseFloat(loadedData.critChanceBonus) || 0; // 假設新增了這個屬性
+        permanentData.critChanceBonus = parseFloat(loadedData.critChanceBonus) || 0;
         permanentData.knownItems = Array.isArray(loadedData.knownItems) ? loadedData.knownItems : [];
+
+        // ✅ 新增診斷日誌！
+        console.log("DIAGNOSTICS: Loaded permanent HP Bonus:", permanentData.hpBonus, "Type:", typeof permanentData.hpBonus);
 
     } else {
         // 新帳號或無存檔，則初始化為 0
