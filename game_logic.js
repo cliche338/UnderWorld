@@ -1053,15 +1053,13 @@ export function handleUpgradeDefense() {
     }
     
     State.permanentData.stones -= UPGRADE_COST;
-    State.permanentData.defenseBonus += 5; // 更新永久數據
-
-    // 套用即時效果到當前 Run Data
+    State.permanentData.defenseBonus += 5; 
+    
     State.player.defense += 5; 
 
     logMessage(`🛡️ 永久防禦力 +5 成功！[當前加成: +${State.permanentData.defenseBonus}]`, 'lightgreen');
-    savePermanentData(); // 儲存永久數據
-
-    updateDisplay(); // 統一更新畫面
+    savePermanentData(); 
+    updateDisplay(); 
 }
 
 export function calculateTotalCritChance() {
