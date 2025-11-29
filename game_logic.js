@@ -982,28 +982,39 @@ export function enterDeathMode() {
 }
 
 export function calculateTotalMaxHp() {
-    let totalMaxHp = State.player.maxHp; // 基礎值 + 永久加成
+    let totalMaxHp = State.player.maxHp; // 基礎+職業+永久加成
 
     // 裝備加成
-    for (const slot in State.player.equipment) {
-        const item = State.player.equipment[slot];
-        if (item && item.hp) {
-            totalMaxHp += item.hp;
-        }
+    if (State.player.equipment.helmet) {
+        totalMaxHp += State.player.equipment.helmet.hp || 0;
     }
-    // 確保 maxHp 不會是負數（雖然不太可能）
-    return Math.max(1, totalMaxHp);
+    if (State.player.equipment.armor) {
+        totalMaxHp += State.player.equipment.armor.hp || 0;
+    }
+    if (State.player.equipment.greaves) {
+        totalMaxHp += State.player.equipment.greaves.hp || 0;
+    }
+    if (State.player.equipment.necklace) {
+        totalMaxHp += State.player.equipment.necklace.hp || 0;
+    }
+    if (State.player.equipment.ring) {
+        totalMaxHp += State.player.equipment.ring.hp || 0;
+    }
+    return totalMaxHp;
 }
 
 export function calculateTotalDefense() {
-    let totalDefense = State.player.defense; // 基礎值 + 永久加成
+    let totalDefense = State.player.defense; // 基礎+職業+永久加成
 
     // 裝備加成
-    for (const slot in State.player.equipment) {
-        const item = State.player.equipment[slot];
-        if (item && item.defense) {
-            totalDefense += item.defense;
-        }
+    if (State.player.equipment.helmet) {
+        totalDefense += State.player.equipment.helmet.defense || 0;
+    }
+    if (State.player.equipment.armor) {
+        totalDefense += State.player.equipment.armor.defense || 0;
+    }
+    if (State.player.equipment.greaves) {
+        totalDefense += State.player.equipment.greaves.defense || 0;
     }
     return totalDefense;
 }
@@ -1153,22 +1164,19 @@ export function handleAttack() {
 }
 
 export function handleUpgradeHp() {
-    
     if (State.permanentData.stones < UPGRADE_COST) {
         logMessage(`❌ 耀魂石不足，需要 ${UPGRADE_COST} 💎。`, 'red');
         return;
     }
     
-    State.permanentData.stones -= UPGRADE_COST; 
+    State.permanentData.stones -= UPGRADE_COST;
     State.permanentData.hpBonus += 5; 
+    
+    State.player.maxHp += 5;
+    State.player.hp += 5;
 
-    // 【關鍵修正：立即將永久加成套用到當前角色】
-    State.player.maxHp += 5; 
-    State.player.hp = State.player.maxHp; // 順便補滿血
-
-    logMessage(`❤️ 永久 HP 上限 +5 成功！[當前加成: +${State.permanentData.hpBonus}]`, 'lightgreen');
+    logMessage(`❤️ 永久 HP+5 成功！[當前加成: +${State.permanentData.hpBonus}]`, 'lightgreen');
     savePermanentData(); 
-
     updateDisplay(); 
 }
 
