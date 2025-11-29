@@ -1310,7 +1310,6 @@ export function setNewTownGoal() {
 }
 
 export function renderShop() {
-    
     elements.shopInventoryList.innerHTML = ''; 
 
     // 獲取當前的動態清單 (從 game_logic.js 頂部定義)
@@ -1321,6 +1320,17 @@ export function renderShop() {
         return;
     }
     
+    // 輔助函式 (假設存在於作用域內)
+    const getStatString = (value, unit) => {
+        const sign = value >= 0 ? '+' : '';
+        if (unit === '暴擊率') {
+            const percent = (value * 100).toFixed(1);
+            return `${sign}${percent}% ${unit}`;
+        }
+        return `${sign}${value} ${unit}`;
+    };
+    // -----------------------------------------------------------------
+
     // 遍歷清單，同時獲取索引 (index)
     shopList.forEach((itemId, index) => { 
         const item = getItemById(itemId); 
@@ -1329,60 +1339,69 @@ export function renderShop() {
         const shopDiv = document.createElement('div');
         shopDiv.classList.add('shop-item');
 
+        // 設置 Flex 佈局
+        shopDiv.style.display = 'flex';
+        shopDiv.style.alignItems = 'center';
+        shopDiv.style.justifyContent = 'space-between';
+
         const displayType = item.type === 'weapon' ? '⚔️ 武器' : 
                             item.type === 'armor' ? '🛡️ 胸甲' : 
                             item.type === 'necklace' ? '📿 項鍊' : 
                             item.type === 'ring' ? '💍 戒指' : 
-                            item.type === 'helmet' ? '🪖 頭盔' :     
-                            item.type === 'greaves' ? '👖 護脛' :   
+                            item.type === 'helmet' ? '🪖 頭盔' :
+                            item.type === 'greaves' ? '👢 護脛' : 
                             '🧪 藥水';
 
         let displayStat = '';
-        if (item.type === 'necklace' || item.type === 'ring') {
-            // 項鍊/戒指
-            const parts = [];
-            if (item.attack) parts.push(`${item.attack > 0 ? '+' : ''}${item.attack} ATK`);
-            if (item.hp) parts.push(`${item.hp > 0 ? '+' : ''}${item.hp} HP`);
-            if (item.defense) parts.push(`${item.defense > 0 ? '+' : ''}${item.defense} DEF`);
-            if (item.critChance) {
-                
-                const sign = item.critChance >= 0 ? '+' : '';
-                const critPercent = (item.critChance * 100).toFixed(1);
-                parts.push(`${sign}${critPercent}% 暴擊率`);
-            }
+        const parts = []; // 統一使用 parts 陣列收集屬性
 
-            displayStat = parts.join(', ');
-        } else {
-            // 武器/防具/消耗品
-            if (item.attack) displayStat = `${item.attack > 0 ? '+' : ''}${item.attack} ATK`;
-            else if (item.hp) displayStat = `${item.hp > 0 ? '+' : ''}${item.hp} HP`; 
-            else if (item.heal) displayStat = `+${item.heal} 治療`;
-            else if (item.defense) displayStat = `${item.defense > 0 ? '+' : ''}${item.defense} DEF`;
-            else if (item.critChance) {
-                const sign = item.critChance >= 0 ? '+' : '';
-                const critPercent = (item.critChance * 100).toFixed(1);
-                parts.push(`${sign}${critPercent}% 暴擊率`);
-            }
+        // 檢查所有裝備類型可能擁有的屬性
+        if (item.attack) parts.push(getStatString(item.attack, '攻'));
+        if (item.hp) parts.push(getStatString(item.hp, '生命'));
+        if (item.defense) parts.push(getStatString(item.defense, '防禦'));
+        if (item.critChance) parts.push(getStatString(item.critChance, '暴擊率'));
+        if (item.heal) parts.push(`+${item.heal} 治療`); // 治療屬性
 
-            else displayStat = '';
-        }
+        displayStat = parts.join(', ');
 
-        shopDiv.innerHTML = `${displayType}: *${item.name}* (${displayStat}) 價格: *${item.price}* 💰`;
+        // 只在 displayStat 有內容時才顯示括號
+        const statHtml = displayStat ? ` (${displayStat})` : ''; 
 
+        // ----------------------------------------------------
+        // ⭐ 修正 1: 創建按鈕並追加到左側
+        // ----------------------------------------------------
         const buyButton = document.createElement('button');
         buyButton.textContent = '購買';
-        buyButton.style.marginLeft = '10px';
-        
-        // 🚨 關鍵：綁定購買按鈕到 handleBuyItem
+        buyButton.style.flexShrink = '0'; // 防止按鈕被擠壓
+        buyButton.style.order = '1'; // 確保按鈕在左側
         buyButton.onclick = () => handleBuyItem(item.id, index); 
 
-        // 檢查是否在地城中 (如果 actionsSinceTown > 0，則按鈕禁用)
+        // 關鍵：將按鈕追加到 shopDiv
+        shopDiv.appendChild(buyButton);
+
+        // ----------------------------------------------------
+        // ⭐ 修正 2: 創建 Span 來包裹資訊 (右側)
+        // ----------------------------------------------------
+        const itemInfoSpan = document.createElement('span');
+        itemInfoSpan.innerHTML = `${displayType}: *${item.name}*${statHtml} 價格: *${item.price}* 💰`;
+        
+        itemInfoSpan.style.flexGrow = '1'; // 佔據剩餘空間
+        itemInfoSpan.style.textAlign = 'left'; // 讓文字靠右對齊
+        itemInfoSpan.style.marginLeft = '10px'; // 與按鈕保持間距
+        itemInfoSpan.style.order = '2'; // 確保資訊在右側
+        
+        // 關鍵：將資訊追加到 shopDiv
+        shopDiv.appendChild(itemInfoSpan);
+
+        // ----------------------------------------------------
+        // 檢查是否在地城中 (按鈕禁用邏輯)
+        // ----------------------------------------------------
         if (State.player.actionsSinceTown > 0) {
             buyButton.disabled = true;
             shopDiv.style.opacity = '0.5';
         }
 
-        shopDiv.appendChild(buyButton);
+        // 將 shopDiv 加入清單
         elements.shopInventoryList.appendChild(shopDiv);
     });
 }
