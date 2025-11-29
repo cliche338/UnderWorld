@@ -530,6 +530,21 @@ export function handleExplore() {
     if (!gameActive) { logMessage("請先選擇職業開始冒險！", 'red'); return; }
     if (isCombatActive) return;
 
+    const nextDepth = State.player.depth + 1;
+    const isBossLayer = nextDepth > 0 && 
+                        (nextDepth % 25 === 0 || nextDepth % 20 === 0);
+                        
+    // ⭐ 關鍵修正 A: Boss 優先級判定
+    // 檢查下一層是否為 Boss 樓層，且當前回城計數器已滿
+    if (isBossLayer) {
+        if (State.player.actionsSinceTown >= State.player.actionsToTownRequired) {
+            
+            // 讓行動計數器減 1，防止自動回城邏輯觸發
+            State.player.actionsSinceTown = State.player.actionsToTownRequired - 1;
+            logMessage("🚨 注意！ Boss 就在眼前，先完成戰鬥才能返回城鎮！", 'orange');
+        }
+    }
+
     // 1. 更新深度和行動計數
     State.player.actionsSinceTown++;
     State.player.depth++; 
@@ -548,38 +563,44 @@ export function handleExplore() {
     
     // 4. 記錄進入的層數
     const needed = State.player.actionsToTownRequired - State.player.actionsSinceTown;
-    logMessage(`- 進入地城第 ${State.player.depth} 層 (需再行動 ${needed} 次才能返回城鎮) -`, 'cyan'); 
+    logMessage(`--- 進入地城第 ${State.player.depth} 層 (需再行動 ${needed} 次才能返回城鎮) ---`, 'cyan'); 
     
     // 5. 隨機事件生成與執行
     const eventChance = Math.random(); 
     let eventHappened = false; 
 
-    // 檢查是否為 Boss 樓層 (20的倍數)】
-    const isBossLayer = State.player.depth > 0 && 
-                        (State.player.depth % 25 === 0 || State.player.depth % 20 === 0);
-
-    // 5a. 戰鬥事件 (Boss 樓層必須戰鬥，或有 75% 機率戰鬥)
-    if (isBossLayer || eventChance < 0.75) { 
-        startCombat();
+    // ⭐ 關鍵修正 B: Boss 樓層強制戰鬥
+    if (isBossLayer) { 
+        startCombat(); // Boss 樓層直接執行戰鬥
         eventHappened = true;
     } 
-    // 5b. 非戰鬥事件 (只有在非 Boss 樓層且隨機檢查失敗時才執行)
-    else if (eventChance < 0.85) { 
-        // 找到金幣
-        const foundGold = Math.floor(Math.random() * 20) + 10;
-        State.player.gold += foundGold;
-        logMessage(`💰 你找到了 ${foundGold} 金幣。`, 'yellow');
-        eventHappened = true;
-    } else if (eventChance < 0.95) { 
-        // 找到裝備！
-        const newItem = getLootItem(); 
-        if (newItem) {
-             addItemToInventory(newItem); 
-             eventHappened = true;
+    
+    // 5b. 非 Boss 樓層的普通隨機事件判定
+    if (!eventHappened) { 
+        
+        if (eventChance < 0.75) { 
+            // 75% 機率戰鬥
+            startCombat();
+            eventHappened = true;
+        } 
+        else if (eventChance < 0.85) { 
+            // 找到金幣 (10% 機率)
+            const foundGold = Math.floor(Math.random() * 20) + 10;
+            State.player.gold += foundGold;
+            logMessage(`💰 你找到了 ${foundGold} 金幣。`, 'yellow');
+            eventHappened = true;
+        } else if (eventChance < 0.95) { 
+            // 找到裝備 (10% 機率)
+            const newItem = getLootItem(); 
+            if (newItem) {
+                 addItemToInventory(newItem); 
+                 eventHappened = true;
+            }
+        } else { 
+            // 5% 機率空手而歸
+            logMessage("💨 什麼都沒有，繼續向下探索。", 'white');
+            eventHappened = true;
         }
-    } else { 
-        logMessage("💨 什麼都沒有，繼續向下探索。", 'white');
-        eventHappened = true;
     }
 
     // 6. 檢查生命值
