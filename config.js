@@ -52,8 +52,8 @@ export const MONSTERS = [
 
     // 世界級 Boss
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 37373, attack: 377, defense: 377, goldReward: 370, difficulty: 10, isBoss: true },
-        { id: 'ori-body', name: "奧利哈鋼之軀", hp: 700700, attack: 777, defense: 777, goldReward: 370, difficulty: 10, isBoss: true },
-        { id: 'ori-god', name: "奧利哈鋼之神", hp: 777777777, attack: 77777, defense: 7777, goldReward: 7777, difficulty: 10, isBoss: true },
+        { id: 'ori-body', name: "奧利哈鋼之軀", hp: 73737, attack: 777, defense: 777, goldReward: 370, difficulty: 10, isBoss: true },
+        { id: 'ori-god', name: "奧利哈鋼之神", hp: 77777777, attack: 77777, defense: 7777, goldReward: 7777, difficulty: 10, isBoss: true },
      ];   
 
 export const ITEMS = [
