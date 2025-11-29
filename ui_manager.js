@@ -120,7 +120,7 @@ export function renderInventoryList() {
         return; 
     }
 
-    // 輔助函式
+    // 輔助函式：確保正確的正負號，並轉換暴擊率為百分比 (保持不變)
     const getStatString = (value, unit) => {
         const sign = value >= 0 ? '+' : '';
         if (unit === '暴擊率') {
@@ -134,13 +134,14 @@ export function renderInventoryList() {
         const itemDiv = document.createElement('div'); 
         itemDiv.classList.add('inventory-item'); 
         
+        // ⭐ 修正點 1: 設置 Flex 佈局 (按鈕在左，資訊在右)
         itemDiv.style.display = 'flex';
         itemDiv.style.alignItems = 'center';
         itemDiv.style.justifyContent = 'flex-start';
         itemDiv.style.gap = '10px'; 
 
         // ----------------------------------------------------
-        // --- 1. 動作按鈕容器 ---
+        // --- 1. 動作按鈕容器 (左側) ---
         // ----------------------------------------------------
         const buttonContainer = document.createElement('div');
         buttonContainer.style.display = 'flex';
@@ -168,53 +169,54 @@ export function renderInventoryList() {
             buttonContainer.appendChild(sellButton); 
         }
         
+        // 修正點 2: 先追加按鈕容器 (按鈕在左)
         itemDiv.appendChild(buttonContainer);
         
         // ----------------------------------------------------
-        // --- 2. 道具資訊 Div (Item Info) ---
+        // --- 2. 道具資訊 Div (Item Info - 右側) ---
         // ----------------------------------------------------
         const itemInfoDiv = document.createElement('span');
-        itemInfoDiv.style.flexGrow = '1';
-        itemInfoDiv.style.textAlign = 'left';
+        itemInfoDiv.style.flexGrow = '1'; /* 佔據所有剩餘空間 */
+        itemInfoDiv.style.textAlign = 'left'; /* 文字緊跟在按鈕後 */
         
-        // --- 屬性計算邏輯 ---
-        let statInfo = '';
+        // --- 圖片/圖示邏輯 ---
         let itemDisplayHtml = '';
         if (item.image) {
             // 如果有圖片路徑，則使用 <img> 標籤
-            // 設置圖片尺寸為 20x20 像素（比圖鑑小，以適應清單）
-            itemDisplayHtml = `<img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: contain; vertical-align: middle; margin-right: 5px;">`;
-        } else {const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
-                         item.type === 'armor' ? '🛡️ 防具' : 
-                         item.type === 'necklace' ? '📿 項鍊' : 
-                         item.type === 'ring' ? '💍 戒指' : 
-                         item.type === 'helmet' ? '🪖 頭盔' :     
-                         item.type === 'greaves' ? '👢 護脛' : 
-                         '🧪 藥水';}
-
-        if (item.type === 'necklace' || item.type === 'ring') {
-            const parts = [];
-            if (item.attack) parts.push(getStatString(item.attack, 'ATK'));
-            if (item.hp) parts.push(getStatString(item.hp, 'HP'));
-            if (item.defense) parts.push(getStatString(item.defense, 'DEF'));
-            if (item.critChance) parts.push(getStatString(item.critChance, '暴擊率'));
-            statInfo = parts.join(', ');
+            itemDisplayHtml = `<img src="${item.image}" alt="${item.name}" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle; margin-right: 5px;">`;
         } else {
-            if (item.critChance) {
-                statInfo = getStatString(item.critChance, '暴擊率');
-            }
-            else if (item.attack) statInfo = getStatString(item.attack, 'ATK'); 
-            else if (item.hp) statInfo = getStatString(item.hp, 'HP'); 
-            else if (item.heal) statInfo = `+${item.heal} 治療`;
-            else if (item.defense) statInfo = getStatString(item.defense, 'DEF');
-        }
+             // 如果沒有圖片，使用通用圖示
+             const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
+                         item.type === 'armor' ? '🛡️ 防具' : 
+                         item.type === 'necklace' ? '📿 項鍊' : 
+                         item.type === 'ring' ? '💍 戒指' : 
+                         item.type === 'helmet' ? '𪖈 頭盔' :     
+                         item.type === 'greaves' ? '👢 護脛' : 
+                         '🧪 藥水';
+             itemDisplayHtml = `<span style="font-size: 1.2em; margin-right: 5px; vertical-align: middle;">${typeIcon}</span>`;
+        }
         
-        itemInfoDiv.innerHTML = `${itemDisplayHtml} **${item.name}** (${statInfo}) `;
-        
-        itemDiv.appendChild(itemInfoDiv);
-        
-        elements.inventoryList.appendChild(itemDiv); 
-    });
+        // --- 屬性計算邏輯 (所有裝備都使用多屬性收集) ---
+        const parts = [];
+        
+        // 檢查所有裝備類型可能擁有的屬性，並將其全部加入 parts 陣列
+        if (item.attack) parts.push(getStatString(item.attack, 'ATK'));
+        if (item.hp) parts.push(getStatString(item.hp, 'HP'));
+        if (item.defense) parts.push(getStatString(item.defense, 'DEF'));
+        if (item.critChance) parts.push(getStatString(item.critChance, '暴擊率'));
+        
+        // 治療屬性只適用於消耗品
+        if (item.heal) parts.push(`+${item.heal} 治療`);
+
+        statInfo = parts.join(', ');
+        
+        // 組合最終 HTML
+        itemInfoDiv.innerHTML = `${itemDisplayHtml} **${item.name}** (${statInfo}) `;
+        
+        itemDiv.appendChild(itemInfoDiv);
+        
+        elements.inventoryList.appendChild(itemDiv); 
+    });
 }
 
 export function renderMaterialInventory() { 
