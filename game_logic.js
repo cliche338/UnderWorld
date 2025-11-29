@@ -554,8 +554,9 @@ export function handleExplore() {
     let eventHappened = false; 
 
     // 檢查是否為 Boss 樓層 (20的倍數)】
-    const isBossLayer = State.player.depth > 0 && (State.player.depth % 20 === 0);
-    
+    const isBossLayer = State.player.depth > 0 && 
+                        (State.player.depth % 25 === 0 || State.player.depth % 20 === 0);
+
     // 5a. 戰鬥事件 (Boss 樓層必須戰鬥，或有 75% 機率戰鬥)
     if (isBossLayer || eventChance < 0.75) { 
         startCombat();
