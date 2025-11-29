@@ -13,6 +13,8 @@ import {
     getMaterialById,
     handleSellMaterial,
     calculateTotalCritChance,
+    calculateTotalDefense, // 確保已引入
+    calculateTotalMaxHp,
 } from './game_logic.js'; //
 
 export const elements = {
@@ -240,8 +242,7 @@ export function renderMaterialInventory() {
 
             const div = document.createElement('div'); //
             div.classList.add('material-item'); //
-            
-            // ⭐ 修正點 1: 設置 Flex 佈局
+
             div.style.display = 'flex';
             div.style.alignItems = 'center';
             div.style.justifyContent = 'space-between'; // 讓按鈕和資訊分散開
@@ -277,7 +278,7 @@ export function renderMaterialInventory() {
             const materialInfoSpan = document.createElement('span');
             materialInfoSpan.innerHTML = `**${material.name}** x ${count} (總價值: ${totalSellPrice} 💰)`;
             materialInfoSpan.style.flexGrow = '1';
-            materialInfoSpan.style.textAlign = 'left'; 
+            materialInfoSpan.style.textAlign = 'left';
             materialInfoSpan.style.paddingLeft = '10px';
 
             div.appendChild(materialInfoSpan);
@@ -310,14 +311,15 @@ export function logMessage(message, color = 'white') {
 
 export function updateDisplay() {
     // 1. 計算總攻擊力 (從 game_logic.js 取得)
+    const totalMaxHp = calculateTotalMaxHp();
     const totalAttack = calculateTotalAttack();
+    const totalDefense = calculateTotalDefense();
 
     // 2. 核心數值更新
     elements.hpValue.textContent = player.hp; //
-    elements.maxHpValue.textContent = player.maxHp; //
+    elements.maxHpValue.textContent = totalMaxHp;
     elements.attackValue.textContent = totalAttack; //
-    
-    elements.defenseValue.textContent = player.defense; //
+    elements.defenseValue.textContent = totalDefense;
     elements.goldValue.textContent = player.gold; //
     elements.depthValue.textContent = player.depth; //
     elements.stonesValue.textContent = permanentData.stones; //

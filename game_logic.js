@@ -613,25 +613,25 @@ export function handleExplore() {
     updateDisplay();
 }
 
-export function startGame(className, hpBonus, attackBonus, defenseBonus, critChanceBonus, goldBonus,) {
+export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBonus, critChanceBonus) {
+
     // 檢查狀態
     if (State.gameActive) return; 
 
-    // 1. 設置基礎屬性 (使用 const 是安全的，因為它們只在這裡被讀取)
     const baseHp = 150;
     const baseAttack = 15;
-    const baseDefence = 10;
-    const baseGold = 150;
+    const baseDefense = 10;
     const baseCrit = 0.05;
-    
+    const baseGold = 150;
+
     // 2. 初始化 Run 數據 
     State.player.maxHp = baseHp + State.permanentData.hpBonus + hpBonus;
     State.player.hp = State.player.maxHp;
-    State.player.attack = baseAttack + attackBonus;
+    State.player.attack = baseAttack + attackBonus; 
     State.player.gold = baseGold + goldBonus;
     State.player.depth = 1;
     State.player.className = className;
-    State.player.defense = baseDefence + State.permanentData.defenseBonus + defenseBonus; 
+    State.player.defense = baseDefense + defenseBonus; 
     State.player.critChance = baseCrit + critChanceBonus;
     State.player.inventory = [];
     State.player.materials = {};
@@ -981,17 +981,51 @@ export function enterDeathMode() {
     if (elements.inventoryArea) elements.inventoryArea.style.display = 'none';
 }
 
+export function calculateTotalMaxHp() {
+    let totalMaxHp = State.player.maxHp; // 基礎值 + 永久加成
+
+    // 裝備加成
+    for (const slot in State.player.equipment) {
+        const item = State.player.equipment[slot];
+        if (item && item.hp) {
+            totalMaxHp += item.hp;
+        }
+    }
+    // 確保 maxHp 不會是負數（雖然不太可能）
+    return Math.max(1, totalMaxHp);
+}
+
+export function calculateTotalDefense() {
+    let totalDefense = State.player.defense; // 基礎值 + 永久加成
+
+    // 裝備加成
+    for (const slot in State.player.equipment) {
+        const item = State.player.equipment[slot];
+        if (item && item.defense) {
+            totalDefense += item.defense;
+        }
+    }
+    return totalDefense;
+}
+
 export function calculateTotalAttack() {
     
-    // 基礎攻擊力
+    // 基礎攻擊力 (已包含在 State.player.attack 中)
     let totalAttack = State.player.attack; 
     
-    // 永久攻擊加成
+    // ⭐ 修正 ATK: 加上永久攻擊加成
     totalAttack += State.permanentData.attackBonus || 0; 
 
     // 裝備加成
     if (State.player.equipment.weapon) {
         totalAttack += State.player.equipment.weapon.attack || 0;
+    }
+    // 加上項鍊/戒指的 ATK 加成
+    if (State.player.equipment.necklace) {
+        totalAttack += State.player.equipment.necklace.attack || 0;
+    }
+    if (State.player.equipment.ring) {
+        totalAttack += State.player.equipment.ring.attack || 0;
     }
 
     return totalAttack;
@@ -1004,7 +1038,8 @@ export function handleUpgradeAttack() {
     }
     
     State.permanentData.stones -= UPGRADE_COST;
-    State.permanentData.attackBonus += 5; 
+    State.permanentData.attackBonus += 5; // 更新永久數據
+    State.player.attack += 5;
 
     logMessage(`💪 永久攻擊力 +5 成功！[當前加成: +${State.permanentData.attackBonus}]`, 'lightgreen');
     savePermanentData();

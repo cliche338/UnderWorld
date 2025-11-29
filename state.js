@@ -101,26 +101,37 @@ export function savePermanentData() {
 }
 
 export function loadGame() {
-        if (!currentUsername) return false; 
+    if (!currentUsername) return false; 
 
-        const uniqueSaveKey = SAVE_KEY + '_' + currentUsername;
-        const savedDataString = localStorage.getItem(uniqueSaveKey);
+    const uniqueSaveKey = SAVE_KEY + '_' + currentUsername;
+    const savedDataString = localStorage.getItem(uniqueSaveKey);
 
-        if (savedDataString) {
-            // 🚨 診斷：輸出成功
-            console.log("GAME STATE: Found save data for user:", currentUsername);
-            
-            const loadedPlayer = JSON.parse(savedDataString);
-            Object.assign(player, loadedPlayer); 
-            
-            logMessage("📂 載入進度成功。", 'lightgreen');
-            return true;
-        }
+    if (savedDataString) {
+        console.log("GAME STATE: Found save data for user:", currentUsername);
         
-        // 🚨 診斷：輸出失敗
-        console.log("GAME STATE: No save data found for user:", currentUsername); 
-        return false;
+        const loadedPlayer = JSON.parse(savedDataString);
+        Object.assign(player, loadedPlayer); 
+    
+        const baseHp = 150;
+        const baseAttack = 15;
+        const baseDefense = 10;
+        const baseCritChance = 0.05;
+        
+        player.attack = baseAttack + permanentData.attackBonus;
+        player.defense = baseDefense + permanentData.defenseBonus; // 使用 baseDefense
+        player.maxHp = baseHp + permanentData.hpBonus;
+        
+        // 確保 player.critChance 不低於基礎值
+        player.critChance = player.critChance > baseCritChance ? player.critChance : baseCritChance; 
+
+
+        logMessage("📂 載入進度成功。", 'lightgreen');
+        return true;
     }
+    
+    console.log("GAME STATE: No save data found for user:", currentUsername); 
+    return false;
+}
 
 export function saveGame() {
         // 只有在登入後才進行存檔
