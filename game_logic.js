@@ -86,7 +86,7 @@ export function showHowToPlay() {
 export function showUpdateLog() {
     const updateLog = `
 
-- 調整人物基礎體質
+- 調整人物基礎體質 >> HP:150, ATK:15, DEF:10, GOLD:150
 - 調整怪物刷新難度
 - 新增特殊boss掉落素材
 - 調整初始補給
@@ -1186,6 +1186,41 @@ export function endCombat(isVictory) {
 
             const dustId = 'ori_dust';
             const dustCount = 3;
+            State.player.materials[dustId] = (State.player.materials[dustId] || 0) + dustCount;
+            logMessage(`✨ 獲得稀有素材 [奧利哈鋼粉塵] x${dustCount}！`, 'gold');
+        }
+
+        //擊敗奧利哈鋼之神
+        if (enemy.id === 'ori-god') { 
+            
+            const rareLootIds = [
+                'ori-god-sword',    // 武器
+                'ori-god-helmet',   // 頭盔
+                'ori-god-armor',    // 胸甲
+                'ori-god-greaves',  // 護脛
+                'ori-god-necklace', // 項鍊
+                'ori-god-ring',     // 戒指
+                'ori-blood'     // 消耗品
+            ];
+            
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+            
+            const newItem = getItemById(rareLootId); 
+            
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
+
+            const essenceId = 'ori_essence'; 
+            const essenceCount = 5;
+            State.player.materials[essenceId] = (State.player.materials[essenceId] || 0) + essenceCount;
+            logMessage(`✨ 獲得稀有素材 [奧利哈鋼精華] x${essenceCount}！`, 'gold');
+
+            const dustId = 'ori_dust';
+            const dustCount = 10;
             State.player.materials[dustId] = (State.player.materials[dustId] || 0) + dustCount;
             logMessage(`✨ 獲得稀有素材 [奧利哈鋼粉塵] x${dustCount}！`, 'gold');
         }
