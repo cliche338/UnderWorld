@@ -13,8 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. 綁定職業選擇 
     //HP, ATK, DEF, CRIT, GOLD
+// 騎士: +50 HP, +20 DEF
     elements.selectKnightBtn.onclick = () => GameLogic.startGame("騎士", 50, 0, 20, 0, 0); 
-    elements.selectMerchantBtn.onclick = () => GameLogic.startGame("商人", 0, 0, 0, -0.20, 200);
+// 商販: -20% CRIT, +200 GOLD
+    elements.selectMerchantBtn.onclick = () => GameLogic.startGame("商人", 0, 0, 0, -0.20, 200); 
+// 刺客: +25 ATK, +20% CRIT
     elements.selectThiefBtn.onclick = () => GameLogic.startGame("刺客", 0, 25, 0, 0.20, 0);
 
     // 4. 綁定遊戲流程按鈕

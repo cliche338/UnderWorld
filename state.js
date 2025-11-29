@@ -79,13 +79,17 @@ export function loadPermanentData() {
         permanentData.stones = parseInt(loadedData.stones) || 0;
         permanentData.hpBonus = parseInt(loadedData.hpBonus) || 0;
         permanentData.attackBonus = parseInt(loadedData.attackBonus) || 0;
+        permanentData.defenseBonus = parseInt(loadedData.defenseBonus) || 0; 
+        permanentData.critChanceBonus = parseFloat(loadedData.critChanceBonus) || 0; // 假設新增了這個屬性
         permanentData.knownItems = Array.isArray(loadedData.knownItems) ? loadedData.knownItems : [];
 
-    }else {
+    } else {
         // 新帳號或無存檔，則初始化為 0
         permanentData.stones = 0;
         permanentData.hpBonus = 0;
         permanentData.attackBonus = 0;
+        permanentData.defenseBonus = 0; 
+        permanentData.critChanceBonus = 0;
         permanentData.knownItems = [];
     }
 }
@@ -101,28 +105,27 @@ export function savePermanentData() {
 }
 
 export function loadGame() {
-    if (!currentUsername) return false; 
+    if (!currentUsername) return false;
 
     const uniqueSaveKey = SAVE_KEY + '_' + currentUsername;
     const savedDataString = localStorage.getItem(uniqueSaveKey);
 
     if (savedDataString) {
-
         console.log("GAME STATE: Found save data for user:", currentUsername);
-        
         const loadedPlayer = JSON.parse(savedDataString);
-        Object.assign(player, loadedPlayer); 
+        Object.assign(player, loadedPlayer);
     
         const baseHp = 150;
         const baseAttack = 15;
-        const baseDefense = 10; 
+        const baseDefense = 10;
         const baseCritChance = 0.05;
-        
+
+
         player.attack = baseAttack + permanentData.attackBonus;
-        player.defense = baseDefense + permanentData.defenseBonus; // 修正：必須加上 baseDefense
-        player.maxHp = baseHp + permanentData.hpBonus;
+        player.defense = baseDefense + permanentData.defenseBonus;
+        player.maxHp = baseHp;
         
-        player.critChance = player.critChance || baseCritChance; 
+        player.critChance = player.critChance || baseCritChance;
 
         logMessage("📂 載入進度成功。", 'lightgreen');
         return true;
@@ -131,7 +134,7 @@ export function loadGame() {
     console.log("GAME STATE: No save data found for user:", currentUsername); 
     return false;
 }
-
+    
 export function saveGame() {
         // 只有在登入後才進行存檔
         if (!currentUsername) return; 

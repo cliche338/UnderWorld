@@ -315,14 +315,16 @@ export function updateDisplay() {
     const totalAttack = calculateTotalAttack();
     const totalDefense = calculateTotalDefense();
 
+    player.hp = Math.min(player.hp, player.maxHp); 
+
     // 2. 核心數值更新
-    elements.hpValue.textContent = player.hp; //
-    elements.maxHpValue.textContent = totalMaxHp;
-    elements.attackValue.textContent = totalAttack; //
-    elements.defenseValue.textContent = totalDefense;
-    elements.goldValue.textContent = player.gold; //
-    elements.depthValue.textContent = player.depth; //
-    elements.stonesValue.textContent = permanentData.stones; //
+    elements.hpValue.textContent = Math.round(player.hp);
+    elements.maxHpValue.textContent = Math.round(player.maxHp);
+    elements.attackValue.textContent = Math.round(totalAttack);
+    elements.defenseValue.textContent = Math.round(totalDefense);
+    elements.goldValue.textContent = player.gold;
+    elements.stonesValue.textContent = permanentData.stones;
+    elements.depthValue.textContent = player.depth;
 
     // 3. 裝備名稱更新
     if (elements.equippedWeaponName) {

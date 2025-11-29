@@ -613,7 +613,7 @@ export function handleExplore() {
     updateDisplay();
 }
 
-export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBonus, critChanceBonus) {
+export function startGame(className, hpBonus, attackBonus, defenseBonus, critChanceBonus, goldBonus) {
 
     // 檢查狀態
     if (State.gameActive) return; 
@@ -625,7 +625,7 @@ export function startGame(className, hpBonus, attackBonus, goldBonus, defenseBon
     const baseGold = 150;
 
     // 2. 初始化 Run 數據 
-    State.player.maxHp = baseHp + State.permanentData.hpBonus + hpBonus;
+    State.player.maxHp = baseHp + hpBonus;
     State.player.hp = State.player.maxHp;
     State.player.attack = baseAttack + attackBonus; 
     State.player.gold = baseGold + goldBonus;
@@ -682,7 +682,7 @@ export function getRandomMonster() {
         let bossId = null;
         
         // 【特殊 Boss 優先級判斷】
-        if (currentDepth === 10000) { 
+        if (currentDepth % 10000 === 0) { 
             bossId = 'ori-god'; 
             logMessage('🚨 警報！奧利哈鋼神即將降臨...', 'red'); 
         } else if (currentDepth % 1000 === 0) { 
@@ -816,36 +816,31 @@ export function equipItem(inventoryIndex) {
     State.player.equipment[itemType] = itemToEquip;
     logMessage(`✅ 成功裝備 [${itemToEquip.name}]！`, 'yellow');
 
+    // --- 2. 移除手動加減屬性的舊邏輯 (關鍵修正) ---
+    // 讓屬性完全依賴 calculateTotal* 函式，這樣就不會重複疊加了。
 
-    // --- 2. 關鍵修正：計算 HP 和 Defense 屬性變動 ---
-    
+    // 計算 HP 變動 (用於日誌顯示，但不再用於直接修改 State)
     let hpChange = 0;
-    let defenseChange = 0;
-    let attackChange = 0;
-
-    // 計算 HP 變動
     if (itemToEquip.hp) hpChange += itemToEquip.hp;
     if (oldItem && oldItem.hp) hpChange -= oldItem.hp;
     
     // 計算 Defense 變動
+    let defenseChange = 0;
     if (itemToEquip.defense) defenseChange += itemToEquip.defense;
     if (oldItem && oldItem.defense) defenseChange -= oldItem.defense;
 
     // 計算 Attack 變動
+    let attackChange = 0;
     if (itemToEquip.attack) attackChange += itemToEquip.attack;
     if (oldItem && oldItem.attack) attackChange -= oldItem.attack;
     
-    // 套用變動
-    State.player.maxHp += hpChange;
-    State.player.hp = Math.min(State.player.hp, State.player.maxHp);
-    State.player.defense += defenseChange;
-    State.player.attack += attackChange; 
-    
+    const newMaxHp = calculateTotalMaxHp();
+    State.player.hp = Math.min(State.player.hp, newMaxHp); 
+
     logMessage(`屬性變動：HP 上限 ${hpChange > 0 ? '+' : ''}${hpChange}，防禦 ${defenseChange > 0 ? '+' : ''}${defenseChange}，攻擊 ${attackChange > 0 ? '+' : ''}${attackChange}。`, 'yellow');
 
     // --- 3. 存檔與介面更新 ---
-    
-    updateDisplay(); // 統一更新畫面
+    updateDisplay(); 
 }
 
 export function useConsumable(inventoryIndex) {
@@ -869,10 +864,10 @@ export function useConsumable(inventoryIndex) {
         effectLogged = true;
     } 
     
-    // 2. 執行永久 HP 上限增加 (ori-blood, c6)
+    // 2. 執行永久 HP 上限增加 
     if (permanentHpGain > 0) {
         State.player.maxHp += permanentHpGain; 
-        State.player.hp += permanentHpGain; // 增加的上限也立即補滿
+        State.player.hp += permanentHpGain; 
         logMessage(`❤️ [${itemToUse.name}] 永久增加了 ${permanentHpGain} 點 HP 上限！`, 'gold');
         effectLogged = true;
     }
@@ -982,9 +977,13 @@ export function enterDeathMode() {
 }
 
 export function calculateTotalMaxHp() {
-    let totalMaxHp = State.player.maxHp; // 基礎+職業+永久加成
+    // totalMaxHp 的基礎值 (State.player.maxHp) 已經包含了：基礎HP + 職業獎勵 + 永久加成
+    let totalMaxHp = State.player.maxHp; 
 
-    // 裝備加成
+    // 加上永久加成 (來自升級系統)
+    totalMaxHp += State.permanentData.hpBonus || 0; //
+
+    // 裝備加成 (這段保持不變)
     if (State.player.equipment.helmet) {
         totalMaxHp += State.player.equipment.helmet.hp || 0;
     }
@@ -1000,7 +999,9 @@ export function calculateTotalMaxHp() {
     if (State.player.equipment.ring) {
         totalMaxHp += State.player.equipment.ring.hp || 0;
     }
-    return totalMaxHp;
+    
+    // 確保 MaxHP 不會小於 1
+    return Math.max(1, totalMaxHp);
 }
 
 export function calculateTotalDefense() {
@@ -1043,38 +1044,54 @@ export function calculateTotalAttack() {
 }
 
 export function handleUpgradeAttack() {
-    if (State.permanentData.stones < UPGRADE_COST) {
-        logMessage(`❌ 耀魂石不足，需要 ${UPGRADE_COST} 💎。`, 'red');
-        return;
-    }
-    
-    State.permanentData.stones -= UPGRADE_COST;
-    State.permanentData.attackBonus += 5; // 更新永久數據
-    State.player.attack += 5;
+    const cost = UPGRADE_COST;
+    const attackIncrease = 5;
 
-    logMessage(`💪 永久攻擊力 +5 成功！[當前加成: +${State.permanentData.attackBonus}]`, 'lightgreen');
-    savePermanentData();
-    updateDisplay(); 
+    if (State.permanentData.stones >= cost) {
+        // 1. 扣除費用
+        State.permanentData.stones -= cost;
+        State.permanentData.attackBonus += attackIncrease;
+        
+        // 2. 更新玩家狀態 (attack)
+        State.player.attack += attackIncrease;
+
+        // 3. 儲存遊戲和永久數據
+        State.savePermanentData();
+        State.saveGame();
+
+        // 4. 更新介面和日誌
+        logMessage(`⚔️ 永久 攻擊 升級成功！ATK +${attackIncrease}，目前 ATK: ${State.player.attack}。`, 'yellow');
+        updateDisplay();
+    } else {
+        logMessage(`❌ 您的耀魂石不足 (需要 ${cost} 💎)。`, 'red');
+    }
 }
 
 export function handleUpgradeDefense() {
-    if (State.permanentData.stones < UPGRADE_COST) {
-        logMessage(`❌ 耀魂石不足，需要 ${UPGRADE_COST} 💎。`, 'red');
-        return;
-    }
-    
-    State.permanentData.stones -= UPGRADE_COST;
-    State.permanentData.defenseBonus += 5; 
-    
-    State.player.defense += 5; 
+    const cost = UPGRADE_COST;
+    const defenseIncrease = 5;
 
-    logMessage(`🛡️ 永久防禦力 +5 成功！[當前加成: +${State.permanentData.defenseBonus}]`, 'lightgreen');
-    savePermanentData(); 
-    updateDisplay(); 
+    if (State.permanentData.stones >= cost) {
+        // 1. 扣除費用
+        State.permanentData.stones -= cost;
+        State.permanentData.defenseBonus += defenseIncrease;
+        
+        // 2. 更新玩家狀態 (defense)
+        State.player.defense += defenseIncrease;
+
+        // 3. 儲存遊戲和永久數據
+        State.savePermanentData();
+        State.saveGame();
+
+        // 4. 更新介面和日誌
+        logMessage(`🛡️ 永久 防禦 升級成功！DEF +${defenseIncrease}，目前 DEF: ${State.player.defense}。`, 'yellow');
+        updateDisplay();
+    } else {
+        logMessage(`❌ 您的奧術魔石不足 (需要 ${cost} 💎)。`, 'red');
+    }
 }
 
 export function calculateTotalCritChance() {
-    // 基礎暴擊率 (在 startGame 中設定的 0.05)
     let totalCritChance = State.player.critChance || 0; 
 
     // 加上所有裝備的暴擊率加成
@@ -1137,13 +1154,14 @@ export function handleAttack() {
     // 4-3. 套用怪物暴擊倍率
     damageReceived *= monsterDamageMultiplier;
     
+    damageReceived = Math.round(damageReceived);
     // 4-4. 輸出暴擊訊息
     if (isMonsterCritical) {
         logMessage(`🔥 怪物暴擊！${State.currentMonster.name} 對你造成了雙倍傷害！`, 'orange');
     }
     
     // 5. 對玩家造成傷害
-    State.player.hp -= damageReceived; 
+    State.player.hp -= damageReceived;
     logMessage(`❌ ${State.currentMonster.name} 對你造成了 ${damageReceived} 點傷害 (已減免 ${State.player.defense} 防禦)！`, 'red');
 
     // 6. 檢查死亡
@@ -1164,20 +1182,30 @@ export function handleAttack() {
 }
 
 export function handleUpgradeHp() {
-    if (State.permanentData.stones < UPGRADE_COST) {
-        logMessage(`❌ 耀魂石不足，需要 ${UPGRADE_COST} 💎。`, 'red');
-        return;
-    }
-    
-    State.permanentData.stones -= UPGRADE_COST;
-    State.permanentData.hpBonus += 5; 
-    
-    State.player.maxHp += 5;
-    State.player.hp += 5;
+    const cost = UPGRADE_COST;
+    const hpIncrease = 5;
 
-    logMessage(`❤️ 永久 HP+5 成功！[當前加成: +${State.permanentData.hpBonus}]`, 'lightgreen');
-    savePermanentData(); 
-    updateDisplay(); 
+    if (State.permanentData.stones >= cost) {
+        // 1. 扣除費用
+        State.permanentData.stones -= cost;
+
+        // 2. 增加永久 HP 加成
+        State.permanentData.hpBonus += hpIncrease;
+        
+        // 3. 更新玩家狀態 (maxHp 和當前 hp)
+        State.player.maxHp += hpIncrease;
+        State.player.hp = State.player.maxHp; // 升級後補滿血
+
+        // 4. 儲存遊戲和永久數據
+        State.savePermanentData();
+        State.saveGame();
+
+        // 5. 更新介面和日誌
+        logMessage(`❤️ 永久 HP 升級成功！MaxHP +${hpIncrease}，目前 MaxHP: ${State.player.maxHp}。`, 'yellow');
+        updateDisplay();
+    } else {
+        logMessage(`❌ 您的耀魂石不足 (需要 ${cost} 💎)。`, 'red');
+    }
 }
 
 export function endCombat(isVictory) {
@@ -1512,12 +1540,10 @@ export function handleRest(isAuto = false) {
 
     if (!gameActive) return;
 
-    // 0. 檢查是否已經位於城鎮
     if (State.player.actionsSinceTown === 0) {
-        // 如果是自動返回的，則繼續執行存檔邏輯；如果玩家手動點擊，則給出提示
         if (!isAuto) {
             logMessage("🏠 你已經在城鎮裡了！請點擊「繼續探險」開始新的冒險。", 'cyan');
-            return; // 已經在城鎮中，不需要再次執行存檔和重置
+            return; 
         }
     }
     
@@ -1526,28 +1552,27 @@ export function handleRest(isAuto = false) {
 
         const needed = State.player.actionsToTownRequired - State.player.actionsSinceTown;
         logMessage(`❌ 必須在地城中行動 ${needed} 次才能返回城鎮存檔！`, 'orange');
-        return; // 檢查失敗，立即退出
+        return; 
     }
     
-    // 2. 執行治療
-    const totalMaxHp = calculateTotalMaxHp();
+    // 2. 執行治療 (只對當前 HP 進行操作)
+    const totalMaxHp = calculateTotalMaxHp(); // 計算出總 Max HP
     const healAmount = totalMaxHp - State.player.hp;
-    State.player.hp = totalMaxHp;
+    State.player.hp = totalMaxHp; // ⭐ 關鍵：將當前 HP 設為計算後的總 Max HP (這是正確的治療方式)
     
     // 3. 重置行動計數器並設定新目標
     State.player.actionsSinceTown = 0; 
     setNewTownGoal(); 
     
     State.player.lastRestDepth = State.player.depth;
-    State.player.goldAtLastRest = State.player.gold; // 記錄當前金幣為上次存檔點
+    State.player.goldAtLastRest = State.player.gold; 
     
     // 4. 存檔 (這是遊戲的關鍵存檔點)
     saveGame(); 
 
     // 5. 啟用城鎮功能並刷新商店
     toggleTownAccess(true); 
-
-    refreshShopInventory()
+    refreshShopInventory(); 
     renderShop();
 
     if (isAuto) {
