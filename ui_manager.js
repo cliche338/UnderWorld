@@ -319,7 +319,7 @@ export function updateDisplay() {
 
     // 2. 核心數值更新
     elements.hpValue.textContent = Math.round(player.hp);
-    elements.maxHpValue.textContent = Math.round(player.maxHp);
+    elements.maxHpValue.textContent = Math.round(totalMaxHp);
     elements.attackValue.textContent = Math.round(totalAttack);
     elements.defenseValue.textContent = Math.round(totalDefense);
     elements.goldValue.textContent = player.gold;
