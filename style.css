@@ -135,7 +135,7 @@ input:focus {
 /* 3.1. 冒險家狀態區 */
 #status-display { 
     flex: 1; 
-    min-width: 200px;
+    min-width: 180px;
     background: #1e2d2f;
     border-color: #2c4749;
     max-height: 615px;
@@ -409,30 +409,29 @@ input:focus {
 /* 07. 手機/小螢幕優化 (MOBILE OPTIMIZATION) */
 /* ========================================= */
 
+/* 當螢幕寬度小於或等於 900px 時應用 */
 @media (max-width: 900px) {
     
-    /* 1. 全域容器調整：移除不必要的 padding，並確保 body 佔滿高度 */
+    /* ⭐ 修正 1: 只覆蓋 body 的 padding，確保最小邊距 */
     body { 
-        padding: 5px; /* ⭐ 修正：將 padding 減少到最小 */
-        min-height: 100vh;
-        align-items: flex-start;
-        /* 移除 font-family, background 等全域屬性 */
+        padding: 5px; /* 最小化外部填充 */
+        /* 移除所有其他重複的屬性，只留下 padding: 5px; */
     }
 
-    /* 2. 遊戲主容器：確保佔滿寬度，並將高度計算修正為減去 2*body-padding */
+    /* 2. 遊戲主容器：確保佔滿寬度，且使用 box-sizing */
     .game-container {
         width: 100%;
         padding: 5px; /* 最小化內部填充 */
         max-width: unset;
         box-shadow: none; 
-        box-sizing: border-box; /* ⭐ 確保使用 border-box */
-        /* min-height: calc(100vh - 10px); 由於 body padding 是 5px，總減去 10px */
+        box-sizing: border-box; 
+        min-height: calc(100vh - 10px); /* 讓它拉長到螢幕底部 (10px = 2*body padding) */
     }
 
-    /* 3. 核心佈局切換：垂直堆疊 (Flex Direction) */
+    /* 3. 核心佈局切換與排序 */
     .game-layout {
         flex-direction: column; 
-        gap: 5px; /* ⭐ 減少區塊間距 */
+        gap: 5px; 
         width: 100%;
     }
 
@@ -440,13 +439,12 @@ input:focus {
     #status-display,
     #hub-area,
     #log-and-controls-group,
-    .panel { /* 將 .panel 設為 border-box */
+    .panel {
         box-sizing: border-box; 
         flex: none; 
         min-width: unset !important;
-        max-height: unset;
         width: 100%; 
-        padding: 10px; /* 恢復基礎面板填充 */
+        padding: 10px; 
     }
     
     /* ⭐ 排序 (ORDER FIX) */
@@ -454,14 +452,37 @@ input:focus {
     #hub-area { order: 2; } 
     #log-and-controls-group { order: 3; } 
 
-    /* 5. 遊戲日誌調整 (縮小高度以適應單頁顯示) */
+    /* 5. 帳號管理區佈局 (實現左登出 / 右功能按鈕) */
+    #auth-area {
+        display: flex;
+        flex-direction: row; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 5px; /* 精簡填充 */
+    }
+    
+    #auth-main-content {
+        flex-grow: 1; 
+        max-width: 50%; 
+        margin-right: 5px;
+        text-align: left;
+    }
+    
+    #func-buttons-group {
+        display: flex;
+        flex-direction: column; 
+        align-items: flex-end; 
+        flex-shrink: 0; 
+    }
+    
+    /* 6. 遊戲日誌調整 */
     #game-log {
-        height: 180px; /* ⭐ 調整日誌高度，騰出空間 */
+        height: 180px; 
         margin-bottom: 5px; 
         padding: 5px;
     }
 
-    /* 6. 按鈕調整 (統一且精簡) */
+    /* 7. 按鈕調整 (統一且精簡) */
     button,
     input[type="button"],
     input[type="submit"],
@@ -469,19 +490,25 @@ input:focus {
     #adventure-actions button,
     #class-selection button {
         box-sizing: border-box; 
-        width: 100%; 
+        width: 100%; /* 預設 100% 寬度 */
         min-width: unset;
         display: block; 
-        font-size: 0.9em; /* ⭐ 縮小字體 */
-        padding: 8px 10px; /* 調整填充 */
+        font-size: 0.9em; 
+        padding: 8px 10px; 
         margin-bottom: 3px !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
     }
     
-    /* 7. 內嵌面板修正 (防止輸入框擠壓) */
+    /* 7a. 修正功能按鈕寬度 (讓它適應內容) */
+    #func-buttons-group button,
+    #auth-area #logout-btn { /* ⭐ 確保登出按鈕也使用自適應寬度 */
+        width: auto !important; 
+        min-width: 100px;
+    }
+
+    /* 8. 內嵌面板修正 */
     #stone-exchange {
-        display: flex;
         flex-direction: column; 
         align-items: flex-start;
     }
@@ -492,17 +519,9 @@ input:focus {
         margin-bottom: 5px !important;
     }
     
-    /* 8. 登入/帳號區塊優化 */
-    #auth-area > div:first-child {
-        flex-direction: column; 
-        align-items: flex-start;
-    }
-    
     /* 9. 城鎮升級按鈕佈局調整 */
     #hub-area > div:last-child {
         flex-wrap: wrap; 
-        justify-content: flex-start;
         gap: 5px;
     }
-    
 }
