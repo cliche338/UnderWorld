@@ -977,10 +977,8 @@ export function enterDeathMode() {
 }
 
 export function calculateTotalMaxHp() {
-    // totalMaxHp 的基礎值 (State.player.maxHp) 已經包含了：基礎HP + 職業獎勵 + 永久加成
-    let totalMaxHp = State.player.maxHp; 
 
-    // 加上永久加成 (來自升級系統)
+    let totalMaxHp = State.player.maxHp; 
     totalMaxHp += State.permanentData.hpBonus || 0;
 
     // 裝備加成 (這段保持不變)
@@ -1005,7 +1003,7 @@ export function calculateTotalMaxHp() {
 }
 
 export function calculateTotalDefense() {
-    
+
     let totalDefense = State.player.defense; 
     totalDefense += State.permanentData.defenseBonus || 0;
 
@@ -1191,16 +1189,17 @@ export function handleUpgradeHp() {
         // 2. 增加永久 HP 加成
         State.permanentData.hpBonus += hpIncrease;
         
-        // 3. 更新玩家狀態 (maxHp 和當前 hp)
-        State.player.maxHp += hpIncrease;
-        State.player.hp = State.player.maxHp; // 升級後補滿血
+        // 3. 更新玩家狀態 (MaxHP 和當前 HP)
+        const newTotalMaxHp = calculateTotalMaxHp(); 
+        State.player.hp = newTotalMaxHp; 
 
         // 4. 儲存遊戲和永久數據
         State.savePermanentData();
         State.saveGame();
 
         // 5. 更新介面和日誌
-        logMessage(`❤️ 永久 HP 升級成功！MaxHP +${hpIncrease}，目前 MaxHP: ${State.player.maxHp}。`, 'yellow');
+        // 修正日誌：顯示計算後的總 MaxHP
+        logMessage(`❤️ 永久 HP 升級成功！MaxHP +${hpIncrease}，目前 MaxHP: ${newTotalMaxHp}。`, 'yellow');
         updateDisplay();
     } else {
         logMessage(`❌ 您的耀魂石不足 (需要 ${cost} 💎)。`, 'red');
@@ -1556,8 +1555,9 @@ export function handleRest(isAuto = false) {
     
     // 2. 執行治療 (只對當前 HP 進行操作)
     const totalMaxHp = calculateTotalMaxHp(); // 計算出總 Max HP
-    const healAmount = totalMaxHp - State.player.hp;
-    State.player.hp = totalMaxHp; // ⭐ 關鍵：將當前 HP 設為計算後的總 Max HP (這是正確的治療方式)
+    const oldHp = State.player.hp;
+    State.player.hp = totalMaxHp;
+    const healAmount = State.player.hp - oldHp;
     
     // 3. 重置行動計數器並設定新目標
     State.player.actionsSinceTown = 0; 
