@@ -52,20 +52,22 @@ export function showHowToPlay() {
         3. 🎲 點擊「繼續探險」進入地城。
         4. ⚔️ 遭遇怪物時，點擊「攻擊」進行回合制戰鬥。
         5. 💰 收集金幣和物品。
-        6. 🏠 每完成7次行動，會自動返回城鎮。
+        6. 🏠 每完成7次行動,會自動返回城鎮。
 
     🏠城鎮功能 : 
         * 返回城鎮時會存檔、治療生命。
         * 使用金幣兌換 💎 耀魂石。
-        * 使用耀魂石永久強化HP和攻擊力，增強下一次冒險的能力。
-        * 刷新商店以購買更強力的裝備，層數越深可遇見道具稀有度越高。
+        * 使用耀魂石永久強化HP和攻擊力,增強下一次冒險的能力。
+        * 刷新商店以購買更強力的裝備,層數越深可遇見道具稀有度越高。
         
     🗡️戰鬥守則 :
         * 每次攻擊會根據裝備加成對怪物造成傷害。
-        * 防禦力會減少所受傷害，最小所受傷害為5。
+        * 防禦力會減少所受傷害,最小所受傷害為5。
         * 逃跑有機率失敗，失敗會讓怪物免費攻擊一次(全額傷害)。
         * 每20層會遇到一個Boss怪物。
-        * 每250層會遇見奧利哈鋼幻影Boss，擊敗會掉落專屬道具。
+        * 每250層會遇見奧利哈鋼幻影Boss,擊敗會掉落專屬道具。
+        * 每1000層會遇見奧利哈鋼之軀Boss,擊敗會掉落專屬道具。
+        * 每10000層會遇見奧利哈鋼之神Boss,擊敗會掉落專屬道具。
         
     🎯目標 : 
         * 在地城中探索得越深越好，並收集稀有裝備！
@@ -84,17 +86,26 @@ export function showHowToPlay() {
 export function showUpdateLog() {
     const updateLog = `
 
-- 調整初始職業強度,讓新帳號能更好度過遊戲前期
-- 背包內道具顯示icon修改
-- 行動版版面配置更新
-        
+- 調整人物基礎體質
+- 調整怪物刷新難度
+- 新增特殊boss掉落素材
+- 調整初始補給
+- 下調"奧利哈鋼之神"強度 >> hp: 777777777, attack: 77777, defense: 7777
+- 新增擊敗"奧利哈鋼之神"掉落道具(非素材類) >> 
+    奧利哈鋼之神劍-亞特蘭提斯
+    奧利哈鋼之神盔-柏拉圖之視
+    奧利哈鋼之神甲-失落帝國
+    奧利哈鋼之神鱗-海格力斯
+    奧利哈鋼之神心-克里提亞
+    奧利哈鋼之神眼-蒂邁歐
+
     `;
     
     if (elements.codexFilters) {
         elements.codexFilters.style.display = 'none'; 
     }
 
-    const title = "V3.0 遊戲更新日誌";
+    const title = "V3.01 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 
@@ -547,7 +558,7 @@ export function handleExplore() {
     
     // 5a. 戰鬥事件 (Boss 樓層必須戰鬥，或有 75% 機率戰鬥)
     if (isBossLayer || eventChance < 0.75) { 
-        startCombat(); // getRandomMonster() 會在內部確保是 Boss
+        startCombat();
         eventHappened = true;
     } 
     // 5b. 非戰鬥事件 (只有在非 Boss 樓層且隨機檢查失敗時才執行)
@@ -584,10 +595,10 @@ export function startGame(className, hpBonus, attackBonus, defenseBonus, critCha
     if (State.gameActive) return; 
 
     // 1. 設置基礎屬性 (使用 const 是安全的，因為它們只在這裡被讀取)
-    const baseHp = 100;
-    const baseAttack = 5;
-    const baseDefence = 0;
-    const baseGold = 100;
+    const baseHp = 150;
+    const baseAttack = 15;
+    const baseDefence = 10;
+    const baseGold = 150;
     const baseCrit = 0.05;
     
     // 2. 初始化 Run 數據 
@@ -690,10 +701,14 @@ export function getRandomMonster() {
     let targetDifficulty = 1;
 
     // 根據深度調整難度門檻
-    if (currentDepth >= 30) { 
-        targetDifficulty = 3;
-    } else if (currentDepth >= 5) { 
-        targetDifficulty = 2;
+    if (currentDepth >= 250) { 
+        targetDifficulty = 4; 
+    } else if (currentDepth >= 150) { 
+        targetDifficulty = 3; 
+    } else if (currentDepth >= 50) { 
+        targetDifficulty = 2; 
+    } else {
+        targetDifficulty = 1; 
     }
     
     const allAvailableMonsters = MONSTERS.filter(m => !m.isBoss && m.difficulty <= targetDifficulty);
@@ -1133,6 +1148,11 @@ export function endCombat(isVictory) {
                 addItemToInventory(newItem);
                 logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
             }
+
+            const dustId = 'ori_dust';
+            const dustCount = 2;
+            State.player.materials[dustId] = (State.player.materials[dustId] || 0) + dustCount;
+            logMessage(`✨ 獲得稀有素材 [奧利哈鋼粉塵] x${dustCount}！`, 'gold');
         }
 
         //擊敗奧利哈鋼之軀
@@ -1157,6 +1177,39 @@ export function endCombat(isVictory) {
             if (newItem) {
                 addItemToInventory(newItem);
                 logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
+
+            const essenceId = 'ori_essence'; 
+            const essenceCount = 1;
+            State.player.materials[essenceId] = (State.player.materials[essenceId] || 0) + essenceCount;
+            logMessage(`✨ 獲得稀有素材 [奧利哈鋼精華] x${essenceCount}！`, 'gold');
+
+            const dustId = 'ori_dust';
+            const dustCount = 3;
+            State.player.materials[dustId] = (State.player.materials[dustId] || 0) + dustCount;
+            logMessage(`✨ 獲得稀有素材 [奧利哈鋼粉塵] x${dustCount}！`, 'gold');
+        }
+
+        if (enemy.isBoss && enemy.id !== 'ori-shadow' && enemy.id !== 'ori-body' && enemy.id !== 'ori-god') { 
+            
+            // 掉落高品質材料
+            const scaleId = 'dragon_scale'; // 假設是巨龍鱗片 (稀有)
+            const coreId = 'ancient_core'; // 假設是遠古核心 (稀有)
+            
+            // 判定掉落數量和機率 (這裡設定為高機率掉落 1-2 個)
+            
+            // 1. 掉落 1-2 個巨龍鱗片 (高機率)
+            if (Math.random() < 0.75) { 
+                const scaleCount = Math.floor(Math.random() * 2) + 1; // 1 或 2 個
+                State.player.materials[scaleId] = (State.player.materials[scaleId] || 0) + scaleCount;
+                logMessage(`✨ Boss 掉落素材 [巨龍鱗片] x${scaleCount}！`, 'orange');
+            }
+            
+            // 2. 掉落 1 個遠古核心 (中機率)
+            if (Math.random() < 0.50) { 
+                const coreCount = 1;
+                State.player.materials[coreId] = (State.player.materials[coreId] || 0) + coreCount;
+                logMessage(`✨ Boss 掉落素材 [遠古核心] x${coreCount}！`, 'orange');
             }
         }
         

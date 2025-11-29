@@ -15,11 +15,11 @@ export const MONSTERS = [
         
     // 中等怪物 (Difficulty 2)
         { id: 'k1', name: "骷髏人", hp: 35, attack: 20, defense: 15, goldReward: 35, difficulty: 2 },
-        { id: 'k2', name: "幽魂射手", hp: 55, attack: 40, defense: 30, goldReward: 50, difficulty: 2 },
-        { id: 'wolf1', name: "野狼", hp: 45, attack: 15, defense: 20, goldReward: 40, difficulty: 2 },
-        { id: 'wolf2', name: "狼人", hp: 65, attack: 22, defense: 20, goldReward: 55, difficulty: 2 },
-        { id: 'wolf3', name: "雙頭狼", hp: 130, attack: 25, defense: 40, goldReward: 80, difficulty: 2 },
-        { id: 's-slime1', name: "菁英-普通史萊姆", hp: 80, attack: 16, defense: 25, goldReward: 40, difficulty: 2 },
+        { id: 'k2', name: "幽魂射手", hp: 55, attack: 40, defense: 20, goldReward: 50, difficulty: 2 },
+        { id: 'wolf1', name: "野狼", hp: 45, attack: 15, defense: 15, goldReward: 40, difficulty: 2 },
+        { id: 'wolf2', name: "狼人", hp: 65, attack: 22, defense: 15, goldReward: 55, difficulty: 2 },
+        { id: 'wolf3', name: "雙頭狼", hp: 130, attack: 25, defense: 25, goldReward: 80, difficulty: 2 },
+        { id: 's-slime1', name: "菁英-普通史萊姆", hp: 80, attack: 15, defense: 25, goldReward: 40, difficulty: 2 },
         { id: 's-slime2', name: "菁英-濕潤史萊姆", hp: 100, attack: 20, defense: 30, goldReward: 60, difficulty: 2 },
         { id: 's-slime3', name: "菁英-劇毒史萊姆", hp: 120, attack: 30, defense: 35, goldReward: 80, difficulty: 2 },
         { id: 's-slime4', name: "菁英-熔岩史萊姆", hp: 120, attack: 40, defense: 35, goldReward: 80, difficulty: 2 },
@@ -31,27 +31,29 @@ export const MONSTERS = [
     // 強力怪物 (Difficulty 3)
         { id: 'rock1', name: "黑曜石頭人", hp: 100, attack: 30, defense: 35, goldReward: 80, difficulty: 3 },
         { id: 'rock2', name: "普通岩石頭人", hp: 60, attack: 25, defense: 45, goldReward: 50, difficulty: 3 },
-        { id: 'demon1', name: "颱風惡魔", hp: 150, attack: 20, defense: 75, goldReward: 90, difficulty: 3 },
+        { id: 'demon1', name: "颱風惡魔", hp: 150, attack: 20, defense: 55, goldReward: 90, difficulty: 3 },
         { id: 'demon2', name: "火焰惡魔", hp: 80, attack: 35, defense: 45, goldReward: 90, difficulty: 3 },
         { id: 'demon3', name: "暗影惡魔", hp: 280, attack: 35, defense: 45, goldReward: 90, difficulty: 3 },
-        { id: 'x-mo1', name: "混沌-魔能哨兵", hp: 420, attack: 150, defense: 55, goldReward: 150, difficulty: 2 },
-        { id: 'x-mo2', name: "混沌-魔能戰士", hp: 400, attack: 155, defense: 65, goldReward: 150, difficulty: 2 },
-        { id: 'x-mo3', name: "混沌-魔能獵犬", hp: 370, attack: 170, defense: 55, goldReward: 150, difficulty: 2 },
-        { id: 'mo4', name: "魔能戰魂", hp: 400, attack: 190, defense: 85, goldReward: 350, difficulty: 2 },
 
-    // Boss 怪物 (Difficulty 4 & 5)
-        { id: 'boss1', name: "地城守衛者", hp: 450, attack: 140, defense: 80, goldReward: 300, difficulty: 4, isBoss: true },
+     // 混沌怪物 (Difficulty 4)
+        { id: 'x-mo1', name: "混沌-魔能哨兵", hp: 420, attack: 150, defense: 55, goldReward: 150, difficulty: 4 },
+        { id: 'x-mo2', name: "混沌-魔能戰士", hp: 400, attack: 155, defense: 65, goldReward: 150, difficulty: 4 },
+        { id: 'x-mo3', name: "混沌-魔能獵犬", hp: 370, attack: 170, defense: 55, goldReward: 150, difficulty: 4 },
+        { id: 'mo4', name: "魔能戰魂", hp: 400, attack: 190, defense: 85, goldReward: 350, difficulty: 4 },
+
+    // Boss 怪物 (Difficulty 5)
+        { id: 'boss1', name: "地城守衛者", hp: 450, attack: 140, defense: 80, goldReward: 300, difficulty: 5, isBoss: true },
         { id: 'boss2', name: "遠古巨龍", hp: 500, attack: 160, defense: 95, goldReward: 1000, difficulty: 5, isBoss: true },
-        { id: 'boss3', name: "大樹守衛", hp: 1500, attack: 150, defense: 200, goldReward: 500, difficulty: 4, isBoss: true },
+        { id: 'boss3', name: "大樹守衛", hp: 1500, attack: 150, defense: 200, goldReward: 500, difficulty: 5, isBoss: true },
         { id: 'boss4', name: "炸彈惡魔", hp: 550, attack: 175, defense: 100, goldReward: 300, difficulty: 5, isBoss: true },
         { id: 'boss5', name: "凋零女王", hp: 600, attack: 250, defense: 115, goldReward: 500, difficulty: 5, isBoss: true },
         { id: 'boss6', name: "泰坦戰甲", hp: 750, attack: 180, defense: 180, goldReward: 850, difficulty: 5, isBoss: true },
-        { id: 'x-mo4', name: "混沌-魔能戰魂", hp: 1800, attack: 220, defense: 150, goldReward: 350, difficulty: 4 },
+        { id: 'x-mo4', name: "混沌-魔能戰魂", hp: 1800, attack: 220, defense: 150, goldReward: 350, difficulty: 5 },
 
     // 世界級 Boss
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 37373, attack: 377, defense: 377, goldReward: 370, difficulty: 10, isBoss: true },
         { id: 'ori-body', name: "奧利哈鋼之軀", hp: 700700, attack: 777, defense: 777, goldReward: 370, difficulty: 10, isBoss: true },
-        { id: 'ori-god', name: "奧利哈鋼之神", hp: 7777777777777, attack: 777777, defense: 7777, goldReward: 7777, difficulty: 10, isBoss: true },
+        { id: 'ori-god', name: "奧利哈鋼之神", hp: 777777777, attack: 77777, defense: 7777, goldReward: 7777, difficulty: 10, isBoss: true },
      ];   
 
 export const ITEMS = [
@@ -61,6 +63,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '斷裂的聖劍'},
         { id: 'ori-sword', name: '奧利哈鋼聖劍', type: 'weapon', attack: 220, critChance: 0.45, image: 'icon/weapon/ori_sword.png', 
                 value: 1500, price: 3700, rarity: 10, intro: '修復完好的聖劍\n蘊含巨大能量'},
+        { id: 'ori-god-sword', name: '奧利哈鋼之神劍-亞特蘭蒂斯', type: 'weapon', attack: 520, critChance: 0.60, image: 'icon/weapon/ori-god-sword.png', 
+                value: 1500, price: 3700, rarity: 10, intro: '蘊藏奧利哈鋼神力的劍\n是傲視群雄的存在'},
         { id: 'w1', name: '生鏽的短刀', type: 'weapon', attack: 3, image: 'icon/weapon/w1.png',
                 value: 20, price: 50, rarity: 1, intro: '普通的短刀但生鏽了' },
         { id: 'w2', name: '戰士長劍', type: 'weapon', attack: 8, image: 'icon/weapon/w2.png',
@@ -99,6 +103,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '碎裂的龍骨頭盔'},
         { id: 'ori-helmet', name: '奧利哈鋼龍骨', type: 'helmet', hp: 400, defense: 150, image: 'icon/helmet/ori-helmet.png',
                 value: 1500, price: 3700, rarity: 10, intro: '完整龍骨製成的頭盔\n散發著王者的氣息'},
+        { id: 'ori-god-helmet', name: '奧利哈鋼之神盔-柏拉圖之視', type: 'helmet', hp: 750, attack: 150, defense: 250, image: 'icon/helmet/ori-god-helmet.png',
+                value: 1500, price: 3700, rarity: 10, intro: '富含神之力頭盔\n散發神的壓迫感'},
         { id: 'h1', name: '皮革帽子', type: 'helmet', defense: 15, image: 'icon/helmet/h1.png',
                 value: 70, price: 120, rarity: 1, intro: '一般的皮革帽'},
         { id: 'h2', name: '士兵鋼盔', type: 'helmet', defense: 25, image: 'icon/helmet/h2.png',
@@ -125,6 +131,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '掉落了幾片龍鱗\n但不影響戰甲的主要功能'},
         { id: 'ori-armor', name: '奧利哈鋼龍軀', type: 'armor', hp: 550, defense: 110, image: 'icon/armor/ori-armor.png',
                 value: 1500, price: 3700, rarity: 10, intro: '完整的龍鱗及骨架\n完好的包覆使用者'},
+        { id: 'ori-god-armor', name: '奧利哈鋼之神甲-失落帝國', type: 'armor', hp: 750, defense: 280, image: 'icon/armor/ori-god-armor.png',
+                value: 1500, price: 3700, rarity: 10, intro: '能自主適應穿戴者身形的鎧甲\n能更完美適配使用者'},
         { id: 'a1', name: '皮革護甲', type: 'armor', hp: 10, defense: 5, image: 'icon/armor/a1.png',
                 value: 15, price: 250, rarity: 1, intro: '普通的皮革上衣'},
         { id: 'a2', name: '鋼鐵胸甲', type: 'armor', hp: 25, defense: 15, image: 'icon/armor/a2.png',
@@ -151,6 +159,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '破損的龍鱗護脛\n有幾處破損但仍堅韌'},
         { id: 'ori-greaves', name: '奧利哈鋼龍鱗', type: 'greaves', hp: 300, defense: 150, image: 'icon/greaves/ori-greaves.png',
                 value: 1500, price: 3700, rarity: 10, intro: '完整包覆下身的龍鱗甲\n閃耀且實用'},
+        { id: 'ori-god-greaves', name: '奧利哈鋼之神鱗-海格力斯', type: 'greaves', hp: 450, defense: 250, image: 'icon/greaves/ori-greaves.png',
+                value: 1500, price: 3700, rarity: 10, intro: '由神身上剝落的鱗甲製成\n有效防禦的同時機動性還高'},
         { id: 'g1', name: '牛仔褲', type: 'greaves', defense: 15, image: 'icon/greaves/g1.png',
                 value: 60, price: 100, rarity: 1, intro: '普通的緊身牛仔褲\n些許影響行動'},
         { id: 'g2', name: '厚皮腿甲', type: 'greaves', defense: 30, image: 'icon/greaves/g2.png',
@@ -171,6 +181,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '保存不良的龍心\n效果大打折扣'},
         { id: 'ori-necklace', name: '奧利哈鋼龍心', type: 'necklace', hp: 300, defense: 35, image: 'icon/necklace/ori-necklace.png',
                 value: 1500, price: 3700, rarity: 10, intro: '保存完好的龍心\n裝備後似乎可以獲得龍之力'},
+        { id: 'ori-god-necklace', name: '奧利哈鋼之神心-克里提亞', type: 'necklace', hp: 400, attack: 50, defense: 60, image: 'icon/necklace/ori-god-necklace.png',
+                value: 1500, price: 3700, rarity: 10, intro: '神的心臟\n只有弒神者可以配戴'},
         { id: 'n1', name: '守護項鍊', type: 'necklace', hp: 20, defense: 5, image: 'icon/necklace/n1.png',
                 value: 30, price: 500, rarity: 2, intro: '守護者的初級項鍊'},
         { id: 'n2', name: '狂暴掛墜', type: 'necklace', attack: 15, image: 'icon/necklace/n2.png',
@@ -197,6 +209,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '黯淡的眼睛\n似乎無法使出全力'},
         { id: 'ori-ring', name: '奧利哈鋼魔眼', type: 'ring', attack: 140, defense: 30, critChance: 0.20, image: 'icon/ring/ori-ring.png',
                 value: 1500, price: 3700, rarity: 10, intro: '從奧利哈鋼身上取出的眼睛\n保存完好且散發不尋常的光芒'},
+        { id: 'ori-ring', name: '奧利哈鋼之神眼-蒂邁歐', type: 'ring', attack: 240, defense: 50, critChance: 0.30, image: 'icon/ring/ori-god-ring.png',
+                value: 1500, price: 3700, rarity: 10, intro: '看穿一切的神之眼\n能看見過去古文記載中的世界'},
         { id: 'r1', name: '力量之戒', type: 'ring', attack: 10, image: 'icon/ring/r1.png',
                 value: 300, price: 600, rarity: 2, intro: '配戴上後似乎充滿了力量'},
         { id: 'r2', name: '鐵壁指環', type: 'ring', defense: 10, image: 'icon/ring/r2.png',
@@ -261,13 +275,32 @@ export const ITEMS = [
         { id: 'mana_gem', name: '魔力寶石碎片', value: 800, dropRate: 0.05 },
         { id: 'ore_chunk', name: '黑鐵礦石', value: 150, dropRate: 0.35 },
         { id: 'demon_horn', name: '惡魔之角', value: 1200, dropRate: 0.08 },
+        { id: 'tough_hide', name: '堅韌獸皮', value: 75, dropRate: 0.45 },
+        { id: 'shadow_silk', name: '暗影絲線', value: 180, dropRate: 0.15 },
+        { id: 'venom_sac', name: '劇毒囊', value: 250, dropRate: 0.12 },
+        { id: 'obsidian_chunk', name: '黑曜石碎片', value: 320, dropRate: 0.10 },
+        { id: 'chaos_shard', name: '混沌結晶碎片', value: 650, dropRate: 0.04 },
+        
+        // Boss 級或稀有掉落 
+        { id: 'dragon_scale', name: '巨龍鱗片', value: 1500, dropRate: 0.02 },
+        { id: 'ancient_core', name: '遠古核心', value: 2000, dropRate: 0.015 },
+        { id: 'titan_alloy', name: '泰坦合金錠', value: 3500, dropRate: 0.005 },
+
+        // 奧利哈鋼系列掉落 
+        { id: 'ori_dust', name: '奧利哈鋼粉塵', value: 5000, dropRate: 0.003 },
+        { id: 'ori_essence', name: '奧利哈鋼精華', value: 10000, dropRate: 0.001 },
 
     ];
 
     export const STARTER_LOOT_IDS = [
     'w1', 
+    'h1',
     'a1',
+    'g1',
     'c1', 
     'c1', 
+    'c1', 
+    'c1', 
+    'c2',
     ];
     

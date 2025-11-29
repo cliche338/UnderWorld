@@ -132,14 +132,15 @@ export function renderInventoryList() {
 
     player.inventory.forEach((item, index) => { 
         const itemDiv = document.createElement('div'); 
+        let statInfo = ''
+
         itemDiv.classList.add('inventory-item'); 
-        
-        // ⭐ 修正點 1: 設置 Flex 佈局 (按鈕在左，資訊在右)
         itemDiv.style.display = 'flex';
         itemDiv.style.alignItems = 'center';
         itemDiv.style.justifyContent = 'flex-start';
         itemDiv.style.gap = '10px'; 
 
+        
         // ----------------------------------------------------
         // --- 1. 動作按鈕容器 (左側) ---
         // ----------------------------------------------------
@@ -187,36 +188,35 @@ export function renderInventoryList() {
         } else {
              // 如果沒有圖片，使用通用圖示
              const typeIcon = item.type === 'weapon' ? '⚔️ 武器' : 
-                         item.type === 'armor' ? '🛡️ 防具' : 
-                         item.type === 'necklace' ? '📿 項鍊' : 
-                         item.type === 'ring' ? '💍 戒指' : 
-                         item.type === 'helmet' ? '𪖈 頭盔' :     
-                         item.type === 'greaves' ? '👢 護脛' : 
-                         '🧪 藥水';
+                            item.type === 'armor' ? '🛡️ 防具' : 
+                            item.type === 'necklace' ? '📿 項鍊' : 
+                            item.type === 'ring' ? '💍 戒指' : 
+                            item.type === 'helmet' ? '🪖 頭盔' : 
+                            item.type === 'greaves' ? '👢 護脛' : 
+                        '🧪 藥水';
              itemDisplayHtml = `<span style="font-size: 1.2em; margin-right: 5px; vertical-align: middle;">${typeIcon}</span>`;
-        }
+         }
         
         // --- 屬性計算邏輯 (所有裝備都使用多屬性收集) ---
-        const parts = [];
-        
-        // 檢查所有裝備類型可能擁有的屬性，並將其全部加入 parts 陣列
-        if (item.attack) parts.push(getStatString(item.attack, 'ATK'));
-        if (item.hp) parts.push(getStatString(item.hp, 'HP'));
-        if (item.defense) parts.push(getStatString(item.defense, 'DEF'));
-        if (item.critChance) parts.push(getStatString(item.critChance, '暴擊率'));
-        
-        // 治療屬性只適用於消耗品
-        if (item.heal) parts.push(`+${item.heal} 治療`);
+const parts = [];
 
-        statInfo = parts.join(', ');
-        
+        // 檢查所有裝備類型可能擁有的屬性，並將其全部加入 parts 陣列
+        if (item.attack) parts.push(getStatString(item.attack, 'ATK'));
+        if (item.hp) parts.push(getStatString(item.hp, 'HP'));
+        if (item.defense) parts.push(getStatString(item.defense, 'DEF'));
+        if (item.critChance) parts.push(getStatString(item.critChance, '暴擊率'));
+
+        // 治療屬性只適用於消耗品
+        if (item.heal) parts.push(`+${item.heal} 治療`);
+
+        statInfo = parts.join(', ');
+
         // 組合最終 HTML
-        itemInfoDiv.innerHTML = `${itemDisplayHtml} **${item.name}** (${statInfo}) `;
-        
-        itemDiv.appendChild(itemInfoDiv);
-        
-        elements.inventoryList.appendChild(itemDiv); 
-    });
+        itemInfoDiv.innerHTML = `${itemDisplayHtml} **${item.name}** (${statInfo}) `;
+
+        itemDiv.appendChild(itemInfoDiv);
+        elements.inventoryList.appendChild(itemDiv); 
+        });
 }
 
 export function renderMaterialInventory() { 
