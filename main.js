@@ -70,6 +70,18 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-   
+   if (elements.modalCloseBtn) {
+        elements.modalCloseBtn.onclick = () => {
+            
+            // ⭐ 修正邏輯：如果圖鑑處於開啟狀態，則呼叫 toggleCodex 關閉圖鑑 ⭐
+            if (elements.modalBody.classList.contains('codex-modal')) {
+                // toggleCodex 會處理隱藏背景、移除樣式和清理篩選器的所有步驟
+                GameLogic.toggleCodex(); 
+            } else {
+                // 否則，執行通用關閉邏輯（用於玩法說明、更新日誌）
+                elements.modalBackdrop.style.display = 'none';
+            }
+        };
+    }
     
 });
