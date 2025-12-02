@@ -97,7 +97,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none'; 
     }
 
-    const title = "V3.01 遊戲更新日誌";
+    const title = "V3.02 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 
