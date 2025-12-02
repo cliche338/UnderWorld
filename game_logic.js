@@ -1008,6 +1008,9 @@ export function calculateTotalDefense() {
     totalDefense += State.permanentData.defenseBonus || 0;
 
     // 裝備加成
+    if (State.player.equipment.weapon) { 
+        totalDefense += State.player.equipment.weapon.defense || 0;
+    }
     if (State.player.equipment.helmet) {
         totalDefense += State.player.equipment.helmet.defense || 0;
     }
@@ -1016,6 +1019,12 @@ export function calculateTotalDefense() {
     }
     if (State.player.equipment.greaves) {
         totalDefense += State.player.equipment.greaves.defense || 0;
+    }
+    if (State.player.equipment.necklace) { 
+        totalDefense += State.player.equipment.necklace.defense || 0;
+    }
+    if (State.player.equipment.ring) {
+        totalDefense += State.player.equipment.ring.defense || 0;
     }
     return totalDefense;
 }
