@@ -50,6 +50,9 @@ export const MONSTERS = [
         { id: 'boss6', name: "泰坦戰甲", hp: 750, attack: 180, defense: 180, goldReward: 850, difficulty: 5, isBoss: true },
         { id: 'x-mo4', name: "混沌-魔能戰魂", hp: 1800, attack: 220, defense: 150, goldReward: 350, difficulty: 5 },
 
+    // 活動 Boss
+        { id: 'xmasboss', name: "猩紅尼古拉", hp: 1500, attack: 320, defense: 150, goldReward: 1350, difficulty: 8 },
+
     // 世界級 Boss
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 37373, attack: 377, defense: 377, goldReward: 370, difficulty: 10, isBoss: true },
         { id: 'ori-body', name: "奧利哈鋼之軀", hp: 737373, attack: 777, defense: 777, goldReward: 370, difficulty: 10, isBoss: true },
@@ -65,6 +68,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '修復完好的聖劍\n蘊含巨大能量'},
         { id: 'ori-god-sword', name: '奧利哈鋼之神劍-亞特蘭蒂斯', type: 'weapon', attack: 520, critChance: 0.60, image: 'icon/weapon/ori-god-sword.png', 
                 value: 1500, price: 3700, rarity: 10, intro: '蘊藏奧利哈鋼神力的劍\n是傲視群雄的存在'},
+        { id: 'xmas-sword', name: '聖誕樹冰劍', type: 'weapon', attack: 70, defense: 20, image: 'icon/weapon/xmas-sword.png',
+                value: 1200, price: 5500, rarity: 10, intro: '聖誕節限時副本掉落'},
         { id: 'w1', name: '生鏽的短刀', type: 'weapon', attack: 3, image: 'icon/weapon/w1.png',
                 value: 20, price: 50, rarity: 1, intro: '普通的短刀但生鏽了' },
         { id: 'w2', name: '戰士長劍', type: 'weapon', attack: 8, image: 'icon/weapon/w2.png',
@@ -97,6 +102,8 @@ export const ITEMS = [
              //value: 1400, price: 3000, rarity: 10, intro: '「龍麟 反發 成雙之流星」'},
         { id: 'w16', name: '噬魂七星劍', type: 'weapon', attack: 250, critChance: 0.65, defense: -150, image: 'icon/weapon/w16.png',
                 value: 1700, price: 2600, rarity: 9, intro: '「想獲得強大的力量就必須犧牲點什麼...」'},
+        { id: 'w17', name: '名刀月隱', type: 'weapon', attack: 125, critChance: 0.25, image: 'icon/weapon/w17.png',
+                value: 700, price: 1600, rarity: 9, intro: '由瑟利亞的刀匠以輝石鍛造\n因其收刀入鞘時會散發微光而得名。'},
        
     // 頭盔
         { id: 'ori-broken-helmet', name: '碎裂的奧利哈鋼頭骨', type: 'helmet', hp: 200, defense: 85, image: 'icon/helmet/ori-broken-helmet.png',
@@ -105,6 +112,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '完整龍骨製成的頭盔\n散發著王者的氣息'},
         { id: 'ori-god-helmet', name: '奧利哈鋼之神盔-柏拉圖之視', type: 'helmet', hp: 750, attack: 150, defense: 250, image: 'icon/helmet/ori-god-helmet.png',
                 value: 1500, price: 3700, rarity: 10, intro: '富含神之力頭盔\n散發神的壓迫感'},
+        { id: 'xmas-helmet', name: '聖誕帽', type: 'helmet', attack: 30, defense: 25, image: 'icon/weapon/xmas-helmet.png',
+                value: 1200, price: 5500, rarity: 10, intro: '聖誕節限時副本掉落'},
         { id: 'h1', name: '皮革帽子', type: 'helmet', defense: 15, image: 'icon/helmet/h1.png',
                 value: 70, price: 120, rarity: 1, intro: '一般的皮革帽'},
         { id: 'h2', name: '士兵鋼盔', type: 'helmet', defense: 25, image: 'icon/helmet/h2.png',
@@ -133,6 +142,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '完整的龍鱗及骨架\n完好的包覆使用者'},
         { id: 'ori-god-armor', name: '奧利哈鋼之神甲-失落帝國', type: 'armor', hp: 750, defense: 280, image: 'icon/armor/ori-god-armor.png',
                 value: 1500, price: 3700, rarity: 10, intro: '能自主適應穿戴者身形的鎧甲\n能更完美適配使用者'},
+        { id: 'xmas-armor', name: '聖誕服', type: 'armor', hp: 55, defense: 45, image: 'icon/weapon/xmas-armor.png',
+                value: 1200, price: 5500, rarity: 10, intro: '聖誕節限時副本掉落'},
         { id: 'a1', name: '皮革護甲', type: 'armor', hp: 10, defense: 5, image: 'icon/armor/a1.png',
                 value: 15, price: 250, rarity: 1, intro: '普通的皮革上衣'},
         { id: 'a2', name: '鋼鐵胸甲', type: 'armor', hp: 25, defense: 15, image: 'icon/armor/a2.png',
@@ -161,6 +172,8 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '完整包覆下身的龍鱗甲\n閃耀且實用'},
         { id: 'ori-god-greaves', name: '奧利哈鋼之神鱗-海格力斯', type: 'greaves', hp: 450, defense: 250, image: 'icon/greaves/ori-greaves.png',
                 value: 1500, price: 3700, rarity: 10, intro: '由神身上剝落的鱗甲製成\n有效防禦的同時機動性還高'},
+        { id: 'xmas-greaves', name: '聖誕襪', type: 'greaves', attack: 25, defense: 30, image: 'icon/weapon/xmas-greaves.png',
+                value: 1200, price: 5500, rarity: 10, intro: '聖誕節限時副本掉落'},
         { id: 'g1', name: '牛仔褲', type: 'greaves', defense: 15, image: 'icon/greaves/g1.png',
                 value: 60, price: 100, rarity: 1, intro: '普通的緊身牛仔褲\n些許影響行動'},
         { id: 'g2', name: '厚皮腿甲', type: 'greaves', defense: 30, image: 'icon/greaves/g2.png',
@@ -285,6 +298,9 @@ export const ITEMS = [
         { id: 'dragon_scale', name: '巨龍鱗片', value: 1500, dropRate: 0.02 },
         { id: 'ancient_core', name: '遠古核心', value: 2000, dropRate: 0.015 },
         { id: 'titan_alloy', name: '泰坦合金錠', value: 3500, dropRate: 0.005 },
+
+        // 活動Boss掉落
+        { id: 'xmas-star', name: '聖誕星', value: 1500, dropRate: 0.005 },
 
         // 奧利哈鋼系列掉落 
         { id: 'ori_dust', name: '奧利哈鋼粉塵', value: 5000, dropRate: 0.003 },

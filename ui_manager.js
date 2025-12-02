@@ -107,6 +107,14 @@ export const elements = {
         codexBtn: document.getElementById('codex-toggle-btn'),
         codexList: document.getElementById('codex-list'), 
         codexFilters: document.getElementById('codex-filters'),
+        
+        dungeonEntrancePanel: document.getElementById('dungeon-entrance-panel'), 
+        dungeonEnterBtn: document.getElementById('dungeon-enter-btn'),
+        dungeonChallengeBackdrop: document.getElementById('dungeon-challenge-modal-backdrop'),
+        dungeonChallengeTitle: document.getElementById('dungeon-challenge-title'),
+        dungeonChallengeInfo: document.getElementById('dungeon-challenge-info'),
+        dungeonChallengeBtn: document.getElementById('dungeon-challenge-btn'),
+        dungeonLeaveBtn: document.getElementById('dungeon-leave-btn'),
 
 };
 
@@ -366,6 +374,22 @@ export function updateDisplay() {
     elements.upgradeHpBtn.textContent = `永久 HP+5 (消耗 ${UPGRADE_COST} 💎) \n[當前加成: +${permanentData.hpBonus}]`; 
     elements.upgradeAttackBtn.textContent = `永久 ATK+5 (消耗 ${UPGRADE_COST} 💎) \n[當前加成: +${permanentData.attackBonus}]`; 
     elements.upgradeDefenseBtn.textContent = `永久 DEF+5 (消耗 ${UPGRADE_COST} 💎) \n[當前加成: +${permanentData.defenseBonus}]`;
+}
+
+export function showDungeonChallengeModal(bossName, infoText) {
+    if (!elements.dungeonChallengeBackdrop) return;
+    
+    // 更新內容並顯示
+    elements.dungeonChallengeTitle.textContent = `🔥 挑戰：${bossName} 🔥`;
+    elements.dungeonChallengeInfo.textContent = infoText;
+    elements.dungeonChallengeBackdrop.style.display = 'flex';
+    
+    logMessage(`🔔 挑戰副本 Boss 提示已顯示: ${bossName}`, 'orange');
+}
+
+export function hideDungeonChallengeModal() {
+    if (!elements.dungeonChallengeBackdrop) return;
+    elements.dungeonChallengeBackdrop.style.display = 'none';
 }
 
 export function updateExchangeDisplay() {

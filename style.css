@@ -163,7 +163,7 @@ input:focus {
 
 /* 3.2. 城鎮區 */
 #hub-area { 
-    flex: 3; 
+    flex: 2; 
     min-width: 300px;
     background: #3d3326;
     border-color: #6e5a3d;
@@ -225,34 +225,46 @@ input:focus {
 }
 
 #auth-area {
-    /* 縮減頂部面板的外部垂直填充空間 */
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
+    padding-top: 8px !important;     /* 將頂部填充縮小到 8px */
+    padding-bottom: 8px !important;  /* 將底部填充縮小到 8px */
     margin-bottom: 15px !important;
+    /* 由於您已經將 h3 內的內容封裝進去了，我們不使用標準的 h3 樣式 */
 }
 
+/* 2. 確保 H3 及其內部內容的間距被強力歸零 */
+#auth-area h3 {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    line-height: 1.1 !important; /* 進一步壓縮行高 */
+    font-size: 1.1em; /* 確保標題大小正常 */
+}
+
+/* 3. 確保 p 標籤的垂直間距也被歸零 (重要) */
+#auth-area p {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important; 
+    line-height: 1.2 !important; 
+}
+
+/* 4. 微調登入/登出視圖 DIV 的間距，讓它緊跟在標題後 */
 #auth-area #logged-in-view,
 #auth-area #logged-out-view {
-    margin-top: 0px !important; 
+    margin-top: 5px !important; /* 確保內容不會直接貼著 H3 文字 */
     margin-bottom: 0px !important; 
     padding: 0 !important;
 }
 
-#auth-area h3,
-#auth-area p {
-    margin-top: 0 !important;      /*頂部邊距 */
-    margin-bottom: 0 !important;   /* 底部邊距 */
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    line-height: 1.2 !important;   /* 壓縮行高 */
-}
-
-#auth-area #logged-in-view button {
-    margin-top: 5px !important; 
-}
-
+/* 確保整個 Flex 容器能夠在面板內向上對齊 */
 #auth-area > div:first-child {
-    margin-bottom: 0px !important; 
+    align-items: flex-start !important; /* 忽略 align-items: center，強制子元素從頂部開始排 */
+}
+
+/* 修正功能按鈕群組的頂部間距 */
+#func-buttons-group {
+    /* 如果您有將功能按鈕群組放在這個 ID 裡，確保移除 margin-top */
+    margin-top: 0px !important;
 }
 
 /* 統一底部間距 */
@@ -422,7 +434,7 @@ input:focus {
 .codex-card {
     display: flex !important;
     flex-direction: column !important;
-    align-items: left !important;
+    align-items: center !important;
 }
 
 /* ========================================= */

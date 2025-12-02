@@ -16,6 +16,7 @@ import { logMessage, updateDisplay, elements,
 
 export let currentShopInventory = [];
 let currentCodexFilter = 'all';
+export let isDungeonAvailable = false;
 
 function openModal(title, content, modalClass) {
 
@@ -86,19 +87,9 @@ export function showHowToPlay() {
 export function showUpdateLog() {
     const updateLog = `
 
-- 調整人物基礎體質 >> HP:150, ATK:15, DEF:10, GOLD:150
-- 調整怪物刷新難度
-- 新增特殊boss掉落素材
-- 調整初始補給
-- 下調"奧利哈鋼之軀"強度 >> hp: 737373, attack: 777, defense: 777
-- 下調"奧利哈鋼之神"強度 >> hp: 77777777, attack: 77777, defense: 7777
-- 新增擊敗"奧利哈鋼之神"掉落道具(非素材類) >> 
-    奧利哈鋼之神劍-亞特蘭提斯
-    奧利哈鋼之神盔-柏拉圖之視
-    奧利哈鋼之神甲-失落帝國
-    奧利哈鋼之神鱗-海格力斯
-    奧利哈鋼之神心-克里提亞
-    奧利哈鋼之神眼-蒂邁歐
+- 新增限時活動 : 挑戰猩紅尼古拉
+- 新增武器 : 聖誕樹冰劍、名刀月隱
+- 新增裝備 : 聖誕帽、聖誕服、聖誕襪
 
     `;
     
@@ -515,7 +506,22 @@ export function endGame(reason) {
         
         // 6. 切換到死亡介面
         enterDeathMode(); 
-        
+        if (State.currentMonster && State.currentMonster.isDungeonBoss) { 
+            
+            // 呼叫 UI 函式，並傳遞 'defeat' 模式
+            showDungeonChallengeModal(
+                `挑戰失敗：${State.currentMonster.name}`, 
+                `你被強大的 Boss 擊敗，已經被送回城鎮。請準備更完善後再行挑戰。`, 
+                'defeat' // 傳遞 'defeat' 模式
+            );
+            
+            // 由於模態框會擋住，我們讓模態框的「離開」按鈕處理復原和進入城鎮模式。
+            // 這裡不執行 enterDeathMode，而是讓模態框的「離開」按鈕執行復原
+            logMessage("❌ Boss 戰敗，等待玩家點擊離開確認。", 'red');
+            return; // 阻止繼續執行後續的 updateDisplay/enterDeathMode
+        }
+
+
     } else {
         // 非死亡結束
         logMessage(`🎉 恭喜！冒險結束。`, 'gold');
@@ -766,6 +772,73 @@ export function getRandomMonster() {
     const selectedMonster = weightedPool[randomIndex];
     
     return JSON.parse(JSON.stringify(selectedMonster));
+}
+
+export function toggleDungeonEntrance(isVisible) {
+    // 之前已經修正為 #dungeon-entrance-panel，此處只做邏輯確認
+    const container = elements.dungeonEntrancePanel; // 假設 ui_manager 已經引用它
+    if (!container) return;
+
+    container.style.display = isVisible ? 'flex' : 'none'; 
+    isDungeonAvailable = isVisible;
+    
+    if (isVisible) {
+        logMessage("🚨 偵測到強大的 Boss 氣息！請從副本入口進入挑戰。", 'red');
+        if (elements.exploreBtn) elements.exploreBtn.disabled = true; 
+    } else {
+        if (elements.exploreBtn) elements.exploreBtn.disabled = false; 
+    }
+}
+
+export function getDungeonBoss() {
+    
+    // ⭐ 直接指定副本 Boss ID ⭐
+    const bossId = 'xmasboss'; 
+
+    const boss = MONSTERS.find(m => m.id === bossId);
+    
+    if (boss) {
+        logMessage(`🔥 你感應到強大的氣息... Boss：${boss.name} 準備就緒！`, 'orange');
+        
+        // 🚨 關鍵：返回時確保 Boss 數據被複製，且包含 isDungeonBoss 旗標
+        const monsterData = JSON.parse(JSON.stringify(boss));
+        
+        // 確保即使配置中沒有，這裡也強制加上，避免 endGame 判斷失敗
+        monsterData.isDungeonBoss = true; 
+        
+        return monsterData;
+    }
+    
+    logMessage("❌ 系統錯誤 ", 'red');
+    return null;
+}
+
+export function handleDungeonBossCombat() {
+    if (!State.gameActive) { 
+        logMessage("請先選擇職業開始冒險！", 'red'); 
+        return; 
+    }
+    
+    const monster = getDungeonBoss(); 
+
+    if (!monster) {
+        logMessage("❌ 無法啟動副本戰鬥，請稍後再試。", 'red');
+        switchUIMode(false); 
+        return;
+    }
+
+    // 1. 設置戰鬥狀態
+    State.setIsCombatActive(true); 
+    State.setCurrentMonster(monster); 
+    
+    // 2. 切換按鈕 UI
+    switchUIMode(true); // 進入戰鬥模式 (顯示攻擊/逃跑按鈕)
+    
+    // 3. 輸出遭遇日誌
+    logMessage(`🚨 副本挑戰啟動！遭遇 Boss: ${State.currentMonster.name} (HP: ${State.currentMonster.hp})！`, 'red'); 
+    logMessage(`--- 請選擇行動 ---`, 'white');
+
+    updateDisplay();
 }
 
 export function startCombat() {
@@ -1222,7 +1295,7 @@ export function endCombat(isVictory) {
         State.player.gold += gold;
         logMessage(`💰 擊敗 ${enemy.name}，獲得 ${gold} 金幣。`, 'yellow');
 
-        // 擊敗奧利哈鋼幻影
+        // 擊敗 奧利哈鋼幻影
         if (enemy.id === 'ori-shadow') { 
             
             const rareLootIds = [
@@ -1252,7 +1325,7 @@ export function endCombat(isVictory) {
             logMessage(`✨ 獲得稀有素材 [奧利哈鋼粉塵] x${dustCount}！`, 'gold');
         }
 
-        //擊敗奧利哈鋼之軀
+        //擊敗 奧利哈鋼之軀
         if (enemy.id === 'ori-body') { 
             
             const rareLootIds = [
@@ -1287,7 +1360,7 @@ export function endCombat(isVictory) {
             logMessage(`✨ 獲得稀有素材 [奧利哈鋼粉塵] x${dustCount}！`, 'gold');
         }
 
-        //擊敗奧利哈鋼之神
+        //擊敗 奧裡哈鋼之神
         if (enemy.id === 'ori-god') { 
             
             const rareLootIds = [
@@ -1322,7 +1395,36 @@ export function endCombat(isVictory) {
             logMessage(`✨ 獲得稀有素材 [奧利哈鋼粉塵] x${dustCount}！`, 'gold');
         }
 
-        if (enemy.isBoss && enemy.id !== 'ori-shadow' && enemy.id !== 'ori-body' && enemy.id !== 'ori-god') { 
+        //擊敗 猩紅尼古拉
+        if (enemy.id === 'xmasboss') { 
+            
+            const rareLootIds = [
+                'xmas-sword',         // 武器
+                'xmas-helmet',        // 頭盔
+                'xmas-armor',         // 胸甲
+                'xmas-greaves',       // 護脛
+                'xmas-necklace',      // 項鍊
+                'xmas-ring',          // 戒指
+            ];
+            
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+            
+            const newItem = getItemById(rareLootId); 
+            
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
+
+            const dustId = 'xmas-star';
+            const dustCount = 1;
+            State.player.materials[dustId] = (State.player.materials[dustId] || 0) + dustCount;
+            logMessage(`✨ 獲得稀有素材 [聖誕星] x${dustCount}！`, 'gold');
+        }
+
+        if (enemy.isBoss && enemy.id !== 'ori-shadow' && enemy.id !== 'ori-body' && enemy.id !== 'ori-god' && enemy.id !== 'xmasboss') { 
             
             // 掉落高品質材料
             const scaleId = 'dragon_scale'; // 假設是巨龍鱗片 (稀有)
