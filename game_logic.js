@@ -1186,6 +1186,8 @@ export function handleAttack() {
     if (!isCombatActive) return;
 
     const totalAttack = calculateTotalAttack();
+    // ⭐ 修正點 1：新增總防禦力計算 ⭐
+    const totalDefense = calculateTotalDefense(); 
     const monsterDefense = parseInt(State.currentMonster.defense) || 0; 
     
     // --- 暴擊判定 ---
@@ -1217,19 +1219,22 @@ export function handleAttack() {
     }
     
     logMessage(`💥 ${State.currentMonster.name} 剩餘 HP: ${State.currentMonster.hp}`, 'yellow');
+    
     // 4. 怪物反擊 -
     // 4-1. 怪物暴擊判定：固定為 40% 
     const MONSTER_CRIT_CHANCE = 0.40; 
     const isMonsterCritical = Math.random() < MONSTER_CRIT_CHANCE;
     const monsterDamageMultiplier = isMonsterCritical ? 2 : 1;
     
-    // 4-2. 計算基礎傷害 (已減免玩家防禦)
-    let damageReceived = Math.max(5, State.currentMonster.attack - State.player.defense);
+    // 4-2. 計算基礎傷害 (減去玩家的總防禦力)
+    // ⭐ 修正點 2：使用 totalDefense 變數 ⭐
+    let damageReceived = Math.max(5, State.currentMonster.attack - totalDefense);
     
     // 4-3. 套用怪物暴擊倍率
     damageReceived *= monsterDamageMultiplier;
     
     damageReceived = Math.round(damageReceived);
+    
     // 4-4. 輸出暴擊訊息
     if (isMonsterCritical) {
         logMessage(`🔥 怪物暴擊！${State.currentMonster.name} 對你造成了雙倍傷害！`, 'orange');
@@ -1237,7 +1242,9 @@ export function handleAttack() {
     
     // 5. 對玩家造成傷害
     State.player.hp -= damageReceived;
-    logMessage(`❌ ${State.currentMonster.name} 對你造成了 ${damageReceived} 點傷害 (已減免 ${State.player.defense} 防禦)！`, 'red');
+    
+    // ⭐ 修正點 3：日誌顯示正確的 totalDefense 值 ⭐
+    logMessage(`❌ ${State.currentMonster.name} 對你造成了 ${damageReceived} 點傷害 (已減免 ${totalDefense} 防禦)！`, 'red');
 
     // 6. 檢查死亡
     if (State.player.hp <= 0) {
@@ -1255,7 +1262,6 @@ export function handleAttack() {
     updateDisplay(); 
     logMessage(`--- 請選擇下一回合行動 ---`, 'white'); 
 }
-
 export function handleUpgradeHp() {
     const cost = UPGRADE_COST;
     const hpIncrease = 5;
