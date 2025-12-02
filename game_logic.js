@@ -1376,7 +1376,6 @@ export function endCombat(isVictory) {
                 'ori-god-greaves',  // 護脛
                 'ori-god-necklace', // 項鍊
                 'ori-god-ring',     // 戒指
-                'ori-blood'     // 消耗品
             ];
             
             // 隨機選擇其中一件
