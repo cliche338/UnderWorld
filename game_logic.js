@@ -87,9 +87,7 @@ export function showHowToPlay() {
 export function showUpdateLog() {
     const updateLog = `
 
-- 新增限時活動 : 挑戰猩紅尼古拉
-- 新增武器 : 聖誕樹冰劍、名刀月隱
-- 新增裝備 : 聖誕帽、聖誕服、聖誕襪
+- 修正登入畫面顯示"副本入口"、"遊戲提示"、"更新日誌"及"道具圖鑑"
 
     `;
     
@@ -97,7 +95,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none'; 
     }
 
-    const title = "V3.02 遊戲更新日誌";
+    const title = "v3.03 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal'); 
 }
 
@@ -1856,6 +1854,12 @@ export function handleSuccessfulLogin(username) {
     elements.currentUsernameDisplay.textContent = username;
     elements.gameContent.style.display = 'block';
 
+    //登入成功後：顯示相關按鈕和副本入口
+    elements.howToPlayBtn.style.display = 'block';
+    elements.updateLogBtn.style.display = 'block';
+    elements.codexBtn.style.display = 'block';
+    elements.dungeonEntrancePanel.style.display = 'block';
+
     // 啟動遊戲 (載入永久數據和 Run Data)
     initializeGame();
 }
@@ -1951,6 +1955,12 @@ export function handleLogout() {
     elements.gameContent.style.display = 'none';    // 隱藏整個遊戲內容
     elements.classSelection.style.display = 'none'; // 隱藏職業選擇按鈕
     
+    // 6.登出時：隱藏不屬於登入介面的按鈕和緊急通知 
+    elements.howToPlayBtn.style.display = 'none';
+    elements.updateLogBtn.style.display = 'none';
+    elements.codexBtn.style.display = 'none';
+    elements.dungeonEntrancePanel.style.display = 'none';
+
     updateDisplay(); // 統一更新畫面
 }
 
@@ -1966,5 +1976,10 @@ export function checkLocalLogin() {
         
         elements.gameContent.style.display = 'none';
         elements.loggedOutView.style.display = 'block';
+
+        elements.howToPlayBtn.style.display = 'none';
+        elements.updateLogBtn.style.display = 'none';
+        elements.codexBtn.style.display = 'none';
+        elements.dungeonEntrancePanel.style.display = 'none';
     }
 }

@@ -301,21 +301,27 @@ export function renderMaterialInventory() {
 // =========================================================
 
 export function logMessage(message, color = 'white') {
-        const p = document.createElement('p'); //
-        p.innerHTML = message; //
-        p.style.color = color; //
-        
-        // 確保只保留最新的訊息
-        if (elements.messages.children.length > 100) { //
-            elements.messages.removeChild(elements.messages.children[0]); //
-        }
-        elements.messages.appendChild(p); //
-        
-        // 自動滾動到底部
-        if (elements.gameLog) { //
-        elements.gameLog.scrollTop = elements.gameLog.scrollHeight; //
+    if (!elements.messages) {
+        // 如果訊息區域尚未載入 (例如在登入畫面時)，則直接返回或使用 console.log 替代
+        console.log(`[LOG] ${message}`);
+        return; 
     }
+    
+    const p = document.createElement('p'); 
+    p.innerHTML = message; 
+    p.style.color = color; 
+    
+    // 確保只保留最新的訊息
+    if (elements.messages.children.length > 100) { 
+        elements.messages.removeChild(elements.messages.children[0]); 
     }
+    elements.messages.appendChild(p); 
+    
+    // 自動滾動到底部
+    if (elements.gameLog) { 
+        elements.gameLog.scrollTop = elements.gameLog.scrollHeight; 
+    }
+}
 
 export function updateDisplay() {
     // 1. 計算總攻擊力 (從 game_logic.js 取得)

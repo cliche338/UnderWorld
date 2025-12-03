@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 🚨 注意：這裡不再立即隱藏地圖入口
             
             // 呼叫模態框顯示函式 (可以根據實際 Boss 傳入名字)
-            showDungeonChallengeModal('古代巨龍', '你確定要挑戰這個強大的 Boss 嗎？你將面對一場沒有退路的戰鬥！');
+            showDungeonChallengeModal('你確定要挑戰這個強大的 Boss 嗎？你將面對一場沒有退路的戰鬥！');
         };
     }
 
