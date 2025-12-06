@@ -1,15 +1,15 @@
 <head>
     <title>地下城-奧利哈鋼</title>
     <link rel="icon" type="image/png" href="Orichalcum.png">
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="style.css">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <div id="custom-modal-backdrop" style="display: none;">
     <div id="update-log-modal" class="panel">
-        
-        <h3 id="modal-title" style="color: #f39c12; margin-top: 0;"></h3> 
+
+        <h3 id="modal-title" style="color: #f39c12; margin-top: 0;"></h3>
 
         <div id="codex-filters" style="margin-bottom: 15px; text-align: center; display: none;">
             <button data-filter="all">所有道具</button>
@@ -21,26 +21,29 @@
             <button data-filter="ring">💍 戒指</button>
             <button data-filter="consumable">🧪 藥水</button>
         </div>
-        
+
         <div id="modal-content">
-            </div>
+        </div>
         <button id="modal-close-btn" style="margin-top: 15px;">確定</button>
     </div>
 </div>
 
-<div id="dungeon-challenge-modal-backdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); justify-content: center; align-items: center; z-index: 1010;">
-    <div id="dungeon-challenge-modal" class="panel" style="background: #3d3326; border-color: #f39c12; padding: 30px; border-radius: 10px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);">
-        
-        <h3 id="dungeon-challenge-title" style="color: #f39c12; margin-top: 0;">🔥 挑戰：古代巨龍 🔥</h3> 
-        
+<div id="dungeon-challenge-modal-backdrop"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); justify-content: center; align-items: center; z-index: 1010;">
+    <div id="dungeon-challenge-modal" class="panel"
+        style="background: #3d3326; border-color: #f39c12; padding: 30px; border-radius: 10px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);">
+
+        <h3 id="dungeon-challenge-title" style="color: #f39c12; margin-top: 0;">🔥 挑戰：古代巨龍 🔥</h3>
+
         <p id="dungeon-challenge-info" style="margin: 15px 0 25px 0;">
             你確定要挑戰這個強大的 Boss 嗎？你將面對一場沒有退路的戰鬥！
         </p>
 
         <div style="display: flex; justify-content: center;">
-            
+
             <div id="dungeon-challenge-btn-group" style="display: flex; justify-content: space-around; width: 100%;">
-                <button id="dungeon-challenge-btn" style="background-color: #e74c3c; border-color: #ff8888; min-width: 120px;">
+                <button id="dungeon-challenge-btn"
+                    style="background-color: #e74c3c; border-color: #ff8888; min-width: 120px;">
                     ⚔️ 挑戰
                 </button>
                 <button id="dungeon-leave-btn" style="background-color: #666; border-color: #aaa; min-width: 120px;">
@@ -49,182 +52,203 @@
             </div>
 
             <div id="dungeon-defeat-btn-group" style="display: none; width: 100%;">
-                <button id="dungeon-defeat-leave-btn" style="background-color: #666; border-color: #aaa; min-width: 120px; margin: 0 auto;">
+                <button id="dungeon-defeat-leave-btn"
+                    style="background-color: #666; border-color: #aaa; min-width: 120px; margin: 0 auto;">
                     🚪 離開
                 </button>
             </div>
         </div>
-        </div>
+    </div>
 </div>
+
 <body>
     <div class="game-container">
-        
+
         <div id="auth-area" class="panel">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px;">
-            <h3>👤 帳號管理
-                
-                <div id="logged-out-view">
-                <p style="margin-bottom: 10px;">請輸入帳號密碼來登入或創建帳號：</p>
-                
-                <div style="margin-bottom: 8px;">
-                    <label for="username-input">帳號：</label>
-                    <input type="text" id="username-input" placeholder="請輸入帳號" required>
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <label for="password-input">密碼：</label>
-                    <input type="password" id="password-input" placeholder="請輸入密碼" required>
-                </div>
-                
-                <button id="login-btn" style="background-color: #3498db; margin-right: 15px;">登入</button>
-                
-                <button id="create-account-btn" style="background-color: #2ecc71;">創建帳號</button>
+                <h3>👤 帳號管理
 
-                <div style="margin-top: 10px; font-size: 0.9em;">
-                    <a href="#" onclick="alert('請聯繫管理員重設密碼'); return false;">忘記密碼？</a>
-                </div>
-            </div>
+                    <div id="logged-out-view">
+                        <p style="margin-bottom: 10px;">請輸入帳號密碼來登入或創建帳號：</p>
 
-            <div id="logged-in-view" style="display: none;">
-                <p>歡迎回來，<span id="current-username"></span>！</p>
-                <button id="logout-btn">登出</button>
-            </div>
+                        <div style="margin-bottom: 8px;">
+                            <label for="username-input">帳號：</label>
+                            <input type="text" id="username-input" placeholder="請輸入帳號" required>
+                        </div>
 
-            </h3>
-            
-            <div id="top-central-adventures" style="margin-bottom: 15px; display: none; width: 100%; display: flex; justify-content: center;">
-                <div id="dungeon-entrance-panel" class="panel" style="text-align: center; background: #331f1f; border-color: #7b4e4e; padding: 15px; max-width: 600px; width: 95%;">
+                        <div style="margin-bottom: 15px;">
+                            <label for="password-input">密碼：</label>
+                            <input type="password" id="password-input" placeholder="請輸入密碼" required>
+                        </div>
+
+                        <button id="login-btn" style="background-color: #3498db; margin-right: 15px;">登入</button>
+
+                        <button id="create-account-btn" style="background-color: #2ecc71;">創建帳號</button>
+
+                        <div style="margin-top: 10px; font-size: 0.9em;">
+                            <a href="#" onclick="alert('請聯繫管理員重設密碼'); return false;">忘記密碼？</a>
+                        </div>
+                    </div>
+
+                    <div id="logged-in-view" style="display: none;">
+                        <p>歡迎回來，<span id="current-username"></span>！</p>
+                        <button id="logout-btn">登出</button>
+                    </div>
+
+                </h3>
+
+                <div id="top-central-adventures"
+                    style="margin-bottom: 15px; display: none; width: 100%; display: flex; justify-content: center;">
+                    <div id="dungeon-entrance-panel" class="panel"
+                        style="text-align: center; background: #331f1f; border-color: #7b4e4e; padding: 15px; max-width: 600px; width: 95%;">
                         <h3>🚨 緊急通知 🚨</h3>
                         <p>強大的氣息正在前方凝聚，你準備好面對挑戰了嗎？</p>
-                        <button id="dungeon-enter-btn" style="background-color: #8c0000; border-color: #ff5555; margin-top: 15px; min-width: 250px;">
+                        <button id="dungeon-enter-btn"
+                            style="background-color: #8c0000; border-color: #ff5555; margin-top: 15px; min-width: 250px;">
                             🔥 進入副本挑戰！
                         </button>
                     </div>
-            </div>
-                
-            <div style="display: flex; flex-direction: column; align-items: flex-end;"> 
-                
-                <button id="how-to-play-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #f39c12; color: white; margin-top: 10px;">
-                    ❓ 遊戲提示
-                </button>
-                
-                <button id="update-log-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #2ecc71; color: white; margin-top: 10px;">
-                    📢 最新更新
-                </button>
+                </div>
 
-                <button id="codex-toggle-btn" style="padding: 5px 10px; font-size: 0.9em; background-color: #7f8c8d; color: white; margin-top: 10px;">
-                    📜 道具圖鑑
-                </button>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
 
+                    <button id="how-to-play-btn"
+                        style="padding: 5px 10px; font-size: 0.9em; background-color: #f39c12; color: white; margin-top: 10px;">
+                        ❓ 遊戲提示
+                    </button>
+
+                    <button id="update-log-btn"
+                        style="padding: 5px 10px; font-size: 0.9em; background-color: #2ecc71; color: white; margin-top: 10px;">
+                        📢 最新更新
+                    </button>
+
+                    <button id="codex-toggle-btn"
+                        style="padding: 5px 10px; font-size: 0.9em; background-color: #7f8c8d; color: white; margin-top: 10px;">
+                        📜 道具圖鑑
+                    </button>
+
+                </div>
             </div>
         </div>
-        </div>
 
-    <div id="game-content" style="display: none;">
+        <div id="game-content" style="display: none;">
             <div id="codex-panel" class="panel" style="display: none;">
                 <h3>📜 道具圖鑑</h3>
                 <div id="codex-list" style="display: flex; flex-wrap: wrap; gap: 15px;">
-                    </div>
+                </div>
                 <button id="close-codex-btn">關閉圖鑑</button>
             </div>
             <div class="game-layout">
 
                 <div id="status-display" class="panel">
-                        <h3>⚔️ 冒險家狀態</h3>
-                        
-                        <p>HP：<span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
-                        
-                        <p>ATK：<span id="attack-value">0</span></p>
-                        <p>DEF：<span id="defense-value">0</span></p>  
-                        <p>暴擊率：<span id="crit-chance-value">0%</span></p>
-                        <p>金幣：<span id="gold-value">0</span></p>
-                        <p>深度：<span id="depth-value">0</span> 層</p>
-                        <p>耀魂石：<span id="stones-value">0</span> 💎</p>
-                        
-                        <hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
+                    <h3>⚔️ 冒險家狀態</h3>
 
-                        <p>武器：<span id="equipped-weapon-name">無</span></p>
-                        <p>頭盔：<span id="equipped-helmet-name">無</span></p>
-                        <p>胸甲：<span id="equipped-armor-name">無</span></p>
-                        <p>護脛：<span id="equipped-greaves-name">無</span></p>
-                        <p>項鍊：<span id="equipped-necklace-name">無</span></p>
-                        <p>戒指：<span id="equipped-ring-name">無</span></p>
+                    <p>HP：<span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
 
-                        <button id="inventory-btn">背包</button>
-                    </div>
+                    <p>ATK：<span id="attack-value">0</span></p>
+                    <p>DEF：<span id="defense-value">0</span></p>
+                    <p>暴擊率：<span id="crit-chance-value">0%</span></p>
+                    <p>金幣：<span id="gold-value">0</span></p>
+                    <p>深度：<span id="depth-value">0</span> 層</p>
+                    <p>耀魂石：<span id="stones-value">0</span> 💎</p>
+
+                    <hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
+
+                    <p>武器：<span id="equipped-weapon-name">無</span></p>
+                    <p>頭盔：<span id="equipped-helmet-name">無</span></p>
+                    <p>胸甲：<span id="equipped-armor-name">無</span></p>
+                    <p>護脛：<span id="equipped-greaves-name">無</span></p>
+                    <p>項鍊：<span id="equipped-necklace-name">無</span></p>
+                    <p>戒指：<span id="equipped-ring-name">無</span></p>
+
+                    <button id="inventory-btn">背包</button>
+                </div>
 
                 <div id="hub-area" class="panel">
-                        <h3>🏰 城鎮</h3>        
-                    
-                        <div id="shop-area" class="panel">
-                            <h3>💰 雜貨鋪</h3>
-                            <div id="shop-inventory-list">正在載入商品...</div>
+                    <h3>🏰 城鎮</h3>
+
+                    <div id="shop-area" class="panel">
+                        <h3>💰 雜貨鋪</h3>
+                        <div id="shop-inventory-list">正在載入商品...</div>
+                    </div>
+
+                    <div id="stone-exchange" class="panel" style="border: 1px dashed #aaa;">
+                        <h4>✨ 耀魂石兌換所 (10 💰 : 1 💎)</h4>
+                        <input type="number" id="gold-amount-input" value="100" min="10" step="10" style="width: 80px;">
+                        <button id="exchange-btn">兌換</button>
+                        <span>可兌換 <span id="exchange-result">10</span> 💎</span>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <div id="upgrade-multiplier-controls" style="margin-bottom: 10px;">
+                            <span>升級倍率: </span>
+                            <button class="multiplier-btn active" data-value="1">x1</button>
+                            <button class="multiplier-btn" data-value="10">x10</button>
+                            <button class="multiplier-btn" data-value="MAX">Max</button>
                         </div>
 
-                        <div id="stone-exchange" class="panel" style="border: 1px dashed #aaa;">
-                            <h4>✨ 耀魂石兌換所 (10 💰 : 1 💎)</h4>
-                            <input type="number" id="gold-amount-input" value="100" min="10" step="10" style="width: 80px;">
-                            <button id="exchange-btn">兌換</button>
-                            <span>可兌換 <span id="exchange-result">10</span> 💎</span>
-                        </div>
-
-                        <div style="margin-top: 15px;">
-                            <span class="nowrap-text">使用耀魂石強化你的能力：</span>
-                            <button id="upgrade-hp-btn">永久 HP+5</button>
-                            <button id="upgrade-attack-btn">永久 ATK+5</button>
-                            <button id="upgrade-defense-btn">永久 DEF+5</button> </div>
-                    </div> 
+                        <span class="nowrap-text">使用耀魂石強化你的能力：</span>
+                        <button id="upgrade-hp-btn">永久 HP+5</button>
+                        <button id="upgrade-attack-btn">永久 ATK+5</button>
+                        <button id="upgrade-defense-btn">永久 DEF+5</button>
+                    </div>
+                </div>
 
                 <div id="log-and-controls-group">
-    
+
                     <div id="game-log" class="panel log">
                         <h3>📜 冒險日誌</h3>
                         <div id="messages">歡迎來到地下世界！</div>
-                        </div>
+                    </div>
 
                     <div id="controls-area" class="panel">
                         <h3 id="current-stage-title">下一步行動</h3>
-                        
+
                         <div id="class-selection">
                             <button id="select-knight-btn">🛡️ 騎士<br>+50HP<br>+20DEF</button>
                             <button id="select-merchant-btn">💰 商人<br>+200金幣<br>-20%暴擊率</button>
                             <button id="select-thief-btn">🗡️ 刺客<br>+25ATK<br>+20%暴擊率</button>
                         </div>
 
-                <div id="adventure-actions">
-    
-                    <div id="explore-mode-buttons"> 
-                        <button id="explore-btn" style="font-size: 1.2em;">🎲 繼續探險</button>
-                        <button id="rest-btn">⛺ 確認回城步數</button>
-                    </div>
-                </div>  
+                        <div id="adventure-actions">
 
-                    <div id="combat-mode-buttons" style="display: none;">
-                        <button id="attack-btn" style="background-color: #e74c3c;">⚔️ 攻擊</button>
-                        <button id="run-btn" style="background-color: #f39c12;">🏃 逃跑</button>
-                    </div>
-                    
-                    <div id="death-mode-buttons" style="display: none;">
-                        <button id="revive-btn" style="background-color: #3498db; font-size: 1.2em;">🔙 回到城鎮 (復原進度)</button>
-                    </div>
-                    
+                            <div id="explore-mode-buttons">
+                                <button id="explore-btn" style="font-size: 1.2em;">🎲 繼續探險</button>
+                                <button id="rest-btn">⛺ 確認回城步數</button>
+                            </div>
                         </div>
-                    
-                    <div id="backpack-content-panel" class="panel" style="display: none;">
-                        <h3>🎒 背包</h3>
-                        <div id="inventory-list">目前沒有物品。</div>
-                        <button id="close-inventory-btn" style="background-color: #666;">關閉背包</button>
 
-                        <div id="materials-section" style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px;">
-                            <h4>📦 販售素材</h4>
-                            <div id="material-inventory-list">素材清單載入中...</div>
-                        </div> 
-                        </div> 
-                    
+                        <div id="combat-mode-buttons" style="display: none;">
+                            <button id="attack-btn" style="background-color: #e74c3c;">⚔️ 攻擊</button>
+                            <button id="run-btn" style="background-color: #f39c12;">🏃 逃跑</button>
+                        </div>
+
+                        <div id="death-mode-buttons" style="display: none;">
+                            <button id="revive-btn" style="background-color: #3498db; font-size: 1.2em;">🔙 回到城鎮
+                                (復原進度)</button>
+                        </div>
+
+                    </div>
+
+
                 </div>
-            </div> 
-    </div> 
-    
-                    
+
+                <div id="backpack-content-panel" class="panel" style="display: none;">
+                    <h3>🎒 背包</h3>
+                    <div id="inventory-list">目前沒有物品。</div>
+                    <button id="close-inventory-btn" style="background-color: #666;">關閉背包</button>
+
+                    <div id="materials-section"
+                        style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px;">
+                        <h4>📦 販售素材</h4>
+                        <div id="material-inventory-list">素材清單載入中...</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
     <script type="module" src="main.js"></script>
 </body>

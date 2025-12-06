@@ -24,28 +24,44 @@ body {
     padding: 20px;
 }
 
+/* Multiplier Button Styles */
+.multiplier-btn {
+    background-color: #555;
+    color: white;
+    border: 1px solid #777;
+    padding: 2px 8px;
+    margin: 0 2px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.multiplier-btn.active {
+    background-color: #f39c12;
+    border-color: #e67e22;
+    font-weight: bold;
+}
+
 /* 橫向排版 (Flex 佈局) */
 .game-layout {
     display: flex;
     gap: 20px;
-    align-items: stretch; 
+    align-items: stretch;
 }
 
-/* 通用面板樣式 */
 .panel {
     background: #1b1b1b;
     border: 2px solid #42392c;
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 15px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
 }
 
 /* 強制文字不換行 */
 .nowrap-text {
-    white-space: nowrap; 
-    display: inline-block; 
-    margin-right: 10px; 
+    white-space: nowrap;
+    display: inline-block;
+    margin-right: 10px;
 }
 
 ::-webkit-scrollbar {
@@ -79,7 +95,7 @@ input[type="submit"] {
     border: 2px solid #bfa76f;
     font-size: 1em;
     border-radius: 6px;
-    padding:4px 8px;
+    padding: 4px 8px;
     background: linear-gradient(#4e3b27, #2f1f15);
     color: #f5e9c5;
     transition: 0.25s ease;
@@ -94,7 +110,7 @@ input[type="submit"]:hover,
 #adventure-actions button:hover {
     background: linear-gradient(#ab842d, #674e1a);
     border-color: #e8c26a;
-    box-shadow: 0 0 10px rgba(255,255,150,0.6);
+    box-shadow: 0 0 10px rgba(255, 255, 150, 0.6);
 }
 
 /* 2.2. 控制/冒險按鈕 (較大按鈕) */
@@ -122,17 +138,19 @@ input[type="submit"]:hover,
 /* 2.3. 商店購買按鈕 (較小固定寬度) */
 #shop-area button,
 #shop-inventory-list button {
-    width: 80px !important; 
-    flex-shrink: 0; 
-    flex-grow: 0;   
+    width: 80px !important;
+    flex-shrink: 0;
+    flex-grow: 0;
     min-width: unset !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    padding: 3px 9px; 
+    padding: 3px 9px;
 }
 
 /* 2.4. 輸入框樣式 */
-input[type="text"], input[type="number"], input[type="password"] {
+input[type="text"],
+input[type="number"],
+input[type="password"] {
     padding: 8px;
     border: 2px solid #6e5a3d;
     border-radius: 4px;
@@ -144,7 +162,7 @@ input[type="text"], input[type="number"], input[type="password"] {
 input:focus {
     outline: none;
     border-color: #d8b76d;
-    box-shadow: 0 0 6px rgba(255,220,150,0.7);
+    box-shadow: 0 0 6px rgba(255, 220, 150, 0.7);
 }
 
 /* ========================================= */
@@ -153,8 +171,8 @@ input:focus {
 
 
 /* 3.1. 冒險家狀態區 */
-#status-display { 
-    flex: 1; 
+#status-display {
+    flex: 1;
     min-width: 180px;
     background: #1e2d2f;
     border-color: #2c4749;
@@ -162,8 +180,8 @@ input:focus {
 }
 
 /* 3.2. 城鎮區 */
-#hub-area { 
-    flex: 2; 
+#hub-area {
+    flex: 2;
     min-width: 300px;
     background: #3d3326;
     border-color: #6e5a3d;
@@ -172,21 +190,21 @@ input:focus {
 }
 
 /* 3.3. 日誌與控制群組 (垂直容器) */
-#log-and-controls-group { 
-    flex: 1.5; 
-    display: flex; 
-    flex-direction: column; 
+#log-and-controls-group {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
 }
 
 /* 3.4. 右側面板 (垂直容器，用於日誌+控制) */
-.right-panel { 
-    flex: 4; 
-    min-width: 350px; 
+.right-panel {
+    flex: 4;
+    min-width: 350px;
     flex-shrink: 0;
-    display: flex; 
-    flex-direction: column; 
-    justify-content: space-between; 
-    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
 }
 
 /* 3.5. 遊戲日誌區 */
@@ -199,20 +217,22 @@ input:focus {
     border-radius: 8px;
     border: 2px solid #4a3927;
     font-family: "Courier New", monospace;
-    flex-grow: 1; 
-    margin-bottom: 15px; 
+    flex-grow: 1;
+    margin-bottom: 15px;
 }
 
 #messages {
     padding-top: 5px;
 }
 
-#backpack-content-panel > button#close-inventory-btn {
+#backpack-content-panel>button#close-inventory-btn {
     /* 讓按鈕靠右顯示 */
-    display: block; 
-    margin-left: auto; /* ⭐ 關鍵：使用自動左邊距將其推到最右邊 */
+    display: block;
+    margin-left: auto;
+    /* ⭐ 關鍵：使用自動左邊距將其推到最右邊 */
     margin-right: 0;
-    margin-top: 15px; /* 增加頂部間距 */
+    margin-top: 15px;
+    /* 增加頂部間距 */
 }
 
 /* ========================================= */
@@ -225,8 +245,10 @@ input:focus {
 }
 
 #auth-area {
-    padding-top: 8px !important;     /* 將頂部填充縮小到 8px */
-    padding-bottom: 8px !important;  /* 將底部填充縮小到 8px */
+    padding-top: 8px !important;
+    /* 將頂部填充縮小到 8px */
+    padding-bottom: 8px !important;
+    /* 將底部填充縮小到 8px */
     margin-bottom: 15px !important;
     /* 由於您已經將 h3 內的內容封裝進去了，我們不使用標準的 h3 樣式 */
 }
@@ -237,28 +259,32 @@ input:focus {
     margin-bottom: 0 !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
-    line-height: 1.1 !important; /* 進一步壓縮行高 */
-    font-size: 1.1em; /* 確保標題大小正常 */
+    line-height: 1.1 !important;
+    /* 進一步壓縮行高 */
+    font-size: 1.1em;
+    /* 確保標題大小正常 */
 }
 
 /* 3. 確保 p 標籤的垂直間距也被歸零 (重要) */
 #auth-area p {
     margin-top: 0 !important;
-    margin-bottom: 0 !important; 
-    line-height: 1.2 !important; 
+    margin-bottom: 0 !important;
+    line-height: 1.2 !important;
 }
 
 /* 4. 微調登入/登出視圖 DIV 的間距，讓它緊跟在標題後 */
 #auth-area #logged-in-view,
 #auth-area #logged-out-view {
-    margin-top: 5px !important; /* 確保內容不會直接貼著 H3 文字 */
-    margin-bottom: 0px !important; 
+    margin-top: 5px !important;
+    /* 確保內容不會直接貼著 H3 文字 */
+    margin-bottom: 0px !important;
     padding: 0 !important;
 }
 
 /* 確保整個 Flex 容器能夠在面板內向上對齊 */
-#auth-area > div:first-child {
-    align-items: flex-start !important; /* 忽略 align-items: center，強制子元素從頂部開始排 */
+#auth-area>div:first-child {
+    align-items: flex-start !important;
+    /* 忽略 align-items: center，強制子元素從頂部開始排 */
 }
 
 /* 修正功能按鈕群組的頂部間距 */
@@ -271,10 +297,11 @@ input:focus {
 #auth-area [id="how-to-play-btn"],
 #auth-area [id="update-log-btn"],
 #auth-area [id="codex-toggle-btn"] {
-    margin-bottom: 1px !important; 
+    margin-bottom: 1px !important;
 }
+
 #auth-area [id="codex-toggle-btn"] {
-    margin-bottom: 0px !important; 
+    margin-bottom: 0px !important;
 }
 
 
@@ -284,54 +311,54 @@ input:focus {
 
 /* 壓縮城鎮子面板的間距和填充 */
 #hub-area .panel {
-    margin-bottom: 8px !important; 
-    padding: 8px !important; 
+    margin-bottom: 8px !important;
+    padding: 8px !important;
 }
 
 /* 壓縮底部永久升級區塊上方的間距 */
-#hub-area > div[style="margin-top: 15px;"] {
-    margin-top: 5px !important; 
+#hub-area>div[style="margin-top: 15px;"] {
+    margin-top: 5px !important;
 }
 
 /* 商店商品列表佈局 */
-#shop-inventory-list > div {
+#shop-inventory-list>div {
     display: flex;
-    align-items: center; 
-    gap: 10px; 
-    margin-bottom: 7px; 
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
 }
 
 /* 商店商品名稱文字 (佔滿空間) */
-#shop-inventory-list > div > span {
-    flex-grow: 1;      
-    flex-shrink: 1;    
-    flex-basis: 0;     
-    white-space: normal; 
-    word-break: break-word; 
+#shop-inventory-list>div>span {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    white-space: normal;
+    word-break: break-word;
 }
 
 /* 城鎮底部的升級按鈕群組 */
-#hub-area > div:last-child {
+#hub-area>div:last-child {
     display: flex;
-    justify-content: space-between; 
-    flex-wrap: nowrap; 
-    gap: 10px; 
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 10px;
 }
 
 /* 城鎮升級按鈕 (強制垂直拉伸) */
-#hub-area > div:last-child > button[id^="upgrade-"] {
-    display: block;        
-    width: 100%;           
-    margin: 5px 0 10px 0;  
-    min-width: unset;      
-    text-align: center;    
-    box-sizing: border-box; 
-    
-    flex-grow: unset; 
+#hub-area>div:last-child>button[id^="upgrade-"] {
+    display: block;
+    width: 100%;
+    margin: 5px 0 10px 0;
+    min-width: unset;
+    text-align: center;
+    box-sizing: border-box;
+
+    flex-grow: unset;
     flex-shrink: unset;
     flex-basis: unset;
-    
-    padding: 15px 5px; 
+
+    padding: 15px 5px;
     white-space: normal;
     line-height: 1.2;
 
@@ -350,7 +377,7 @@ input:focus {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9); 
+    background: rgba(0, 0, 0, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -363,20 +390,20 @@ input:focus {
     border: 3px solid #6b5d4d;
     padding: 30px;
     border-radius: 10px;
-    max-width: 550px; 
+    max-width: 550px;
     width: 90%;
     box-shadow: 0 0 20px rgba(255, 210, 87, 0.4);
-    text-align: center; 
-    font-size: 1.6em; 
+    text-align: center;
+    font-size: 1.6em;
     margin-bottom: 20px;
 }
 
 /* 內容文字區 */
 #modal-content {
-    white-space: pre-wrap; 
-    text-align: left; 
+    white-space: pre-wrap;
+    text-align: left;
     padding: 10px 0;
-    max-height: 450px; 
+    max-height: 450px;
     overflow-y: auto;
     font-family: monospace;
     font-size: 0.9em;
@@ -385,47 +412,47 @@ input:focus {
 
 /* 橘色/更新模態框 */
 .update-modal {
-    border-color: #f39c12; 
-    box-shadow: 0 0 10px rgba(243, 156, 18, 0.5); 
+    border-color: #f39c12;
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
 }
 
 .update-modal #modal-title {
-    color: #f39c12 !important; 
+    color: #f39c12 !important;
 }
 
 /* 規則/藍色模態框 */
-#update-log-modal.rules-modal { 
-    background: #252d3d; 
-    border-color: #3498db; 
-    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5); 
-    max-width: 800px; 
+#update-log-modal.rules-modal {
+    background: #252d3d;
+    border-color: #3498db;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    max-width: 800px;
 }
 
 /* 圖鑑/橘色模態框 (極寬) */
 #update-log-modal.codex-modal {
     background: #101010;
     border-color: #f39c12;
-    box-shadow: 0 0 10px rgba(243, 156, 18, 0.5); 
-    max-width: 750px; 
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+    max-width: 750px;
     width: 90%;
 }
 
 /* 圖鑑列表 */
 #codex-list {
     display: flex;
-    flex-wrap: wrap; 
-    gap: 15px;      
+    flex-wrap: wrap;
+    gap: 15px;
     padding: 10px;
-    justify-content: center; 
-    
-    max-height: 500px;
-    }
+    justify-content: center;
 
-.codex-card > div {
+    max-height: 500px;
+}
+
+.codex-card>div {
     /* 強制文字內容置中，尤其是 introText div */
     text-align: center !important;
     /* 確保其佔滿父容器寬度，不因內容短小而偏置 */
-    width: 100% !important; 
+    width: 100% !important;
     /* 移除可能導致偏移的內邊距，除非您需要 */
     padding: 0 !important;
 }
@@ -443,27 +470,30 @@ input:focus {
 
 /* 當螢幕寬度小於或等於 900px 時應用 */
 @media (max-width: 900px) {
-    
+
     /* ⭐ 修正 1: 只覆蓋 body 的 padding，確保最小邊距 */
-    body { 
-        padding: 5px; /* 最小化外部填充 */
+    body {
+        padding: 5px;
+        /* 最小化外部填充 */
         /* 移除所有其他重複的屬性，只留下 padding: 5px; */
     }
 
     /* 2. 遊戲主容器：確保佔滿寬度，且使用 box-sizing */
     .game-container {
         width: 100%;
-        padding: 5px; /* 最小化內部填充 */
+        padding: 5px;
+        /* 最小化內部填充 */
         max-width: unset;
-        box-shadow: none; 
-        box-sizing: border-box; 
-        min-height: calc(100vh - 10px); /* 讓它拉長到螢幕底部 (10px = 2*body padding) */
+        box-shadow: none;
+        box-sizing: border-box;
+        min-height: calc(100vh - 10px);
+        /* 讓它拉長到螢幕底部 (10px = 2*body padding) */
     }
 
     /* 3. 核心佈局切換與排序 */
     .game-layout {
-        flex-direction: column; 
-        gap: 5px; 
+        flex-direction: column;
+        gap: 5px;
         width: 100%;
     }
 
@@ -472,45 +502,54 @@ input:focus {
     #hub-area,
     #log-and-controls-group,
     .panel {
-        box-sizing: border-box; 
-        flex: none; 
+        box-sizing: border-box;
+        flex: none;
         min-width: unset !important;
-        width: 100%; 
-        padding: 10px; 
+        width: 100%;
+        padding: 10px;
     }
-    
+
     /* ⭐ 排序 (ORDER FIX) */
-    #status-display { order: 1; } 
-    #hub-area { order: 2; } 
-    #log-and-controls-group { order: 3; } 
+    #status-display {
+        order: 1;
+    }
+
+    #hub-area {
+        order: 2;
+    }
+
+    #log-and-controls-group {
+        order: 3;
+    }
 
     /* 5. 帳號管理區佈局 (實現左登出 / 右功能按鈕) */
     #auth-area {
         display: flex;
-        flex-direction: row; 
-        justify-content: space-between; 
-        align-items: center; 
-        padding: 5px; /* 精簡填充 */
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        /* 精簡填充 */
     }
-    
+
     #auth-main-content {
-        flex-grow: 1; 
-        max-width: 50%; 
+        flex-grow: 1;
+        max-width: 50%;
         margin-right: 5px;
         text-align: left;
     }
-    
+
     #func-buttons-group {
         display: flex;
-        flex-direction: column; 
-        align-items: flex-end; 
-        flex-shrink: 0; 
+        flex-direction: column;
+        align-items: flex-end;
+        flex-shrink: 0;
     }
-    
+
     /* 6. 遊戲日誌調整 */
     #game-log {
-        height: 180px; 
-        margin-bottom: 5px; 
+        height: 180px;
+        margin-bottom: 5px;
         padding: 5px;
     }
 
@@ -521,39 +560,41 @@ input:focus {
     #controls-area button,
     #adventure-actions button,
     #class-selection button {
-        box-sizing: border-box; 
-        width: 100%; /* 預設 100% 寬度 */
+        box-sizing: border-box;
+        width: 100%;
+        /* 預設 100% 寬度 */
         min-width: unset;
-        display: block; 
-        font-size: 0.9em; 
-        padding: 8px 10px; 
+        display: block;
+        font-size: 0.9em;
+        padding: 8px 10px;
         margin-bottom: 3px !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
     }
-    
+
     /* 7a. 修正功能按鈕寬度 (讓它適應內容) */
     #func-buttons-group button,
-    #auth-area #logout-btn { /* ⭐ 確保登出按鈕也使用自適應寬度 */
-        width: auto !important; 
+    #auth-area #logout-btn {
+        /* ⭐ 確保登出按鈕也使用自適應寬度 */
+        width: auto !important;
         min-width: 100px;
     }
 
     /* 8. 內嵌面板修正 */
     #stone-exchange {
-        flex-direction: column; 
+        flex-direction: column;
         align-items: flex-start;
     }
-    
-    #stone-exchange input, 
+
+    #stone-exchange input,
     #stone-exchange button {
         width: 100%;
         margin-bottom: 5px !important;
     }
-    
+
     /* 9. 城鎮升級按鈕佈局調整 */
-    #hub-area > div:last-child {
-        flex-wrap: wrap; 
+    #hub-area>div:last-child {
+        flex-wrap: wrap;
         gap: 5px;
     }
 }
