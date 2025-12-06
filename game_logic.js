@@ -16,6 +16,194 @@ import {
     updateExchangeDisplay, getItemIcon
 } from './ui_manager.js';
 
+export { logMessage }; // Export logMessage for main.js usage
+
+export function showUpdateLog() {
+    const updateLog = `
+
+- 新增批量強化按鈕
+- 更新背包消耗品堆疊
+- 新增轉職系統
+- 新增職業試煉關卡
+
+    `;
+
+    if (elements.codexFilters) {
+        elements.codexFilters.style.display = 'none';
+    }
+
+    const title = "v3.04 遊戲更新日誌";
+    openModal(title, updateLog, 'update-modal');
+}
+
+
+// 引入戰鬥相關函式，雖然在同一个文件，但如果 handleEvolutionChallenge 要用 startCombat，
+// 而 startCombat 和 handleEvolutionChallenge 都在這，直接呼叫即可。
+// 但我們需要確保從 main.js 綁定 handleEvolutionChallenge。
+
+export const ADVANCED_CLASSES = {
+    "騎士": [
+        { name: "聖騎士", hpBonus: 200, attackBonus: 0, defenseBonus: 50, critBonus: 0, desc: "大幅提升生存能力 (HP+200, DEF+50)" },
+        { name: "狂戰士", hpBonus: 0, attackBonus: 100, defenseBonus: -10, critBonus: 0, desc: "大幅提升攻擊力 (ATK+100, DEF-10)" }
+    ],
+    "商人": [
+        { name: "煉金術士", hpBonus: 0, attackBonus: 0, defenseBonus: 0, critBonus: 0, desc: "" },
+        { name: "公務員", hpBonus: 0, attackBonus: 20, defenseBonus: 20, critBonus: 0, desc: "均衡發展 (ATK+20, DEF+20)" }
+    ],
+    "刺客": [
+        { name: "影武者", hpBonus: 0, attackBonus: 50, defenseBonus: 0, critBonus: 0.15, desc: "極致輸出 (ATK+50, Crit+15%)" },
+        { name: "忍者", hpBonus: 100, attackBonus: 30, defenseBonus: 0, critBonus: 0.10, desc: "靈活作戰 (HP+100, ATK+30, Crit+10%)" }
+    ]
+};
+
+// 挑戰用的 Boss 定義
+export const EVOLUTION_BOSS = {
+    id: 'guardian_of_souls',
+    name: "職業試煉官",
+    hp: 20000,
+    attack: 550,
+    defense: 120,
+    goldReward: 1000,
+    difficulty: 6,
+    isBoss: true,
+    isEvolutionBoss: true
+};
+
+export function checkClassEvolution() {
+    // 檢查條件：深度 1000 以上，且尚未轉職
+    // logMessage(`DEBUG: Checking Evolution. Depth=${State.player.depth}, Evolved=${State.player.isEvolved}`, 'gray');
+
+    if (State.player.depth >= 1000 && !State.player.isEvolved) {
+        // 顯示挑戰面板
+        if (elements.evolutionChallengePanel) {
+            elements.evolutionChallengePanel.style.display = 'flex'; // Use flex to maintain internal layout
+        }
+        // ⭐ 必須同時顯示父容器
+        if (elements.topCentralAdventures) {
+            elements.topCentralAdventures.style.display = 'flex';
+        } else {
+            console.error("Critical: elements.topCentralAdventures is missing!");
+        }
+    } else {
+        // 隱藏挑戰面板
+        if (elements.evolutionChallengePanel) {
+            elements.evolutionChallengePanel.style.display = 'none';
+        }
+        // 父容器的隱藏邏輯由 updateDisplay 或其他地方統一管理，或者這裡僅隱藏自己
+        // 暫時不隱藏父容器，避免影響副本入口顯示
+    }
+}
+
+export function handleEvolutionChallenge() {
+    console.log("Opening Evolution Confirmation Modal");
+    if (!State.gameActive) return;
+
+    if (elements.evolutionConfirmModalBackdrop) {
+        elements.evolutionConfirmModalBackdrop.style.display = 'flex';
+    } else {
+        // Fallback if modal is missing (should verify markup)
+        startEvolutionCombat();
+    }
+}
+
+export function startEvolutionCombat() {
+    // 隱藏確認視窗
+    if (elements.evolutionConfirmModalBackdrop) {
+        elements.evolutionConfirmModalBackdrop.style.display = 'none';
+    }
+
+    // 設定當前怪物為靈魂守護者
+    State.setCurrentMonster(JSON.parse(JSON.stringify(EVOLUTION_BOSS)));
+
+    // 隱藏挑戰面板 (避免同時點擊)
+    if (elements.evolutionChallengePanel) elements.evolutionChallengePanel.style.display = 'none';
+    // 副本入口暫時不隱藏，因為它應該常駐，且有點擊模態框保護
+    // if (elements.dungeonEntrancePanel) elements.dungeonEntrancePanel.style.display = 'none';
+
+    // 啟動戰鬥
+    State.setIsCombatActive(true);
+
+    updateDisplay();
+    logMessage(`⚔️ 你向 [${EVOLUTION_BOSS.name}] 發起了挑戰！證明你的實力吧！`, 'red');
+
+    // 切換 UI 到戰鬥模式
+    enterCombatMode();
+}
+
+export function enterCombatMode() {
+    logMessage(`[DEBUG] Entering Combat Mode.`, 'gray');
+
+    if (elements.combatArea) elements.combatArea.style.display = 'block';
+    if (elements.hubArea) elements.hubArea.style.display = 'none';
+    if (elements.deathScreen) elements.deathScreen.style.display = 'none';
+
+    // 確保戰鬥介面按鈕顯示
+    if (elements.combatModeButtons) elements.combatModeButtons.style.display = 'block';
+    if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'none';
+}
+
+function triggerClassEvolution() {
+    const currentClass = State.player.className;
+    const options = ADVANCED_CLASSES[currentClass];
+
+    if (!options) return; // 該職業無轉職選項
+
+    elements.evolutionOptions.innerHTML = ''; // 清空選項
+
+    options.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'evolution-btn'; // 可以稍後在 CSS 加樣式
+        btn.style.width = '200px';
+        btn.style.padding = '15px';
+        btn.style.margin = '10px';
+        btn.style.background = 'linear-gradient(#2980b9, #2c3e50)';
+        btn.style.color = 'white';
+        btn.style.border = '2px solid #3498db';
+        btn.style.borderRadius = '8px';
+        btn.style.cursor = 'pointer';
+
+        btn.innerHTML = `
+            <strong style="font-size: 1.2em; display: block; margin-bottom: 8px;">${option.name}</strong>
+            <span style="font-size: 0.9em; opacity: 0.9;">${option.desc}</span>
+        `;
+
+        btn.onclick = () => handleClassChange(option);
+
+        elements.evolutionOptions.appendChild(btn);
+    });
+
+    elements.classEvolutionModalBackdrop.style.display = 'flex';
+}
+
+function handleClassChange(option) {
+    // 1. 應用數值
+    if (option.hpBonus) State.permanentData.hpBonus += option.hpBonus;
+    if (option.attackBonus) State.permanentData.attackBonus += option.attackBonus;
+    if (option.defenseBonus) State.permanentData.defenseBonus += option.defenseBonus;
+    // 暴擊率特別處理，直接加到 player (因為 permanentData 暫無 crit 欄位，或需新增)
+    // 為了簡單起見，我們直接修改 player.critChance, 並假設 StartGame 的邏輯不會覆蓋它 (因為已是遊戲中途)
+    if (option.critBonus) State.player.critChance += option.critBonus;
+    if (option.goldReward) State.player.gold += option.goldReward;
+
+    // 2. 更新狀態與名稱
+    State.player.className = option.name;
+    State.player.isEvolved = true;
+
+    // 3. 關閉視窗與存檔
+    elements.classEvolutionModalBackdrop.style.display = 'none';
+
+    // 如果有加 MaxHP，補滿
+    if (option.hpBonus) {
+        State.player.maxHp += option.hpBonus;
+        State.player.hp += option.hpBonus;
+    }
+
+    logMessage(`✨ 靈魂昇華！職階晉升為 [${option.name}]！`, 'gold');
+    saveGame();
+    savePermanentData(); // 如果改了 permanentData
+    updateDisplay();
+}
+
 export let currentShopInventory = [];
 let currentCodexFilter = 'all';
 export let isDungeonAvailable = false;
@@ -84,21 +272,6 @@ export function showHowToPlay() {
 
     const title = "❓ 遊戲提示與規則";
     openModal(title, rules, 'rules-modal');
-}
-
-export function showUpdateLog() {
-    const updateLog = `
-
-- 新增批量強化按鈕
-
-    `;
-
-    if (elements.codexFilters) {
-        elements.codexFilters.style.display = 'none';
-    }
-
-    const title = "v3.04 遊戲更新日誌";
-    openModal(title, updateLog, 'update-modal');
 }
 
 function renderCodexContent(filter) {
@@ -284,6 +457,7 @@ export function toggleInventory() {
         elements.adventureActions,
         elements.gameLog,
         elements.controlsArea,
+        elements.logAndControlsGroup, // 新增：隱藏右側總容器
     ];
 
     if (!State.isInventoryOpen) {
@@ -311,6 +485,7 @@ export function toggleInventory() {
         backpackPanel.style.display = 'none';
 
         // 1. 恢復所有核心 UI 區塊 (日誌、控制台總區)
+        if (elements.logAndControlsGroup) elements.logAndControlsGroup.style.display = 'flex'; // 恢復右側總容器 (Flex)
         if (elements.controlsArea) elements.controlsArea.style.display = 'block'; // 恢復「下一步行動」總容器
         if (elements.messages) elements.messages.style.display = 'block';
         if (elements.gameLog) elements.gameLog.style.display = 'block';
@@ -368,8 +543,22 @@ export function getMaterialById(id) {
 
 export function addItemToInventory(item) {
 
-    State.player.inventory.push(item);
-    logMessage(`🎁 你獲得了 [${item.name}]！`, 'cyan');
+    // 堆疊邏輯：如果是消耗品，先檢查背包是否已有相同物品
+    if (item.type === 'consumable') {
+        const existingItem = State.player.inventory.find(i => i.id === item.id);
+        if (existingItem) {
+            existingItem.count = (existingItem.count || 1) + 1;
+            logMessage(`🎁 你獲得了 [${item.name}] (目前持有: ${existingItem.count})！`, 'cyan');
+        } else {
+            item.count = 1;
+            State.player.inventory.push(item);
+            logMessage(`🎁 你獲得了 [${item.name}]！`, 'cyan');
+        }
+    } else {
+        // 非消耗品，直接堆疊
+        State.player.inventory.push(item);
+        logMessage(`🎁 你獲得了 [${item.name}]！`, 'cyan');
+    }
 
     // 確保 item.id 存在，且該 ID 尚未被記錄
     if (item.id && !State.permanentData.knownItems.includes(item.id)) {
@@ -958,8 +1147,13 @@ export function useConsumable(inventoryIndex) {
         return; // 不消耗物品
     }
 
-    // --- 移除物品 ---
-    State.player.inventory.splice(inventoryIndex, 1);
+    // --- 移除物品邏輯 (支援堆疊) ---
+    if (itemToUse.count && itemToUse.count > 1) {
+        itemToUse.count--;
+        logMessage(`(剩餘數量: ${itemToUse.count})`, 'gray');
+    } else {
+        State.player.inventory.splice(inventoryIndex, 1);
+    }
 
     // --- 存檔與介面更新 ---
     saveGame();
@@ -976,8 +1170,12 @@ export function handleSellItem(inventoryIndex, sellPrice) {
     const itemToSell = State.player.inventory[inventoryIndex];
     if (!itemToSell) return;
 
-    // 2. 執行販賣 (移除物品)
-    State.player.inventory.splice(inventoryIndex, 1);
+    // 2. 執行販賣 (處理堆疊)
+    if (itemToSell.count && itemToSell.count > 1) {
+        itemToSell.count--;
+    } else {
+        State.player.inventory.splice(inventoryIndex, 1);
+    }
 
     // 3. 增加金幣
     State.player.gold += sellPrice;
@@ -1319,6 +1517,19 @@ export function endCombat(isVictory) {
 
     if (isVictory) {
         const enemy = State.currentMonster;
+
+        // 轉職挑戰勝利判定
+        if (enemy.isEvolutionBoss) {
+            logMessage(`🏆 戰勝了心中的恐懼！你獲得了晉升的資格。`, 'gold');
+            triggerClassEvolution();
+            // 隱藏挑戰按鈕，避免重複挑戰
+            if (elements.evolutionChallengePanel) {
+                elements.evolutionChallengePanel.style.display = 'none';
+            }
+            // 結束這裡，避免觸發一般怪物的掉落邏輯 (雖然也沒關係)
+            // 但如果有名稱衝突，建議這裡直接 return 或不做後續邏輯
+            // 不過為了讓玩家也能拿到金幣，我們繼續往下執行
+        }
 
         // 金幣結算 
         const gold = enemy.goldReward;
@@ -1718,9 +1929,13 @@ export function handleRest(isAuto = false) {
 
     updateDisplay();
 
+    // 6. 檢查轉職
+    checkClassEvolution();
+
 }
 
 export function enterTownMode() {
+    logMessage(`[DEBUG] Entering Town Mode.`, 'gray');
 
     // 顯示 Town/Hub 區塊，隱藏戰鬥/死亡區塊
     if (elements.hubArea) elements.hubArea.style.display = 'block';
@@ -1744,6 +1959,9 @@ export function enterTownMode() {
     // 刷新商店
     refreshShopInventory();
     renderShop();
+
+    // 檢查轉職
+    checkClassEvolution();
 }
 
 export function handleRevive() {

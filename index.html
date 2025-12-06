@@ -1,7 +1,7 @@
 <head>
     <title>地下城-奧利哈鋼</title>
     <link rel="icon" type="image/png" href="Orichalcum.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1.3">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -60,6 +60,48 @@
         </div>
     </div>
 </div>
+</div>
+
+<div id="evolution-confirm-modal-backdrop"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); justify-content: center; align-items: center; z-index: 1045;">
+    <div id="evolution-confirm-modal" class="panel"
+        style="background: #2c0e36; border-color: #9b59b6; padding: 30px; border-radius: 10px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 0 20px rgba(155, 89, 182, 0.4);">
+
+        <h3 style="color: #d2b4de; margin-top: 0;">✨ 挑戰轉職試煉 ✨</h3>
+
+        <p style="margin: 15px 0 25px 0; color: #ddd;">
+            你即將挑戰內心的恐懼。<br>這場戰鬥將決定你是否有資格晉升。<br>準備好了嗎？
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 20px;">
+            <button id="evolution-confirm-btn"
+                style="background-color: #8e44ad; border-color: #a569bd; min-width: 120px;">
+                ⚔️ 開始挑戰
+            </button>
+            <button id="evolution-cancel-btn" style="background-color: #666; border-color: #aaa; min-width: 120px;">
+                🚪 稍後再說
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="class-evolution-modal-backdrop"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); justify-content: center; align-items: center; z-index: 1050;">
+    <div id="class-evolution-modal" class="panel"
+        style="background: #2c3e50; border-color: #3498db; padding: 30px; border-radius: 10px; max-width: 600px; width: 95%; text-align: center; box-shadow: 0 0 25px rgba(52, 152, 219, 0.6);">
+
+        <h3 id="evolution-title" style="color: #3498db; margin-top: 0; font-size: 1.8em;">✨ 靈魂昇華 ✨</h3>
+
+        <p id="evolution-desc" style="margin: 15px 0 25px 0; color: #ecf0f1; font-size: 1.1em;">
+            你的靈魂經歷了千百次的磨練，現在已經準備好邁向更高的境界。<br>
+            請選擇你的新道路...
+        </p>
+
+        <div id="evolution-options" style="display: flex; justify-content: space-around; gap: 20px; flex-wrap: wrap;">
+            <!-- 選項將由 JS 動態生成 -->
+        </div>
+    </div>
+</div>
 
 <body>
     <div class="game-container">
@@ -98,13 +140,32 @@
                 </h3>
 
                 <div id="top-central-adventures"
-                    style="margin-bottom: 15px; display: none; width: 100%; display: flex; justify-content: center;">
+                    style="margin-bottom: 15px; display: none; width: 100%; display: flex; justify-content: center; flex-direction: row; gap: 10px; align-items: stretch;">
+
+                    <div id="evolution-challenge-panel" class="panel"
+                        style="text-align: center; background: #2c0e36; border-color: #9b59b6; padding: 15px; flex: 1; margin-bottom: 0px; display: none; box-shadow: 0 0 15px #9b59b6; flex-direction: column; justify-content: space-between;">
+
+                        <div>
+                            <h3 style="color: #d2b4de; margin: 0 0 10px 0;">✨ 靈魂的呼喚 ✨</h3>
+                            <p style="color: #ddd;">你的力量已經到達瓶頸，擊敗守護者以獲得晉升的資格。</p>
+                        </div>
+
+                        <button id="evolution-challenge-btn"
+                            style="background-color: #8e44ad; border-color: #a569bd; margin-top: 10px; min-width: 150px; width: 100%; font-weight: bold;">
+                            ⚔️ 挑戰轉職試煉
+                        </button>
+                    </div>
+
                     <div id="dungeon-entrance-panel" class="panel"
-                        style="text-align: center; background: #331f1f; border-color: #7b4e4e; padding: 15px; max-width: 600px; width: 95%;">
-                        <h3>🚨 緊急通知 🚨</h3>
-                        <p>強大的氣息正在前方凝聚，你準備好面對挑戰了嗎？</p>
+                        style="text-align: center; background: #331f1f; border-color: #7b4e4e; padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+
+                        <div>
+                            <h3>🚨 緊急通知 🚨</h3>
+                            <p>強大的氣息正在前方凝聚，你準備好面對挑戰了嗎？</p>
+                        </div>
+
                         <button id="dungeon-enter-btn"
-                            style="background-color: #8c0000; border-color: #ff5555; margin-top: 15px; min-width: 250px;">
+                            style="background-color: #8c0000; border-color: #ff5555; margin-top: 15px; min-width: 150px; width: 100%;">
                             🔥 進入副本挑戰！
                         </button>
                     </div>
@@ -138,31 +199,34 @@
                 </div>
                 <button id="close-codex-btn">關閉圖鑑</button>
             </div>
+
             <div class="game-layout">
 
                 <div id="status-display" class="panel">
                     <h3>⚔️ 冒險家狀態</h3>
 
-                    <p>HP：<span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
-
-                    <p>ATK：<span id="attack-value">0</span></p>
-                    <p>DEF：<span id="defense-value">0</span></p>
-                    <p>暴擊率：<span id="crit-chance-value">0%</span></p>
-                    <p>金幣：<span id="gold-value">0</span></p>
-                    <p>深度：<span id="depth-value">0</span> 層</p>
-                    <p>耀魂石：<span id="stones-value">0</span> 💎</p>
+                    <p>職業 : <span id="class-name-value" style="color: #f1c40f; font-weight: bold;">無</span></p>
+                    <p>HP : <span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
+                    <p>ATK : <span id="attack-value">0</span></p>
+                    <p>DEF : <span id="defense-value">0</span></p>
+                    <p>暴擊率 : <span id="crit-chance-value">0%</span></p>
+                    <p>金幣 : <span id="gold-value">0</span></p>
+                    <p>深度 : <span id="depth-value">0</span> 層</p>
+                    <p>耀魂石 : <span id="stones-value">0</span> 💎</p>
 
                     <hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
 
-                    <p>武器：<span id="equipped-weapon-name">無</span></p>
-                    <p>頭盔：<span id="equipped-helmet-name">無</span></p>
-                    <p>胸甲：<span id="equipped-armor-name">無</span></p>
-                    <p>護脛：<span id="equipped-greaves-name">無</span></p>
-                    <p>項鍊：<span id="equipped-necklace-name">無</span></p>
-                    <p>戒指：<span id="equipped-ring-name">無</span></p>
+                    <p>武器 : <span id="equipped-weapon-name">無</span></p>
+                    <p>頭盔 : <span id="equipped-helmet-name">無</span></p>
+                    <p>胸甲 : <span id="equipped-armor-name">無</span></p>
+                    <p>護脛 : <span id="equipped-greaves-name">無</span></p>
+                    <p>項鍊 : <span id="equipped-necklace-name">無</span></p>
+                    <p>戒指 : <span id="equipped-ring-name">無</span></p>
 
                     <button id="inventory-btn">背包</button>
                 </div>
+
+
 
                 <div id="hub-area" class="panel">
                     <h3>🏰 城鎮</h3>
@@ -198,6 +262,29 @@
 
                     <div id="game-log" class="panel log">
                         <h3>📜 冒險日誌</h3>
+
+                        <!-- Merged Combat UI -->
+                        <div id="combat-area"
+                            style="display: none; border-bottom: 1px dashed #666; padding-bottom: 10px; margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: bold; color: #e74c3c; font-size: 1.1em;">⚔️ <span
+                                        id="monster-name">[怪物名稱]</span></span>
+                                <span style="font-size: 0.9em; color: #ccc;">ATK:<span
+                                        id="monster-attack-value">0</span> DEF:<span
+                                        id="monster-defense-value">0</span></span>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                                <span style="font-size: 0.9em;">HP: <span id="monster-hp-value">0</span>/<span
+                                        id="monster-max-hp-value">0</span></span>
+                                <div
+                                    style="flex: 1; background: #555; height: 12px; border-radius: 6px; overflow: hidden;">
+                                    <div id="monster-hp-bar" style="width: 100%; background: #e74c3c; height: 100%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div id="messages">歡迎來到地下世界！</div>
                     </div>
 

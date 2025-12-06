@@ -3,6 +3,7 @@ import { elements, updateExchangeDisplay, hideDungeonChallengeModal, showDungeon
 
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("[Main] DOMContentLoaded Triggered"); // DEBUG
 
     // 1. 啟動遊戲入口：檢查本地登入資訊
     GameLogic.checkLocalLogin();
@@ -47,7 +48,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.updateLogBtn) elements.updateLogBtn.onclick = GameLogic.showUpdateLog;
     if (elements.codexBtn) elements.codexBtn.onclick = GameLogic.toggleCodex;
 
-    // 8. 綁定新增的副本按鈕 (使用防護檢查)
+    // 8. 綁定轉職挑戰
+    if (elements.evolutionChallengeBtn) elements.evolutionChallengeBtn.onclick = GameLogic.handleEvolutionChallenge;
+
+    // 綁定轉職確認視窗按鈕
+    if (elements.evolutionConfirmBtn) {
+        elements.evolutionConfirmBtn.onclick = () => {
+            GameLogic.startEvolutionCombat();
+        };
+    }
+    if (elements.evolutionCancelBtn) {
+        elements.evolutionCancelBtn.onclick = () => {
+            if (elements.evolutionConfirmModalBackdrop) {
+                elements.evolutionConfirmModalBackdrop.style.display = 'none';
+            }
+        };
+    }
+
+    // 9. 綁定新增的副本按鈕 (使用防護檢查)
     if (elements.dungeonEnterBtn) {
         // 點擊地圖上的「進入副本挑戰」時：只顯示確認模態框
         elements.dungeonEnterBtn.onclick = () => {
@@ -62,17 +80,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // 點擊模態框內的「再次挑戰」按鈕：啟動 Boss 戰
         elements.dungeonChallengeBtn.onclick = () => {
             hideDungeonChallengeModal();
-            GameLogic.toggleDungeonEntrance(false); // 🚨 挑戰開始，隱藏地圖入口
+            // GameLogic.toggleDungeonEntrance(false); // Removed to keep button visible
             GameLogic.handleDungeonBossCombat(); // 啟動戰鬥
         };
     }
 
     if (elements.dungeonLeaveBtn) {
-        // 點擊模態框內的「離開」按鈕：關閉模態框，並隱藏地圖入口
+        // 點擊模態框內的「離開」按鈕：關閉模態框
         elements.dungeonLeaveBtn.onclick = () => {
             hideDungeonChallengeModal();
             GameLogic.logMessage("⚔️ 決定暫時撤退，繼續探索！", 'white');
-            GameLogic.toggleDungeonEntrance(false); // 🚨 離開，隱藏地圖入口
+            // GameLogic.toggleDungeonEntrance(false); // Removed as per user request
         };
     }
 

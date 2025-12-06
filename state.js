@@ -22,6 +22,7 @@ export let player = {
     gold: 0,
     depth: 0,
     className: "",
+    isEvolved: false,
     equipment: {
         weapon: null, //武器
         helmet: null, //頭盔

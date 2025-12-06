@@ -1,8 +1,8 @@
-
 import {
     player, permanentData, isCombatActive,
-    isInventoryOpen, currentUsername, currentUpgradeMultiplier
-} from './state.js'; //
+    isInventoryOpen, currentUsername, currentUpgradeMultiplier,
+    currentMonster
+} from './state.js';
 
 import { ITEMS, MATERIALS_DATA, STONE_CONVERSION_RATE, UPGRADE_COST } from './config.js'; //
 
@@ -18,7 +18,17 @@ import {
     calculateTotalMaxHp,
 } from './game_logic.js'; //
 
+
+
 export const elements = {
+    // Combat UI
+    combatArea: document.getElementById('combat-area'),
+    monsterName: document.getElementById('monster-name'),
+    monsterHpValue: document.getElementById('monster-hp-value'),
+    monsterMaxHpValue: document.getElementById('monster-max-hp-value'),
+    monsterAttackValue: document.getElementById('monster-attack-value'),
+    monsterDefenseValue: document.getElementById('monster-defense-value'),
+    monsterHpBar: document.getElementById('monster-hp-bar'),
 
     modalBackdrop: document.getElementById('custom-modal-backdrop'),
     modalBody: document.getElementById('update-log-modal'),
@@ -51,6 +61,7 @@ export const elements = {
     materialInventoryList: document.getElementById('material-inventory-list'),
 
     statusDisplay: document.getElementById('status-display'),
+    classNameValue: document.getElementById('class-name-value'), // Added Class Name
     hpValue: document.getElementById('hp-value'),
     maxHpValue: document.getElementById('max-hp-value'),
     attackValue: document.getElementById('attack-value'),
@@ -63,6 +74,14 @@ export const elements = {
     exchangeResult: document.getElementById('exchange-result'),
     messages: document.getElementById('messages'),
     inventoryArea: document.getElementById('backpack-content-panel'),
+    topCentralAdventures: document.getElementById('top-central-adventures'), // 新增：頂部冒險區容器
+    evolutionChallengePanel: document.getElementById('evolution-challenge-panel'),
+    evolutionChallengeBtn: document.getElementById('evolution-challenge-btn'), // Added missing button
+    evolutionOptions: document.getElementById('evolution-options'), // Added for class selection
+    classEvolutionModalBackdrop: document.getElementById('class-evolution-modal-backdrop'), // Fix: Point to correct backdrop ID
+
+
+    dungeonEntrancePanel: document.getElementById('dungeon-entrance-panel'), // 新增：副本入口
     inventoryList: document.getElementById('inventory-list'),
     closeInventoryBtn: document.getElementById('close-inventory-btn'),
 
@@ -117,7 +136,20 @@ export const elements = {
     dungeonChallengeBtn: document.getElementById('dungeon-challenge-btn'),
     dungeonLeaveBtn: document.getElementById('dungeon-leave-btn'),
 
+    evolutionConfirmModalBackdrop: document.getElementById('evolution-confirm-modal-backdrop'),
+    evolutionConfirmModal: document.getElementById('evolution-confirm-modal'),
+    evolutionConfirmBtn: document.getElementById('evolution-confirm-btn'),
+    evolutionCancelBtn: document.getElementById('evolution-cancel-btn'),
+
 };
+
+// DEBUG: Check if critical elements are found
+const debugObj = {
+    confirmModal: !!elements.evolutionConfirmModalBackdrop,
+    confirmBtn: !!elements.evolutionConfirmBtn,
+    challengeBtn: !!elements.evolutionChallengeBtn
+};
+console.log("[UI Manager] Elements loaded status:", JSON.stringify(debugObj));
 
 // =========================================================
 // 將渲染函式移至頂部，確保所有地方都能呼叫
@@ -195,7 +227,7 @@ export function renderInventoryList() {
         let itemDisplayHtml = '';
         if (item.image) {
             // 如果有圖片路徑，則使用 <img> 標籤
-            itemDisplayHtml = `< img src = "${item.image}" alt = "${item.name}" style = "width: 20px; height: 20px; object-fit: contain; vertical-align: middle; margin-right: 5px;" > `;
+            itemDisplayHtml = `<img src="${item.image}" alt="${item.name}" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle; margin-right: 5px;">`;
         } else {
             // 如果沒有圖片，使用通用圖示
             const typeIcon = item.type === 'weapon' ? '⚔️ 武器' :
@@ -205,7 +237,7 @@ export function renderInventoryList() {
                             item.type === 'helmet' ? '🪖 頭盔' :
                                 item.type === 'greaves' ? '👢 護脛' :
                                     '🧪 藥水';
-            itemDisplayHtml = `< span style = "font-size: 1.2em; margin-right: 5px; vertical-align: middle;" > ${typeIcon}</span > `;
+            itemDisplayHtml = `<span style="font-size: 1.2em; margin-right: 5px; vertical-align: middle;">${typeIcon}</span>`;
         }
 
         // --- 屬性計算邏輯 (所有裝備都使用多屬性收集) ---
@@ -223,7 +255,8 @@ export function renderInventoryList() {
         statInfo = parts.join(', ');
 
         // 組合最終 HTML
-        itemInfoDiv.innerHTML = `${itemDisplayHtml} ** ${item.name}** (${statInfo})`;
+        const countDisplay = (item.count && item.count > 1) ? ` <span style="color: yellow; font-weight: bold;">x${item.count}</span>` : '';
+        itemInfoDiv.innerHTML = `${itemDisplayHtml} <strong>${item.name}</strong>${countDisplay} (${statInfo})`;
 
         itemDiv.appendChild(itemInfoDiv);
         elements.inventoryList.appendChild(itemDiv);
@@ -333,6 +366,7 @@ export function updateDisplay() {
     player.hp = Math.min(player.hp, totalMaxHp);
 
     // 2. 核心數值更新
+    if (elements.classNameValue) elements.classNameValue.textContent = player.className || "初心者"; // Default to Beginner
     elements.hpValue.textContent = Math.round(player.hp);
     elements.maxHpValue.textContent = Math.round(totalMaxHp);
     elements.attackValue.textContent = Math.round(totalAttack);
@@ -375,8 +409,6 @@ export function updateDisplay() {
     // 4. 渲染列表 (將複雜的 HTML 生成邏輯獨立出來)
     renderInventoryList(); //
     renderMaterialInventory(); // 【修正：恢復素材背包渲染】
-    updateExchangeDisplay(); //
-
     // 5. 按鈕文字更新 (例如永久升級按鈕)
     const multiplier = currentUpgradeMultiplier;
     let count = 1;
@@ -391,9 +423,9 @@ export function updateDisplay() {
         displayCost = count * UPGRADE_COST;
     }
 
-    elements.upgradeHpBtn.textContent = `永久 HP+${5 * count} \n(消耗 ${displayCost}💎) \n[當前: +${permanentData.hpBonus}]`;
-    elements.upgradeAttackBtn.textContent = `永久 ATK+${5 * count} \n(消耗 ${displayCost}💎) \n[當前: +${permanentData.attackBonus}]`;
-    elements.upgradeDefenseBtn.textContent = `永久 DEF+${5 * count} \n(消耗 ${displayCost}💎) \n[當前: +${permanentData.defenseBonus}]`;
+    if (elements.upgradeHpBtn) elements.upgradeHpBtn.textContent = `永久 HP+${5 * count} \n(消耗 ${displayCost}💎) \n[當前: +${permanentData.hpBonus}]`;
+    if (elements.upgradeAttackBtn) elements.upgradeAttackBtn.textContent = `永久 ATK+${5 * count} \n(消耗 ${displayCost}💎) \n[當前: +${permanentData.attackBonus}]`;
+    if (elements.upgradeDefenseBtn) elements.upgradeDefenseBtn.textContent = `永久 DEF+${5 * count} \n(消耗 ${displayCost}💎) \n[當前: +${permanentData.defenseBonus}]`;
 
     // 6. 更新倍率按鈕狀態
     document.querySelectorAll('.multiplier-btn').forEach(btn => {
@@ -404,7 +436,30 @@ export function updateDisplay() {
         }
     });
 
+
+    // 6. 更新戰鬥顯示 (如果戰鬥中)
+    if (isCombatActive && elements.combatArea && elements.combatArea.style.display !== 'none') {
+        updateCombatDisplay();
+    }
+} // End of updateDisplay
+
+export function updateCombatDisplay() {
+    if (!currentMonster) return;
+
+    if (elements.monsterName) elements.monsterName.textContent = currentMonster.name;
+    if (elements.monsterHpValue) elements.monsterHpValue.textContent = currentMonster.hp;
+    if (elements.monsterMaxHpValue) elements.monsterMaxHpValue.textContent = currentMonster.maxHp;
+    if (elements.monsterAttackValue) elements.monsterAttackValue.textContent = currentMonster.attack;
+    if (elements.monsterDefenseValue) elements.monsterDefenseValue.textContent = currentMonster.defense;
+
+    // 更新血條
+    if (elements.monsterHpBar) {
+        const hpPercent = Math.max(0, (currentMonster.hp / currentMonster.maxHp) * 100);
+        elements.monsterHpBar.style.width = `${hpPercent}%`;
+    }
 }
+
+
 
 export function showDungeonChallengeModal(bossName, infoText) {
     if (!elements.dungeonChallengeBackdrop) return;

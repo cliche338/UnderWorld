@@ -45,7 +45,9 @@ body {
 .game-layout {
     display: flex;
     gap: 20px;
-    align-items: stretch;
+    align-items: flex-start;
+    margin-top: 0;
+    padding-top: 0;
 }
 
 .panel {
@@ -62,6 +64,36 @@ body {
     white-space: nowrap;
     display: inline-block;
     margin-right: 10px;
+}
+
+#status-display {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: fit-content;
+    z-index: 10;
+    margin: 0 !important;
+    padding-top: 0 !important;
+}
+
+#status-display h3 {
+    margin-top: 0;
+}
+
+#hub-area {
+    padding-top: 0 !important;
+}
+
+#hub-area h3 {
+    margin-top: 0;
+}
+
+#game-log {
+    padding-top: 0 !important;
+}
+
+#game-log h3 {
+    margin-top: 0;
 }
 
 ::-webkit-scrollbar {
@@ -176,7 +208,7 @@ input:focus {
     min-width: 180px;
     background: #1e2d2f;
     border-color: #2c4749;
-    max-height: 615px;
+    max-height: 630px;
 }
 
 /* 3.2. 城鎮區 */
@@ -223,6 +255,15 @@ input:focus {
 
 #messages {
     padding-top: 5px;
+}
+
+#backpack-content-panel {
+    flex: 3.5;
+    /* 讓它填滿原本 Hub (2) + Log (1.5) 的空間 */
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /* 強制佔滿寬度 */
 }
 
 #backpack-content-panel>button#close-inventory-btn {
@@ -529,7 +570,7 @@ input:focus {
         justify-content: space-between;
         align-items: center;
         padding: 5px;
-        /* 精簡填充 */
+
     }
 
     #auth-main-content {
