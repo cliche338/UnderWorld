@@ -2261,7 +2261,11 @@ export function initializeGame() {
     if (State.loadGame()) {
         // 載入成功
         State.setGameActive(true);
-        enterTownMode();
+        if (State.player.actionsSinceTown === 0) {
+            enterTownMode();
+        } else {
+            enterAdventureMode();
+        }
 
     } else {
         logMessage("歡迎來到地下城冒險！請選擇你的職業來創建新角色。", 'white');
