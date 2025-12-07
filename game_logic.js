@@ -2274,6 +2274,7 @@ export function initializeGame() {
             critChance: 0.05
         };
         Object.assign(State.player, initialPlayerState);
+        State.setGameActive(false); // Ensure game is inactive for new character
 
         enterSelectionMode();
     }
@@ -2378,6 +2379,7 @@ export function handleLogout() {
 
     // 2. 重置 State 中的用戶名
     State.setCurrentUsername(null); // 【關鍵修正】使用 State 函式重置 currentUsername
+    State.setGameActive(false); // Reset game active state
 
     // 3. 重置 player 數據為初始狀態（確保下次登入前是乾淨的）
     Object.assign(State.player, {
