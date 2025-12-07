@@ -799,6 +799,14 @@ export function handleExplore() {
     if (isCombatActive) return;
 
     const nextDepth = State.player.depth + 1;
+
+    // --- Achievement Tracking ---
+    if (!State.player.maxDepthReached || nextDepth > State.player.maxDepthReached) {
+        State.player.maxDepthReached = nextDepth;
+    }
+    checkAchievements();
+    // ----------------------------
+
     const isBossLayer = nextDepth > 0 &&
         (nextDepth % 25 === 0 || nextDepth % 20 === 0);
 
@@ -1674,6 +1682,11 @@ export function endCombat(isVictory) {
     setIsCombatActive(false);
 
     if (isVictory) {
+        // --- Achievement Tracking ---
+        State.player.totalMonstersKilled = (State.player.totalMonstersKilled || 0) + 1;
+        checkAchievements();
+        // ----------------------------
+
         const enemy = State.currentMonster;
 
         // 轉職挑戰勝利判定
@@ -1904,6 +1917,10 @@ export function handleExchangeGold() {
 
     State.player.gold -= goldToExchange;           // 扣除金幣
     State.permanentData.stones += stonesGained;    // 增加耀魂石
+
+    // --- Achievement Tracking ---
+    checkAchievements();
+    // ----------------------------
 
     savePermanentData(); // 儲存永久資料 (耀魂石變動)
     saveGame();          // 儲存 Run Data (金幣變動)
@@ -2524,51 +2541,7 @@ export function showAchievementNotification(achievement) {
     }, 3000);
 }
 
-// 修改現有函數以觸發成就檢查
-
-// 在 handleExplore 中追蹤最大深度
-const originalHandleExplore = handleExplore;
-export { originalHandleExplore as _originalHandleExplore };
-
-// Override handleExplore to track achievements
-export function handleExploreWithAchievements() {
-    originalHandleExplore();
-
-    // 更新最大深度
-    if (State.player.depth > State.player.maxDepthReached) {
-        State.player.maxDepthReached = State.player.depth;
-    }
-
-    checkAchievements();
-}
-
-// 在 endCombat 中追蹤擊殺數
-export function endCombatWithAchievements(isVictory) {
-    if (isVictory) {
-        State.player.totalMonstersKilled = (State.player.totalMonstersKilled || 0) + 1;
-    }
-
-    endCombat(isVictory);
-
-    if (isVictory) {
-        checkAchievements();
-    }
-}
-
-// 在 handleExchangeGold 中追蹤金幣
-const originalHandleExchangeGold = handleExchangeGold;
-export { originalHandleExchangeGold as _originalHandleExchangeGold };
-
-export function handleExchangeGoldWithAchievements() {
-    const goldBefore = State.player.gold;
-    originalHandleExchangeGold();
-    const goldAfter = State.player.gold;
-
-    // 如果成功兌換（金幣減少）
-    if (goldAfter < goldBefore) {
-        checkAchievements();
-    }
-}
+// (Removed redundant achievement wrapper functions as logic is integrated into main functions)
 
 
 // =========================================
