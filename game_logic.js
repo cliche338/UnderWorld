@@ -814,17 +814,6 @@ export function handleExplore() {
     const isBossLayer = nextDepth > 0 &&
         (nextDepth % 25 === 0 || nextDepth % 20 === 0);
 
-    // ⭐ 關鍵修正 A: Boss 優先級判定
-    // 檢查下一層是否為 Boss 樓層，且當前回城計數器已滿
-    if (isBossLayer) {
-        if (State.player.actionsSinceTown >= State.player.actionsToTownRequired) {
-
-            // 讓行動計數器減 1，防止自動回城邏輯觸發
-            State.player.actionsSinceTown = State.player.actionsToTownRequired - 1;
-            logMessage("🚨 注意！ Boss 就在眼前，先完成戰鬥才能返回城鎮！", 'orange');
-        }
-    }
-
     // 1. 更新深度和行動計數
     State.player.actionsSinceTown++;
     State.player.depth++;
@@ -834,8 +823,8 @@ export function handleExplore() {
         toggleTownAccess(false);
     }
 
-    // 3. 檢查是否達到自動回城條件
-    if (State.player.actionsSinceTown >= State.player.actionsToTownRequired) {
+    // 3. 檢查是否達到自動回城條件 (⭐修正：如果是 Boss 層，暫不回城，先打 Boss)
+    if (State.player.actionsSinceTown >= State.player.actionsToTownRequired && !isBossLayer) {
         logMessage("🏠 行動目標已達成！自動返回城鎮休息和存檔。", 'lightgreen');
         handleRest(true); // 呼叫 handleRest 執行返城邏輯
         return; // 立即結束，不觸發隨機事件
@@ -970,7 +959,7 @@ export function getRandomMonster() {
         // 【特殊 Boss 優先級判斷】
         if (currentDepth % 10000 === 0) {
             bossId = 'ori-god';
-            logMessage('🚨 警報！奧利哈鋼神即將降臨...', 'red');
+            logMessage('🚨 警報！奧利哈鋼之神即將降臨...', 'red');
         } else if (currentDepth % 1000 === 0) {
             bossId = 'ori-body';
             logMessage('🚨 警報！奧利哈鋼之軀準備就緒...', 'red');
@@ -2000,7 +1989,7 @@ export function renderShop() {
             'necklace': '📿',
             'ring': '💍',
             'helmet': '🪖',
-            'greaves': '�',
+            'greaves': '👢',
             'consumable': '🧪'
         };
 
@@ -2641,4 +2630,19 @@ function changeClass(className, hpBonus, attackBonus, defenseBonus, critChanceBo
     logMessage(`✨ 命運重塑！您現在是 [${className}]。`, 'gold');
     logMessage(`🔒 轉職試煉已重置，需在第 ${State.player.nextEvolutionDepth} 層後方能再次挑戰。`, 'gray');
 }
+
+// =========================================
+// Debug / Cheat Functions
+// =========================================
+window.cheat_jump = (depth) => {
+    if (typeof depth !== 'number') {
+        console.log("Usage: cheat_jump(depth_number)");
+        return;
+    }
+    State.player.depth = depth;
+    State.player.actionsSinceTown = 0; // Reset return counter to allow exploration
+    State.saveGame();
+    updateDisplay();
+    logMessage(`🚀 [CHEAT] Warp to depth ${depth}.`, 'magenta');
+};
 
