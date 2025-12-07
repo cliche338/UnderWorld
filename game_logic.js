@@ -76,8 +76,6 @@ export const EVOLUTION_BOSS = {
 
 export function checkClassEvolution() {
     // 檢查條件：深度 1000 以上 (或下一次轉職層數)，且尚未轉職
-    // logMessage(`DEBUG: Checking Evolution. Depth=${State.player.depth}, Evolved=${State.player.isEvolved}`, 'gray');
-
     const targetDepth = State.player.nextEvolutionDepth || 1000;
 
     if (State.player.depth >= targetDepth && !State.player.isEvolved) {
@@ -1280,7 +1278,7 @@ export function handleSellItem(inventoryIndex, sellPrice) {
     let finalPrice = sellPrice;
 
     // 黑市大亨職業特效：販賣價格 1.5 倍
-    if (State.player.class === '黑市大亨') {
+    if (State.player.className === '黑市大亨') {
         finalPrice = Math.floor(sellPrice * 1.5);
     }
 
@@ -1311,7 +1309,14 @@ export function handleSellMaterial(materialId, count, sellPrice) {
 
     if (!State.player.materials[materialId] || State.player.materials[materialId] === 0) return;
 
-    const totalRevenue = count * sellPrice;
+    let finalPrice = sellPrice;
+
+    // 黑市大亨職業特效：販賣價格 1.5 倍
+    if (State.player.className === '黑市大亨') {
+        finalPrice = Math.floor(sellPrice * 1.5);
+    }
+
+    const totalRevenue = count * finalPrice;
 
     State.player.gold += totalRevenue;
     State.player.totalGoldEarned = (State.player.totalGoldEarned || 0) + totalRevenue;
@@ -1319,11 +1324,17 @@ export function handleSellMaterial(materialId, count, sellPrice) {
 
     checkAchievements();
 
-    logMessage(`💰 販賣了 ${count} 個 [${getMaterialById(materialId).name}]，總共獲得 ${totalRevenue} 金幣。`, 'gold');
+    if (finalPrice > sellPrice) {
+        logMessage(`💰 [黑市大亨] 販賣了 ${count} 個 [${getMaterialById(materialId).name}]，獲得 ${totalRevenue} 金幣 (單價加成: ${finalPrice})。`, 'gold');
+    } else {
+        logMessage(`💰 販賣了 ${count} 個 [${getMaterialById(materialId).name}]，總共獲得 ${totalRevenue} 金幣。`, 'gold');
+    }
 
     saveGame();
     updateDisplay(); // 更新介面，包括素材列表
 }
+
+
 
 export function enterAdventureMode() {
     elements.currentStageTitle.textContent = "地城探險";
@@ -1397,7 +1408,7 @@ export function calculateTotalMaxHp() {
 
 export function calculateTotalDefense() {
 
-    let totalDefense = State.player.defense;
+    let totalDefense = State.player.defense || 0;
     totalDefense += State.permanentData.defenseBonus || 0;
 
     // 裝備加成
@@ -1532,7 +1543,7 @@ export function handleAttack() {
     let critMultiplier = 2;
 
     // 影武者職業特效：暴擊傷害 260%
-    if (State.player.class === '影武者') {
+    if (State.player.className === '影武者') {
         critMultiplier = 2.6;
     }
 
@@ -1556,7 +1567,7 @@ export function handleAttack() {
     logMessage(`你攻擊了 ${State.currentMonster.name}，造成 ${damageDealt} 點傷害。`, 'white');
 
     // 狂戰士職業特效：攻擊吸血 10%
-    if (State.player.class === '狂戰士' && damageDealt > 0) {
+    if (State.player.className === '狂戰士' && damageDealt > 0) {
         const healAmount = Math.floor(damageDealt * 0.1);
         if (healAmount > 0) {
             const oldHp = State.player.hp;
@@ -1576,7 +1587,7 @@ export function handleAttack() {
     // 4. 怪物反擊 -
 
     // 暗影刺客職業特效：30% 機率閃避
-    if (State.player.class === '暗影刺客' && Math.random() < 0.3) {
+    if (State.player.className === '暗影刺客' && Math.random() < 0.3) {
         logMessage(`⚡ [暗影刺客] 你的身形如鬼魅般閃爍，完全閃避了 ${State.currentMonster.name} 的攻擊！`, 'cyan');
         // 閃避成功，不執行傷害計算，也不會有受傷訊息
         updateDisplay();
@@ -1611,7 +1622,7 @@ export function handleAttack() {
     logMessage(`❌ ${State.currentMonster.name} 對你造成了 ${damageReceived} 點傷害 (已減免 ${totalDefense} 防禦)！`, 'red');
 
     // 聖騎士職業特效：受傷反彈 40%
-    if (State.player.class === '聖騎士' && damageReceived > 0) {
+    if (State.player.className === '聖騎士' && damageReceived > 0) {
         const reflectDamage = Math.floor(damageReceived * 0.4);
         if (reflectDamage > 0) {
             State.currentMonster.hp -= reflectDamage;
@@ -1884,8 +1895,19 @@ export function endCombat(isVictory) {
 
     }
 
+    // ⭐ 關鍵修正 v2：檢查是否需要返回城鎮模式
+    // 如果 actionsSinceTown 為 0，代表我们在城鎮中戰鬥 (如轉職 Boss, 副本 Boss)
+    // 必須使用 enterTownMode 來恢復 Hub 介面 (switchUIMode 只切換按鈕，不足以恢復城鎮狀態)
+    const shouldReturnToTown = State.player.actionsSinceTown === 0;
+
     setCurrentMonster(null);
-    switchUIMode(false);
+
+    if (shouldReturnToTown) {
+        enterTownMode();
+    } else {
+        switchUIMode(false);
+    }
+
     updateDisplay();
 }
 
@@ -2149,36 +2171,25 @@ export function handleRest(isAuto = false) {
 }
 
 export function enterTownMode() {
-    logMessage(`[DEBUG] Entering Town Mode.`, 'gray');
+    // 1. 恢復基礎冒險模式介面 (重置按鈕、主要區域顯示)
+    enterAdventureMode();
 
-    // 顯示 Town/Hub 區塊，隱藏戰鬥/死亡區塊
-    if (elements.hubArea) elements.hubArea.style.display = 'block';
-
-    // 顯示 Explore/Rest 按鈕
-    if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'block';
-    if (elements.combatModeButtons) elements.combatModeButtons.style.display = 'none';
-    if (elements.deathModeButtons) elements.deathModeButtons.style.display = 'none';
-
-    // 確保主要的動作容器顯示 
-    if (elements.adventureActions) elements.adventureActions.style.display = 'block';
-    if (elements.controlsArea) elements.controlsArea.style.display = 'block';
-
-    // 確保不該出現的元素被隱藏
-    // 確保不該出現的元素被隱藏
-    if (elements.classSelection) {
-        elements.classSelection.style.display = 'none';
-        elements.classSelection.setAttribute('style', 'display: none !important');
+    // 2. 更新標題
+    if (elements.currentStageTitle) {
+        elements.currentStageTitle.textContent = "城鎮休息";
     }
+
+    // 3. 確保背包關閉
     if (elements.inventoryArea) elements.inventoryArea.style.display = 'none';
 
-    // 確保城鎮功能開啟 (交易/升級)
+    // 4. 確保城鎮功能開啟 (交易/升級)
     toggleTownAccess(true);
 
-    // 刷新商店
+    // 5. 刷新商店
     refreshShopInventory();
     renderShop();
 
-    // 檢查轉職
+    // 6. 檢查轉職 (關鍵：確保按鈕重新出現)
     checkClassEvolution();
 }
 
