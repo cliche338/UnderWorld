@@ -8,7 +8,7 @@ import {
     setIsInventoryOpen, isCombatActive, gameActive,
 } from './state.js';
 
-import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, } from './config.js';
+import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, ACHIEVEMENTS, ACHIEVEMENT_TIERS, ACHIEVEMENT_CATEGORIES } from './config.js';
 
 import {
     logMessage, updateDisplay, elements,
@@ -18,13 +18,14 @@ import {
 
 export { logMessage }; // Export logMessage for main.js usage
 
+// 更新日誌
 export function showUpdateLog() {
     const updateLog = `
 
-- 新增批量強化按鈕
-- 更新背包消耗品堆疊
-- 新增轉職系統
-- 新增職業試煉關卡
+- 新增成就系統
+- 新增解鎖成就動畫
+- 新增橫向排列狀態面板
+- 修正裝備顯示區塊, 修改為打開背包後顯示
 
     `;
 
@@ -32,15 +33,11 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none';
     }
 
-    const title = "v3.04 遊戲更新日誌";
+    const title = "v3.05 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal');
 }
 
-
-// 引入戰鬥相關函式，雖然在同一个文件，但如果 handleEvolutionChallenge 要用 startCombat，
-// 而 startCombat 和 handleEvolutionChallenge 都在這，直接呼叫即可。
-// 但我們需要確保從 main.js 綁定 handleEvolutionChallenge。
-
+// 職業轉職系統
 export const ADVANCED_CLASSES = {
     "騎士": [
         { name: "聖騎士", hpBonus: 200, attackBonus: 0, defenseBonus: 50, critBonus: 0, desc: "大幅提升生存能力 (HP+200, DEF+50)" },
@@ -444,6 +441,12 @@ export function toggleCodex() {
 export function toggleInventory() {
     // 關鍵：獲取背包面板元素
     const backpackPanel = elements.inventoryArea;
+    const equippedItemsDisplay = document.getElementById('equipped-items-display');
+    const gameLayout = document.querySelector('.game-layout');
+    const statusDisplay = document.getElementById('status-display');
+
+    // ⭐ 新增：獲取狀態面板內部的 Flex 容器
+    const statusFlexContainer = document.getElementById('status-flex-container');
 
     if (!backpackPanel) {
         logMessage("❌ 致命錯誤：找不到背包區塊！", 'red');
@@ -465,6 +468,36 @@ export function toggleInventory() {
         setIsInventoryOpen(true);
         backpackPanel.style.display = 'block';
 
+        // 設置並排布局
+        if (gameLayout) {
+            gameLayout.style.display = 'flex';
+            gameLayout.style.gap = '20px';
+            gameLayout.style.alignItems = 'flex-start';
+        }
+
+        // ⭐ 修改：應用橫向排列樣式
+        if (statusFlexContainer) {
+            statusFlexContainer.classList.add('status-side-by-side');
+        }
+
+        // ⭐ 修改：設置狀態面板寬度 (加寬以容納兩列，但稍微縮減給背包空間)
+        if (statusDisplay) {
+            statusDisplay.style.flex = '0 0 420px';  // 調整為 420px
+            statusDisplay.style.maxWidth = '420px';
+        }
+
+        if (backpackPanel) {
+            backpackPanel.style.flex = '10';  // ⭐ 強制佔據所有剩餘空間
+            backpackPanel.style.width = '100%'; // ⭐ 強制寬度填滿
+            backpackPanel.style.minWidth = '600px';
+            backpackPanel.style.maxWidth = 'none'; // ⭐ 移除最大寬度限制
+        }
+
+        // 顯示狀態面板中的裝備區塊 (CSS class 也會處理，這裡雙重確保)
+        if (equippedItemsDisplay) {
+            equippedItemsDisplay.style.display = 'block';
+        }
+
         // 隱藏所有與背包衝突的介面
         contentToHide.forEach(el => {
             if (el) el.style.display = 'none';
@@ -483,6 +516,35 @@ export function toggleInventory() {
         // --- [背包關閉] ---
         setIsInventoryOpen(false);
         backpackPanel.style.display = 'none';
+
+        // 恢復原始布局
+        if (gameLayout) {
+            gameLayout.style.display = '';  // 恢復默認
+            gameLayout.style.gap = '';
+            gameLayout.style.alignItems = '';
+        }
+
+        // ⭐ 修改：移除橫向排列樣式
+        if (statusFlexContainer) {
+            statusFlexContainer.classList.remove('status-side-by-side');
+        }
+
+        // ⭐ 修改：恢復狀態面板原始寬度
+        if (statusDisplay) {
+            statusDisplay.style.flex = '';
+            statusDisplay.style.minWidth = '';
+            statusDisplay.style.maxWidth = '';
+        }
+
+        if (backpackPanel) {
+            backpackPanel.style.flex = '';
+            backpackPanel.style.minWidth = '';
+        }
+
+        // 隱藏狀態面板中的裝備區塊
+        if (equippedItemsDisplay) {
+            equippedItemsDisplay.style.display = 'none';
+        }
 
         // 1. 恢復所有核心 UI 區塊 (日誌、控制台總區)
         if (elements.logAndControlsGroup) elements.logAndControlsGroup.style.display = 'flex'; // 恢復右側總容器 (Flex)
@@ -1536,6 +1598,20 @@ export function endCombat(isVictory) {
         State.player.gold += gold;
         logMessage(`💰 擊敗 ${enemy.name}，獲得 ${gold} 金幣。`, 'yellow');
 
+        // === Boss 擊殺追蹤（用於成就系統）===
+        if (enemy.isBoss && enemy.id) {
+            // 確保 bossKills 物件存在
+            if (!State.player.bossKills) {
+                State.player.bossKills = {};
+            }
+            // 增加該 Boss 的擊殺計數
+            State.player.bossKills[enemy.id] = (State.player.bossKills[enemy.id] || 0) + 1;
+            logMessage(`🏆 Boss擊殺記錄：${enemy.name} x${State.player.bossKills[enemy.id]}`, 'gold');
+
+            // 觸發成就檢查
+            checkAchievements();
+        }
+
         // 擊敗 奧利哈鋼幻影
         if (enemy.id === 'ori-shadow') {
 
@@ -2102,6 +2178,7 @@ export function handleSuccessfulLogin(username) {
     elements.howToPlayBtn.style.display = 'block';
     elements.updateLogBtn.style.display = 'block';
     elements.codexBtn.style.display = 'block';
+    elements.achievementsBtn.style.display = 'block'; // 顯示成就按鈕
     elements.dungeonEntrancePanel.style.display = 'block';
 
     // 啟動遊戲 (載入永久數據和 Run Data)
@@ -2203,6 +2280,7 @@ export function handleLogout() {
     elements.howToPlayBtn.style.display = 'none';
     elements.updateLogBtn.style.display = 'none';
     elements.codexBtn.style.display = 'none';
+    elements.achievementsBtn.style.display = 'none'; // 隱藏成就按鈕
     elements.dungeonEntrancePanel.style.display = 'none';
 
     updateDisplay(); // 統一更新畫面
@@ -2224,6 +2302,167 @@ export function checkLocalLogin() {
         elements.howToPlayBtn.style.display = 'none';
         elements.updateLogBtn.style.display = 'none';
         elements.codexBtn.style.display = 'none';
+        elements.achievementsBtn.style.display = 'none'; // 隱藏成就按鈕
         elements.dungeonEntrancePanel.style.display = 'none';
+    }
+}
+
+// =========================================================
+// 成就系統 (Achievement System)
+// =========================================================
+
+// 檢查並解鎖成就
+export function checkAchievements() {
+    if (!State.currentUsername) return;
+
+    ACHIEVEMENTS.forEach(achievement => {
+        // 如果已經解鎖，跳過
+        if (State.permanentData.achievements.includes(achievement.id)) {
+            return;
+        }
+
+        // 根據檢查函數檢查是否達成
+        let isUnlocked = false;
+        switch (achievement.checkFunction) {
+            case 'checkDepth':
+                isUnlocked = State.player.maxDepthReached >= achievement.requirement;
+                break;
+            case 'checkKills':
+                isUnlocked = State.player.totalMonstersKilled >= achievement.requirement;
+                break;
+            case 'checkEvolution':
+                isUnlocked = State.player.isEvolved;
+                break;
+            case 'checkGoldEarned':
+                isUnlocked = State.player.totalGoldEarned >= achievement.requirement;
+                break;
+            case 'checkStones':
+                isUnlocked = State.permanentData.stones >= achievement.requirement;
+                break;
+            case 'checkKnownItems':
+                isUnlocked = State.permanentData.knownItems.length >= achievement.requirement;
+                break;
+            case 'checkBossKill':
+                // 檢查是否擊敗特定 Boss
+                if (achievement.bossId && State.player.bossKills) {
+                    isUnlocked = (State.player.bossKills[achievement.bossId] || 0) >= achievement.requirement;
+                }
+                break;
+            case 'checkUniqueBossKills':
+                // 檢查擊敗不同 Boss 的總數
+                if (State.player.bossKills) {
+                    const uniqueBossCount = Object.keys(State.player.bossKills).length;
+                    isUnlocked = uniqueBossCount >= achievement.requirement;
+                }
+                break;
+            case 'checkItemCollection':
+                // 檢查是否收集了特定道具集合
+                if (achievement.requiredItems && Array.isArray(achievement.requiredItems)) {
+                    isUnlocked = achievement.requiredItems.every(itemId =>
+                        State.permanentData.knownItems.includes(itemId)
+                    );
+                }
+                break;
+        }
+
+        if (isUnlocked) {
+            unlockAchievement(achievement.id);
+        }
+    });
+}
+
+// 解鎖成就
+export function unlockAchievement(achievementId) {
+    // 防止重複解鎖
+    if (State.permanentData.achievements.includes(achievementId)) {
+        return;
+    }
+
+    // 添加到已解鎖列表
+    State.permanentData.achievements.push(achievementId);
+    State.savePermanentData();
+
+    // 找到成就數據
+    const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+    if (!achievement) return;
+
+    // 顯示解鎖通知
+    showAchievementNotification(achievement);
+
+    // 日誌
+    const tier = ACHIEVEMENT_TIERS[achievement.tier];
+    logMessage(`🏆 成就解鎖！${tier.icon} [${achievement.name}] - ${achievement.description}`, 'gold');
+}
+
+// 顯示成就解鎖通知
+export function showAchievementNotification(achievement) {
+    const tier = ACHIEVEMENT_TIERS[achievement.tier];
+
+    // 創建通知元素
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.style.borderColor = tier.color;
+
+    notification.innerHTML = `
+        <h2>🏆 成就解鎖！</h2>
+        <div class="achievement-icon">${achievement.icon}</div>
+        <div class="achievement-name">${achievement.name}</div>
+        <div class="tier-badge tier-${achievement.tier.toLowerCase()}">${tier.icon} ${tier.name}</div>
+        <div class="achievement-description">${achievement.description}</div>
+    `;
+
+    document.body.appendChild(notification);
+
+    // 3秒後移除
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+
+// 修改現有函數以觸發成就檢查
+
+// 在 handleExplore 中追蹤最大深度
+const originalHandleExplore = handleExplore;
+export { originalHandleExplore as _originalHandleExplore };
+
+// Override handleExplore to track achievements
+export function handleExploreWithAchievements() {
+    originalHandleExplore();
+
+    // 更新最大深度
+    if (State.player.depth > State.player.maxDepthReached) {
+        State.player.maxDepthReached = State.player.depth;
+    }
+
+    checkAchievements();
+}
+
+// 在 endCombat 中追蹤擊殺數
+export function endCombatWithAchievements(isVictory) {
+    if (isVictory) {
+        State.player.totalMonstersKilled = (State.player.totalMonstersKilled || 0) + 1;
+    }
+
+    endCombat(isVictory);
+
+    if (isVictory) {
+        checkAchievements();
+    }
+}
+
+// 在 handleExchangeGold 中追蹤金幣
+const originalHandleExchangeGold = handleExchangeGold;
+export { originalHandleExchangeGold as _originalHandleExchangeGold };
+
+export function handleExchangeGoldWithAchievements() {
+    const goldBefore = State.player.gold;
+    originalHandleExchangeGold();
+    const goldAfter = State.player.gold;
+
+    // 如果成功兌換（金幣減少）
+    if (goldAfter < goldBefore) {
+        checkAchievements();
     }
 }

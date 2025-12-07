@@ -188,6 +188,11 @@
                         📜 道具圖鑑
                     </button>
 
+                    <button id="achievements-toggle-btn"
+                        style="padding: 5px 10px; font-size: 0.9em; background-color: #e67e22; color: white; margin-top: 10px; display: none;">
+                        🏆 成就
+                    </button>
+
                 </div>
             </div>
         </div>
@@ -205,23 +210,30 @@
                 <div id="status-display" class="panel">
                     <h3>⚔️ 冒險家狀態</h3>
 
-                    <p>職業 : <span id="class-name-value" style="color: #f1c40f; font-weight: bold;">無</span></p>
-                    <p>HP : <span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
-                    <p>ATK : <span id="attack-value">0</span></p>
-                    <p>DEF : <span id="defense-value">0</span></p>
-                    <p>暴擊率 : <span id="crit-chance-value">0%</span></p>
-                    <p>金幣 : <span id="gold-value">0</span></p>
-                    <p>深度 : <span id="depth-value">0</span> 層</p>
-                    <p>耀魂石 : <span id="stones-value">0</span> 💎</p>
+                    <div id="status-flex-container">
+                        <div id="status-stats-container">
+                            <p>職業 : <span id="class-name-value" style="color: #f1c40f; font-weight: bold;">無</span></p>
+                            <p>HP : <span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
+                            <p>ATK : <span id="attack-value">0</span></p>
+                            <p>DEF : <span id="defense-value">0</span></p>
+                            <p>暴擊率 : <span id="crit-chance-value">0%</span></p>
+                            <p>金幣 : <span id="gold-value">0</span></p>
+                            <p>深度 : <span id="depth-value">0</span> 層</p>
+                            <p>耀魂石 : <span id="stones-value">0</span> 💎</p>
+                        </div>
 
-                    <hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
-
-                    <p>武器 : <span id="equipped-weapon-name">無</span></p>
-                    <p>頭盔 : <span id="equipped-helmet-name">無</span></p>
-                    <p>胸甲 : <span id="equipped-armor-name">無</span></p>
-                    <p>護脛 : <span id="equipped-greaves-name">無</span></p>
-                    <p>項鍊 : <span id="equipped-necklace-name">無</span></p>
-                    <p>戒指 : <span id="equipped-ring-name">無</span></p>
+                        <!-- 裝備顯示區塊 - 只在打開背包時顯示 -->
+                        <div id="equipped-items-display"
+                            style="display: none; margin-top: 10px; padding-top: 10px; border-top: 2px solid #6e5a3d;">
+                            <h4 style="margin: 0 0 10px 0; color: #f1c40f;">⚔️ 當前裝備</h4>
+                            <p>武器 : <span id="equipped-weapon-name">無</span></p>
+                            <p>頭盔 : <span id="equipped-helmet-name">無</span></p>
+                            <p>胸甲 : <span id="equipped-armor-name">無</span></p>
+                            <p>護脛 : <span id="equipped-greaves-name">無</span></p>
+                            <p>項鍊 : <span id="equipped-necklace-name">無</span></p>
+                            <p>戒指 : <span id="equipped-ring-name">無</span></p>
+                        </div>
+                    </div>
 
                     <button id="inventory-btn">背包</button>
                 </div>
@@ -321,7 +333,7 @@
                 </div>
 
                 <div id="backpack-content-panel" class="panel" style="display: none;">
-                    <h3>🎒 背包</h3>
+                    <h3>🎒 背包道具</h3>
                     <div id="inventory-list">目前沒有物品。</div>
                     <button id="close-inventory-btn" style="background-color: #666;">關閉背包</button>
 
@@ -336,6 +348,52 @@
         </div>
     </div>
 
+    <!-- Achievement System Modal -->
+    <div id="achievements-modal-backdrop"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); justify-content: center; align-items: center; z-index: 1005;">
+        <div id="achievements-panel"
+            style="display: block !important; background: #1a1515; border: 3px solid #e67e22; padding: 30px; border-radius: 10px; max-width: 900px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 0 20px rgba(230, 126, 34, 0.4);">
+            <h3 style="color: #e67e22; text-align: center; margin-top: 0;">🏆 成就系統</h3>
+            <p id="achievements-progress"
+                style="color: #f39c12; font-weight: bold; margin-bottom: 10px; text-align: center;">已解鎖: 0/16</p>
+
+            <div id="achievement-filters"
+                style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+                <button class="achievement-filter active" data-category="all"
+                    onclick="window.achievementCategoryClick(this)">全部</button>
+                <button class="achievement-filter" data-category="EXPLORATION"
+                    onclick="window.achievementCategoryClick(this)">🗺️ 探索</button>
+                <button class="achievement-filter" data-category="COMBAT"
+                    onclick="window.achievementCategoryClick(this)">⚔️ 戰鬥</button>
+                <button class="achievement-filter" data-category="WEALTH"
+                    onclick="window.achievementCategoryClick(this)">💰 財富</button>
+                <button class="achievement-filter" data-category="COLLECTION"
+                    onclick="window.achievementCategoryClick(this)">📦 收藏</button>
+            </div>
+
+            <div id="achievement-tier-filters"
+                style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+                <button class="achievement-tier-filter active" data-tier="all"
+                    onclick="window.achievementTierClick(this)">全部難度</button>
+                <button class="achievement-tier-filter" data-tier="COMMON"
+                    onclick="window.achievementTierClick(this)">🟢 普通</button>
+                <button class="achievement-tier-filter" data-tier="RARE" onclick="window.achievementTierClick(this)">🔵
+                    稀有</button>
+                <button class="achievement-tier-filter" data-tier="EPIC" onclick="window.achievementTierClick(this)">🟣
+                    史詩</button>
+                <button class="achievement-tier-filter" data-tier="LEGENDARY"
+                    onclick="window.achievementTierClick(this)">🟠 傳說</button>
+            </div>
+
+
+            <div id="achievements-list"
+                style="display: flex; flex-direction: column; gap: 10px; width: 100%; height: 500px; padding: 10px; background: rgba(0,0,0,0.2); overflow-y: auto; flex-shrink: 0;">
+                <!-- Achievement items will be dynamically generated here -->
+            </div>
+            <button id="close-achievements-btn" onclick="window.closeAchievements()"
+                style="margin-top: 15px; display: block; margin-left: auto; margin-right: auto;">關閉成就</button>
+        </div>
+    </div>
 
     <script type="module" src="main.js"></script>
 </body>

@@ -6,7 +6,7 @@ export let isCombatActive = false;
 export let gameActive = false;
 export let currentUsername = null;
 export let isInventoryOpen = false;
-export let permanentData = { stones: 0, hpBonus: 0, attackBonus: 0, defenseBonus: 0, knownItems: [], };
+export let permanentData = { stones: 0, hpBonus: 0, attackBonus: 0, defenseBonus: 0, knownItems: [], achievements: [] };
 export let currentUpgradeMultiplier = 1; // 1, 10, or 'MAX'
 
 export function setCurrentUpgradeMultiplier(value) {
@@ -39,6 +39,12 @@ export let player = {
 
     actionsToTownRequired: 0,
     actionsSinceTown: 0,//行動計數器
+
+    // 成就統計
+    totalMonstersKilled: 0,
+    maxDepthReached: 0,
+    totalGoldEarned: 0,
+    bossKills: {}, // 追蹤擊殺的 Boss，格式：{ 'boss1': 2, 'boss2': 1 }
 };
 
 export function setGameActive(value) {
@@ -86,6 +92,7 @@ export function loadPermanentData() {
         permanentData.defenseBonus = parseInt(loadedData.defenseBonus) || 0;
         permanentData.critChanceBonus = parseFloat(loadedData.critChanceBonus) || 0;
         permanentData.knownItems = Array.isArray(loadedData.knownItems) ? loadedData.knownItems : [];
+        permanentData.achievements = Array.isArray(loadedData.achievements) ? loadedData.achievements : [];
 
         // ✅ 新增診斷日誌！
         console.log("DIAGNOSTICS: Loaded permanent HP Bonus:", permanentData.hpBonus, "Type:", typeof permanentData.hpBonus);
@@ -98,6 +105,7 @@ export function loadPermanentData() {
         permanentData.defenseBonus = 0;
         permanentData.critChanceBonus = 0;
         permanentData.knownItems = [];
+        permanentData.achievements = [];
     }
 }
 

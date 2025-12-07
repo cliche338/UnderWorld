@@ -4,7 +4,7 @@ import {
     currentMonster
 } from './state.js';
 
-import { ITEMS, MATERIALS_DATA, STONE_CONVERSION_RATE, UPGRADE_COST } from './config.js'; //
+import { ITEMS, MATERIALS_DATA, STONE_CONVERSION_RATE, UPGRADE_COST, ACHIEVEMENTS, ACHIEVEMENT_TIERS, ACHIEVEMENT_CATEGORIES } from './config.js'; //
 
 import {
     calculateTotalAttack,
@@ -38,6 +38,16 @@ export const elements = {
 
     howToPlayBtn: document.getElementById('how-to-play-btn'),
     updateLogBtn: document.getElementById('update-log-btn'),
+
+    // Achievement system
+    achievementsBtn: document.getElementById('achievements-toggle-btn'),
+    achievementsModalBackdrop: document.getElementById('achievements-modal-backdrop'),
+    achievementsPanel: document.getElementById('achievements-panel'),
+    achievementsProgress: document.getElementById('achievements-progress'),
+    achievementsList: document.getElementById('achievements-list'),
+    achievementFilters: document.getElementById('achievement-filters'),
+    achievementTierFilters: document.getElementById('achievement-tier-filters'),
+    closeAchievementsBtn: document.getElementById('close-achievements-btn'),
 
     defenseValue: document.getElementById('defense-value'),
     critChanceValue: document.getElementById('crit-chance-value'),
@@ -141,6 +151,16 @@ export const elements = {
     evolutionConfirmBtn: document.getElementById('evolution-confirm-btn'),
     evolutionCancelBtn: document.getElementById('evolution-cancel-btn'),
 
+    // Achievement System
+    achievementsBtn: document.getElementById('achievements-toggle-btn'),
+    achievementsModalBackdrop: document.getElementById('achievements-modal-backdrop'),
+    achievementsPanel: document.getElementById('achievements-panel'),
+    achievementsList: document.getElementById('achievements-list'),
+    achievementsProgress: document.getElementById('achievements-progress'),
+    achievementFilters: document.getElementById('achievement-filters'),
+    achievementTierFilters: document.getElementById('achievement-tier-filters'),
+    closeAchievementsBtn: document.getElementById('close-achievements-btn'),
+
 };
 
 // DEBUG: Check if critical elements are found
@@ -193,6 +213,7 @@ export function renderInventoryList() {
 
         // 裝備或使用按鈕
         const actionButton = document.createElement('button');
+        actionButton.classList.add('inventory-action-btn'); // ⭐ 優化樣式
         if (item.type === 'consumable') {
             actionButton.textContent = '使用';
             actionButton.onclick = () => useConsumable(index);
@@ -206,6 +227,7 @@ export function renderInventoryList() {
         const sellPrice = item.value || 0;
         if (sellPrice > 0) {
             const sellButton = document.createElement('button');
+            sellButton.classList.add('inventory-action-btn'); // ⭐ 優化樣式
             sellButton.textContent = `販賣(${sellPrice} 💰)`;
             sellButton.style.marginLeft = '5px';
             sellButton.style.backgroundColor = '#9b59b6';
@@ -498,4 +520,132 @@ export function getItemIcon(itemType) {
         case 'consumable': return '🧪';
         default: return '❓';
     }
+}
+
+// =========================================================
+// Achievement System UI Functions
+// =========================================================
+
+let currentCategoryFilter = 'all';
+let currentTierFilter = 'all';
+
+export function renderAchievementsList(categoryFilter = 'all', tierFilter = 'all') {
+    console.log('[Achievement] renderAchievementsList called, ACHIEVEMENTS:', ACHIEVEMENTS, 'length:', ACHIEVEMENTS ? ACHIEVEMENTS.length : 0);
+    if (!elements.achievementsList) return;
+
+    currentCategoryFilter = categoryFilter;
+    currentTierFilter = tierFilter;
+
+    elements.achievementsList.innerHTML = '';
+
+    // Filter achievements
+    let filteredAchievements = ACHIEVEMENTS;
+
+    if (categoryFilter !== 'all') {
+        filteredAchievements = filteredAchievements.filter(a => a.category === categoryFilter);
+    }
+
+    if (tierFilter !== 'all') {
+        filteredAchievements = filteredAchievements.filter(a => a.tier === tierFilter);
+    }
+
+
+
+    // RENDER with innerHTML and inline styles
+    elements.achievementsList.innerHTML = '';
+
+    console.log('[Achievement RENDER] filteredAchievements.length:', filteredAchievements.length);
+    console.log('[Achievement RENDER] filteredAchievements:', filteredAchievements);
+
+    filteredAchievements.forEach((achievement) => {
+        console.log('[Achievement RENDER] Rendering:', achievement.name);
+        const isUnlocked = permanentData.achievements.includes(achievement.id);
+        const tier = ACHIEVEMENT_TIERS[achievement.tier];
+
+        // 未解鎖的成就使用灰色調，已解鎖的使用彩色
+        const cardBg = isUnlocked ? '#2a2a2a' : '#1a1a1a';
+        const titleColor = isUnlocked ? '#f1c40f' : '#666';
+        const descColor = isUnlocked ? '#ecf0f1' : '#555';
+        const borderColor = isUnlocked ? tier.color : '#333';
+        const badgeBg = isUnlocked ? tier.color : '#444';
+        const badgeColor = isUnlocked ? 'white' : '#888';
+        const filter = isUnlocked ? '' : 'opacity: 0.6; filter: grayscale(80%);';
+
+        const html = `<div style="background:${cardBg};border-left:8px solid ${borderColor};padding:20px;margin:10px 0;border-radius:5px;display:flex;justify-content:space-between;box-shadow:0 3px 10px rgba(0,0,0,0.5);${filter}">
+            <div style="flex:1;"><div style="font-size:18px;font-weight:bold;color:${titleColor};margin-bottom:8px;">${achievement.name}</div>
+            <div style="font-size:14px;color:${descColor};">${achievement.description}</div></div>
+            <div style="background:${badgeBg};color:${badgeColor};padding:10px 20px;border-radius:5px;font-weight:bold;">${tier.name}</div></div>`;
+
+        elements.achievementsList.insertAdjacentHTML('beforeend', html);
+    });
+
+    // Update progress
+    const unlockedCount = permanentData.achievements.length;
+    const totalCount = ACHIEVEMENTS.length;
+    if (elements.achievementsProgress) {
+        elements.achievementsProgress.textContent = `已解鎖: ${unlockedCount}/${totalCount}`;
+    }
+}
+
+export function toggleAchievements() {
+    if (!elements.achievementsModalBackdrop) {
+        console.error('[Achievement] Modal backdrop not found!');
+        return;
+    }
+
+    const isVisible = elements.achievementsModalBackdrop.style.display === 'flex';
+    console.log('[Achievement] Toggle called, isVisible:', isVisible);
+
+    if (isVisible) {
+        elements.achievementsModalBackdrop.style.display = 'none';
+        console.log('[Achievement] Modal closed');
+    } else {
+        elements.achievementsModalBackdrop.style.display = 'flex';
+        console.log('[Achievement] Modal opened');
+        renderAchievementsList(currentCategoryFilter, currentTierFilter);
+
+        // Delay binding to ensure DOM is ready
+        setTimeout(() => {
+            console.log('[Achievement] Binding events after delay');
+            bindAchievementFilters();
+        }, 100);
+
+        // Add backdrop click to close
+        elements.achievementsModalBackdrop.onclick = (e) => {
+            if (e.target === elements.achievementsModalBackdrop) {
+                console.log('[Achievement] Backdrop clicked');
+                toggleAchievements();
+            }
+        };
+    }
+}
+
+function bindAchievementFilters() {
+    console.log('[Achievement] Setting up global click handlers...');
+
+    // Define global functions for inline onclick handlers
+    window.achievementCategoryClick = function (btn) {
+        console.log('[Achievement] Category clicked!', btn.getAttribute('data-category'));
+        // Remove active from all category buttons
+        document.querySelectorAll('.achievement-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const category = btn.getAttribute('data-category');
+        renderAchievementsList(category, currentTierFilter);
+    };
+
+    window.achievementTierClick = function (btn) {
+        console.log('[Achievement] Tier clicked!', btn.getAttribute('data-tier'));
+        // Remove active from all tier buttons  
+        document.querySelectorAll('.achievement-tier-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tier = btn.getAttribute('data-tier');
+        renderAchievementsList(currentCategoryFilter, tier);
+    };
+
+    window.closeAchievements = function () {
+        console.log('[Achievement] Close clicked!');
+        toggleAchievements();
+    };
+
+    console.log('[Achievement] Global functions registered!');
 }

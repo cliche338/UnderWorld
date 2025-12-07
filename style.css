@@ -48,6 +48,9 @@ body {
     align-items: flex-start;
     margin-top: 0;
     padding-top: 0;
+    width: 100%;
+    /* ⭐ 強制佔滿寬度 */
+    box-sizing: border-box;
 }
 
 .panel {
@@ -638,4 +641,310 @@ input:focus {
         flex-wrap: wrap;
         gap: 5px;
     }
+}
+
+/* ========================================= */
+/* 08. 成就系統樣式 (ACHIEVEMENT SYSTEM) */
+/* ========================================= */
+
+/* 篩選按鈕 */
+.achievement-filter,
+.achievement-tier-filter {
+    padding: 6px 12px;
+    font-size: 0.9em;
+    background: #2a2a2a;
+    border: 2px solid #555;
+    color: #ddd;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    min-width: 80px;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.achievement-filter:hover,
+.achievement-tier-filter:hover {
+    background: #3a3a3a;
+    border-color: #888;
+}
+
+.achievement-filter.active {
+    background: #e67e22;
+    border-color: #d35400;
+    color: white;
+    font-weight: bold;
+}
+
+.achievement-tier-filter.active {
+    background: #e67e22;
+    border-color: #d35400;
+    color: white;
+    font-weight: bold;
+}
+
+/* 關閉按鈕 */
+#close-achievements-btn {
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* 成就列表容器 */
+#achievements-list {
+    width: 100%;
+    min-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+/* 成就列表項目 */
+.achievement-list-item {
+    background: #3a3a3a !important;
+    border-left: 4px solid #e67e22 !important;
+    border-radius: 5px;
+    padding: 15px 20px;
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    min-height: 60px;
+    box-sizing: border-box;
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: white !important;
+}
+
+.achievement-list-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 已解鎖成就 */
+.achievement-list-item.unlocked {
+    background: #1f1f1f;
+    border-left-width: 5px;
+}
+
+/* 未解鎖成就 */
+.achievement-list-item.locked {
+    filter: grayscale(60%);
+    opacity: 0.7;
+}
+
+/* 成就內容區（左側） */
+.achievement-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* 成就名稱 */
+.achievement-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #f1c40f !important;
+}
+
+.achievement-list-item.unlocked .achievement-name {
+    color: #2ecc71 !important;
+}
+
+.achievement-list-item.locked .achievement-name {
+    color: #95a5a6 !important;
+}
+
+/* 成就描述 */
+.achievement-description {
+    font-size: 0.9em;
+    color: #ecf0f1 !important;
+}
+
+.achievement-list-item.locked .achievement-description {
+    color: #7f8c8d !important;
+    font-style: italic;
+}
+
+/* Tier Badge */
+.tier-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: bold;
+    margin-top: 5px;
+    text-transform: uppercase;
+}
+
+.tier-badge.tier-common {
+    background: #27ae60;
+    color: white;
+}
+
+.tier-badge.tier-rare {
+    background: #3498db;
+    color: white;
+}
+
+.tier-badge.tier-epic {
+    background: #9b59b6;
+    color: white;
+}
+
+.tier-badge.tier-legendary {
+    background: #e67e22;
+    color: white;
+}
+
+/* 成就解鎖通知動畫 */
+.achievement-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(0, 0, 0, 0.95);
+    border: 3px solid #f39c12;
+    border-radius: 15px;
+    padding: 30px;
+    z-index: 2000;
+    text-align: center;
+    min-width: 300px;
+    box-shadow: 0 0 30px rgba(243, 156, 18, 0.6);
+    animation: achievementPop 3s ease-in-out forwards;
+}
+
+@keyframes achievementPop {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+
+    10% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 1;
+    }
+
+    20% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    80% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+.achievement-notification h2 {
+    color: #f39c12;
+    margin: 0 0 15px 0;
+    font-size: 1.5em;
+}
+
+.achievement-notification .achievement-icon {
+    font-size: 4em;
+    margin: 10px 0;
+}
+
+.achievement-notification .achievement-name {
+    font-size: 1.3em;
+    margin: 10px 0 5px 0;
+}
+
+.achievement-notification .achievement-description {
+    font-size: 1em;
+    color: #ddd;
+}
+
+/* ========================================= */
+/* 09. 狀態面板橫向排列 (STATUS PANEL HORIZONTAL) */
+/* ========================================= */
+
+.status-side-by-side {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    /* 縮小間距 */
+    align-items: flex-start;
+}
+
+.status-side-by-side>div {
+    flex: 1;
+}
+
+/* 橫向排列時的裝備區塊樣式調整 */
+.status-side-by-side #equipped-items-display {
+    border-top: none !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-left: 2px solid #6e5a3d;
+    padding-left: 8px;
+    /* 縮小內距 */
+
+    /* 確保初始隱藏狀態能被正確處理 */
+    display: block !important;
+}
+
+/* 確保狀態文字間距統一 */
+#status-stats-container p {
+    margin: 12px 0;
+}
+
+/* ========================================= */
+/* 10. 背包按鈕優化 (INVENTORY BUTTON OPTIMIZATION) */
+/* ========================================= */
+
+.inventory-action-btn {
+    min-width: 80px !important;
+    /* 覆蓋全域的 160px */
+    padding: 4px 10px;
+    font-size: 0.9em;
+}
+
+
+/* ========================================= */
+/* 11. 背包網格佈局 (INVENTORY GRID LAYOUT) */
+/* ========================================= */
+
+#inventory-list {
+    display: flex;
+    /* 改回 Flex column 以確保垂直排列且撐滿 */
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.inventory-item {
+    padding: 10px;
+    border: 1px solid #5a4a35;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid #5a4a35;
+    /* 覆蓋舊樣式 */
+
+    /* 確保內容對齊 */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.inventory-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    /* 懸停效果 */
+    border-color: #f1c40f;
 }

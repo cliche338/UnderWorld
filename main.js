@@ -1,5 +1,5 @@
 import * as GameLogic from './game_logic.js';
-import { elements, updateExchangeDisplay, hideDungeonChallengeModal, showDungeonChallengeModal } from './ui_manager.js';
+import { elements, updateExchangeDisplay, hideDungeonChallengeModal, showDungeonChallengeModal, toggleAchievements } from './ui_manager.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -47,6 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.howToPlayBtn) elements.howToPlayBtn.onclick = GameLogic.showHowToPlay;
     if (elements.updateLogBtn) elements.updateLogBtn.onclick = GameLogic.showUpdateLog;
     if (elements.codexBtn) elements.codexBtn.onclick = GameLogic.toggleCodex;
+
+    // 8.5 绑定成就按鈕
+    if (elements.achievementsBtn) {
+        elements.achievementsBtn.onclick = toggleAchievements;
+    }
 
     // 8. 綁定轉職挑戰
     if (elements.evolutionChallengeBtn) elements.evolutionChallengeBtn.onclick = GameLogic.handleEvolutionChallenge;
