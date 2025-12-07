@@ -138,6 +138,11 @@ export function loadGame() {
         const baseCritChance = 0.05;
         player.critChance = player.critChance || baseCritChance;
 
+        // Backfill totalGoldEarned for backward compatibility
+        if (typeof player.totalGoldEarned === 'undefined' || player.totalGoldEarned < player.gold) {
+            player.totalGoldEarned = player.gold;
+        }
+
         logMessage("📂 載入進度成功。", 'lightgreen');
         return true;
     }

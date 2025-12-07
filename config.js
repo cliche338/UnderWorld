@@ -429,7 +429,7 @@ export const ITEMS = [
 
         // 藥水
         {
-                id: 'ori-blood', name: '奧利哈鋼之血', type: 'consumable', hp: 300, image: 'icon/consumable/ori-blood.png',
+                id: 'ori-blood', name: '奧利哈鋼之血', type: 'consumable', heal: 300, image: 'icon/consumable/ori-blood.png',
                 value: 10, price: 50, rarity: 10, intro: '從奧利哈鋼傷口蒐集的血液\n似乎對人體有益處'
         },
         {

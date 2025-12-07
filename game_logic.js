@@ -1291,7 +1291,9 @@ export function handleSellItem(inventoryIndex, sellPrice) {
         finalPrice = Math.floor(sellPrice * 1.5);
     }
 
+
     State.player.gold += finalPrice;
+    State.player.totalGoldEarned = (State.player.totalGoldEarned || 0) + finalPrice;
 
     // 4. 更新狀態與日誌
     if (finalPrice > sellPrice) {
@@ -1299,6 +1301,9 @@ export function handleSellItem(inventoryIndex, sellPrice) {
     } else {
         logMessage(`💰 成功販賣 [${itemToSell.name}]，獲得 ${finalPrice} 金幣。`, 'gold');
     }
+
+    checkAchievements();
+
 
     // 5. 存檔與介面更新
     saveGame();
@@ -1316,7 +1321,10 @@ export function handleSellMaterial(materialId, count, sellPrice) {
     const totalRevenue = count * sellPrice;
 
     State.player.gold += totalRevenue;
+    State.player.totalGoldEarned = (State.player.totalGoldEarned || 0) + totalRevenue;
     State.player.materials[materialId] = 0; // 移除所有素材
+
+    checkAchievements();
 
     logMessage(`💰 販賣了 ${count} 個 [${getMaterialById(materialId).name}]，總共獲得 ${totalRevenue} 金幣。`, 'gold');
 
@@ -1682,11 +1690,6 @@ export function endCombat(isVictory) {
     setIsCombatActive(false);
 
     if (isVictory) {
-        // --- Achievement Tracking ---
-        State.player.totalMonstersKilled = (State.player.totalMonstersKilled || 0) + 1;
-        checkAchievements();
-        // ----------------------------
-
         const enemy = State.currentMonster;
 
         // 轉職挑戰勝利判定
@@ -1702,9 +1705,13 @@ export function endCombat(isVictory) {
             // 不過為了讓玩家也能拿到金幣，我們繼續往下執行
         }
 
+        // Achievement Tracking (moved here to capture gold update)
+        State.player.totalMonstersKilled = (State.player.totalMonstersKilled || 0) + 1;
+
         // 金幣結算 
         const gold = enemy.goldReward;
         State.player.gold += gold;
+        State.player.totalGoldEarned = (State.player.totalGoldEarned || 0) + gold;
         logMessage(`💰 擊敗 ${enemy.name}，獲得 ${gold} 金幣。`, 'yellow');
 
         // === Boss 擊殺追蹤（用於成就系統）===
@@ -1716,10 +1723,10 @@ export function endCombat(isVictory) {
             // 增加該 Boss 的擊殺計數
             State.player.bossKills[enemy.id] = (State.player.bossKills[enemy.id] || 0) + 1;
             logMessage(`🏆 Boss擊殺記錄：${enemy.name} x${State.player.bossKills[enemy.id]}`, 'gold');
-
-            // 觸發成就檢查
-            checkAchievements();
         }
+
+        // Trigger achievement check AFTER all stats (kills, gold, boss kills) are updated
+        checkAchievements();
 
         // 擊敗 奧利哈鋼幻影
         if (enemy.id === 'ori-shadow') {
@@ -2275,7 +2282,8 @@ export function initializeGame() {
             equipment: { weapon: null, helmet: null, armor: null, greaves: null, necklace: null, ring: null },
             inventory: [], materials: {}, goldAtLastRest: 0,
             actionsSinceTown: 0, actionsToTownRequired: 0,
-            critChance: 0.05
+            critChance: 0.05,
+            totalGoldEarned: 0
         };
         Object.assign(State.player, initialPlayerState);
         State.setGameActive(false); // Ensure game is inactive for new character
