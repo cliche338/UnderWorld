@@ -276,7 +276,8 @@ export function renderInventoryList() {
                         item.type === 'ring' ? '💍 戒指' :
                             item.type === 'helmet' ? '🪖 頭盔' :
                                 item.type === 'greaves' ? '👢 護脛' :
-                                    '🧪 藥水';
+                                    item.type === 'consumable' ? '🧪 藥水' :
+                                        '💎 特殊';
             itemDisplayHtml = `<span style="font-size: 1.2em; margin-right: 5px; vertical-align: middle;">${typeIcon}</span>`;
         }
 

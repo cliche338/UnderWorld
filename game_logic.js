@@ -2002,7 +2002,8 @@ export function renderShop() {
             'ring': '戒指',
             'helmet': '頭盔',
             'greaves': '護脛',
-            'consumable': '藥水'
+            'consumable': '藥水',
+            'special': '特殊'
         };
 
         const typeEmojiMap = {
@@ -2012,7 +2013,8 @@ export function renderShop() {
             'ring': '💍',
             'helmet': '🪖',
             'greaves': '👢',
-            'consumable': '🧪'
+            'consumable': '🧪',
+            'special': '💎'
         };
 
         let displayType = '';
