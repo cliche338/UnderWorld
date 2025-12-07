@@ -379,7 +379,7 @@ export const ITEMS = [
                 value: 1500, price: 3700, rarity: 10, intro: '從奧利哈鋼身上取出的眼睛\n保存完好且散發不尋常的光芒'
         },
         {
-                id: 'ori-ring', name: '奧利哈鋼之神眼-蒂邁歐', type: 'ring', attack: 240, defense: 50, critChance: 0.30, image: 'icon/ring/ori-god-ring.png',
+                id: 'ori-god-ring', name: '奧利哈鋼之神眼-蒂邁歐', type: 'ring', attack: 240, defense: 50, critChance: 0.30, image: 'icon/ring/ori-god-ring.png',
                 value: 1500, price: 3700, rarity: 10, intro: '看穿一切的神之眼\n能看見過去古文記載中的世界'
         },
         {

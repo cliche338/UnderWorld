@@ -624,15 +624,58 @@ input:focus {
     #adventure-actions button,
     #class-selection button {
         box-sizing: border-box;
-        width: 100%;
-        /* 預設 100% 寬度 */
+        /* width: 100%;  移除強制 100% 寬度，改由容器控制 */
         min-width: unset;
-        display: block;
+        /* display: block; 移除強制 block */
         font-size: 0.9em;
-        padding: 8px 10px;
-        margin-bottom: 3px !important;
+        padding: 10px 10px;
+        /* 增加一點點觸控區域 */
+        margin-bottom: 5px !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
+    }
+
+    /* 7.1 強制讓 Explore/Rest 等主按鈕群組並排 */
+    #explore-mode-buttons,
+    #combat-mode-buttons,
+    #death-mode-buttons,
+    #dungeon-challenge-btn-group,
+    #dungeon-defeat-btn-group {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+    }
+
+    #explore-mode-buttons button,
+    #combat-mode-buttons button,
+    #death-mode-buttons button,
+    #dungeon-challenge-btn-group button,
+    #dungeon-defeat-btn-group button {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+        display: flex;
+        /* 確保內容置中 */
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* 7.2 職業選擇依舊使用 Flex 或 Grid */
+    #class-selection {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        /* 強制三欄 */
+        gap: 5px !important;
+    }
+
+    #class-selection button {
+        width: 100% !important;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0 !important;
+        font-size: 0.8em;
+        /* 稍微縮小字體以適應三欄 */
+        padding: 5px 2px;
     }
 
     /* 7a. 修正功能按鈕寬度 (讓它適應內容) */
