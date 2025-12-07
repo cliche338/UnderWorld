@@ -33,6 +33,8 @@ export function showUpdateLog() {
 - 新增橫向排列狀態面板
 - 修正裝備顯示區塊, 修改為打開背包後顯示
 - 新增視覺化裝備系統
+- 更新關閉背包位置
+- 修正尼古拉成就無法解鎖bug
 
     `;
 
@@ -40,7 +42,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none';
     }
 
-    const title = "v4.0 遊戲更新日誌";
+    const title = "v4.1 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal');
 }
 
@@ -521,7 +523,7 @@ export function toggleInventory() {
         if (elements.logAndControlsGroup) elements.logAndControlsGroup.style.display = 'flex';
 
         // 恢復 Hub
-        if (State.player.actionsSinceTown === 0 && !State.isCombatActive) {
+        if (!State.isCombatActive && State.player.hp > 0) {
             if (elements.hubArea) elements.hubArea.style.display = 'block';
         }
 

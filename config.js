@@ -51,7 +51,7 @@ export const MONSTERS = [
         { id: 'x-mo4', name: "混沌-魔能戰魂", hp: 1800, attack: 220, defense: 150, goldReward: 350, difficulty: 5 },
 
         // 活動 Boss
-        { id: 'xmasboss', name: "猩紅尼古拉", hp: 1500, attack: 320, defense: 150, goldReward: 1350, difficulty: 8 },
+        { id: 'xmasboss', name: "猩紅尼古拉", hp: 1500, attack: 320, defense: 150, goldReward: 1350, difficulty: 8, isBoss: true },
 
         // 世界級 Boss
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 37373, attack: 377, defense: 377, goldReward: 370, difficulty: 10, isBoss: true },
