@@ -40,7 +40,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none';
     }
 
-    const title = "v3.06 遊戲更新日誌";
+    const title = "v4.0 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal');
 }
 
