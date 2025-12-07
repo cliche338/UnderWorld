@@ -63,6 +63,18 @@ export const elements = {
     exploreModeButtons: document.getElementById('explore-mode-buttons'),
     attackBtn: document.getElementById('attack-btn'),
     runBtn: document.getElementById('run-btn'),
+    // 視覺化裝備面板
+    visualEquipmentPanel: document.getElementById('visual-equipment-panel'),
+    visualSlots: {
+        weapon: document.getElementById('visual-slot-weapon'),
+        helmet: document.getElementById('visual-slot-helmet'),
+        armor: document.getElementById('visual-slot-armor'),
+        greaves: document.getElementById('visual-slot-greaves'),
+        necklace: document.getElementById('visual-slot-necklace'),
+        ring: document.getElementById('visual-slot-ring')
+    },
+
+    logAndControlsGroup: document.getElementById('log-and-controls-group'),
     gameLog: document.getElementById('game-log'),
     controlsArea: document.getElementById('controls-area'),
     hubInteractiveContent: document.getElementById('hub-interactive-content'),
@@ -161,6 +173,12 @@ export const elements = {
     achievementTierFilters: document.getElementById('achievement-tier-filters'),
     closeAchievementsBtn: document.getElementById('close-achievements-btn'),
 
+    // Confirmation Modal
+    confirmationModalBackdrop: document.getElementById('confirmation-modal-backdrop'),
+    confirmationTitle: document.getElementById('confirmation-title'),
+    confirmationContent: document.getElementById('confirmation-content'),
+    confirmationConfirmBtn: document.getElementById('confirmation-confirm-btn'),
+    confirmationCancelBtn: document.getElementById('confirmation-cancel-btn'),
 };
 
 // DEBUG: Check if critical elements are found
@@ -278,7 +296,11 @@ export function renderInventoryList() {
 
         // 組合最終 HTML
         const countDisplay = (item.count && item.count > 1) ? ` <span style="color: yellow; font-weight: bold;">x${item.count}</span>` : '';
-        itemInfoDiv.innerHTML = `${itemDisplayHtml} <strong>${item.name}</strong>${countDisplay} (${statInfo})`;
+
+        // 修正：只有當 statInfo 有內容時才顯示括號
+        const statDisplay = statInfo ? ` (${statInfo})` : '';
+
+        itemInfoDiv.innerHTML = `${itemDisplayHtml} <strong>${item.name}</strong>${countDisplay}${statDisplay}`;
 
         itemDiv.appendChild(itemInfoDiv);
         elements.inventoryList.appendChild(itemDiv);
@@ -648,4 +670,55 @@ function bindAchievementFilters() {
     };
 
     console.log('[Achievement] Global functions registered!');
+}
+
+// =========================================
+// 12. 裝備展示面板渲染 (VISUAL EQUIPMENT RENDER)
+// =========================================
+
+export function renderVisualEquipment() {
+    const visualPanel = document.getElementById('visual-equipment-display');
+    if (!visualPanel || visualPanel.style.display === 'none') {
+        if (!visualPanel) return;
+    }
+
+    const slots = visualPanel.querySelectorAll('.equipment-slot');
+
+    slots.forEach(slot => {
+        const slotType = slot.getAttribute('data-slot');
+        const equippedItemId = player.equipment[slotType];
+
+        // 重置狀態
+        slot.innerHTML = '';
+        slot.classList.add('empty'); // 預設為空 (會顯示 '無' via CSS)
+        slot.setAttribute('title', slot.getAttribute('data-slot-name') || ''); // 恢復基本 title
+
+        if (equippedItemId) {
+            // 尋找對應的物品資料
+            const itemData = ITEMS.find(i => i.id === equippedItemId);
+
+            if (itemData) {
+                // 有找到物品資料
+                if (itemData.image) {
+                    const img = document.createElement('img');
+                    img.src = itemData.image;
+                    img.alt = itemData.name;
+                    // 更新 tooltip
+                    slot.title = `${itemData.name}\n${itemData.intro || ''}`;
+                    slot.appendChild(img);
+                    slot.classList.remove('empty');
+                } else {
+                    // 有物品但沒圖片，暫時顯示名稱縮寫或文字
+                    // 為了美觀，這裡也可以選擇顯示一個通用裝備圖標，目前先用文字
+                    slot.innerHTML = `<span style="font-size:0.8em; text-align:center; color:#f1c40f;">${itemData.name}</span>`;
+                    slot.title = `${itemData.name}\n${itemData.intro || ''}`;
+                    slot.classList.remove('empty');
+                }
+            } else {
+                // 有 ID 但找不到物品資料 (可能是 ID 錯誤或舊存檔)
+                // 視為 "無"，保持 empty 狀態，但可以 Log 警告
+                console.warn(`VisualEquipment: Item ID '${equippedItemId}' not found in ITEMS.`);
+            }
+        }
+    });
 }

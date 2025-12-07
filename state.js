@@ -9,6 +9,11 @@ export let isInventoryOpen = false;
 export let permanentData = { stones: 0, hpBonus: 0, attackBonus: 0, defenseBonus: 0, knownItems: [], achievements: [] };
 export let currentUpgradeMultiplier = 1; // 1, 10, or 'MAX'
 
+export let isReselecting = false;
+export function setIsReselecting(value) {
+    isReselecting = value;
+}
+
 export function setCurrentUpgradeMultiplier(value) {
     currentUpgradeMultiplier = value;
 }

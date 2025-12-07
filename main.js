@@ -5,6 +5,16 @@ import { elements, updateExchangeDisplay, hideDungeonChallengeModal, showDungeon
 document.addEventListener('DOMContentLoaded', () => {
     console.log("[Main] DOMContentLoaded Triggered"); // DEBUG
 
+    // DEBUG: 開放接口供測試使用
+    window.GameLogic = GameLogic;
+    window.getJewel = () => {
+        const item = GameLogic.getItemById('return-jewel');
+        if (item) {
+            GameLogic.addItemToInventory({ ...item }); // Copy item
+            console.log("已獲得回歸玉！請查看背包。");
+        }
+    };
+
     // 1. 啟動遊戲入口：檢查本地登入資訊
     GameLogic.checkLocalLogin();
 

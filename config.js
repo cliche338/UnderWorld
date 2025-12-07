@@ -61,6 +61,14 @@ export const MONSTERS = [
 
 export const ITEMS = [
 
+        // 特殊道具
+        {
+                id: 'return-jewel', name: '回歸玉', type: 'consumable',
+                value: 5000, price: 100000, rarity: 5,
+                image: 'icon/special/return-jewel.png',
+                intro: '使用後可重新選擇職業，但需再歷練500層才能再次轉職。'
+        },
+
         // 武器
         {
                 id: 'ori-broken-sword', name: '奧利哈鋼斷劍', type: 'weapon', attack: 60, critChance: 0.25, image: 'icon/weapon/ori-broken-sword.png',

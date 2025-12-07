@@ -13,7 +13,8 @@ import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST,
 import {
     logMessage, updateDisplay, elements,
     renderInventoryList, renderMaterialInventory,
-    updateExchangeDisplay, getItemIcon
+    updateExchangeDisplay, getItemIcon,
+    renderVisualEquipment // 新增
 } from './ui_manager.js';
 
 export { logMessage }; // Export logMessage for main.js usage
@@ -22,10 +23,16 @@ export { logMessage }; // Export logMessage for main.js usage
 export function showUpdateLog() {
     const updateLog = `
 
+- 新增各轉職職業特性
+    聖騎士 : 反傷 / 狂戰士 : 吸血
+    黑市大亨 : 換金增幅
+    影武者 : 暴擊傷害 / 暗影刺客 : 閃避率
+- 新增回歸玉, 可重新選擇職業, 但需再歷練500層才能再次轉職
 - 新增成就系統
 - 新增解鎖成就動畫
 - 新增橫向排列狀態面板
 - 修正裝備顯示區塊, 修改為打開背包後顯示
+- 新增視覺化裝備系統
 
     `;
 
@@ -33,23 +40,22 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none';
     }
 
-    const title = "v3.05 遊戲更新日誌";
+    const title = "v3.06 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal');
 }
 
 // 職業轉職系統
 export const ADVANCED_CLASSES = {
     "騎士": [
-        { name: "聖騎士", hpBonus: 200, attackBonus: 0, defenseBonus: 50, critBonus: 0, desc: "大幅提升生存能力 (HP+200, DEF+50)" },
-        { name: "狂戰士", hpBonus: 0, attackBonus: 100, defenseBonus: -10, critBonus: 0, desc: "大幅提升攻擊力 (ATK+100, DEF-10)" }
+        { name: "聖騎士", hpBonus: 200, attackBonus: 0, defenseBonus: 0, critBonus: 0, desc: "堅毅壁壘 (HP+200, 受傷反彈 40%)" },
+        { name: "狂戰士", hpBonus: 0, attackBonus: 100, defenseBonus: 0, critBonus: 0, desc: "鮮血渴望 (ATK+100, 攻擊吸血 10%)" }
     ],
     "商人": [
-        { name: "煉金術士", hpBonus: 0, attackBonus: 0, defenseBonus: 0, critBonus: 0, desc: "" },
-        { name: "公務員", hpBonus: 0, attackBonus: 20, defenseBonus: 20, critBonus: 0, desc: "均衡發展 (ATK+20, DEF+20)" }
+        { name: "黑市大亨", hpBonus: 0, attackBonus: 80, defenseBonus: 0, critBonus: 0, desc: "金錢暴力 (ATK+80, 販賣所得+50%)" }
     ],
     "刺客": [
-        { name: "影武者", hpBonus: 0, attackBonus: 50, defenseBonus: 0, critBonus: 0.15, desc: "極致輸出 (ATK+50, Crit+15%)" },
-        { name: "忍者", hpBonus: 100, attackBonus: 30, defenseBonus: 0, critBonus: 0.10, desc: "靈活作戰 (HP+100, ATK+30, Crit+10%)" }
+        { name: "影武者", hpBonus: 0, attackBonus: 50, defenseBonus: 0, critBonus: 0.15, desc: "極致輸出 (ATK+50, 暴擊率+15%, 暴擊傷害提升至260%)" },
+        { name: "暗影刺客", hpBonus: 100, attackBonus: 30, defenseBonus: 0, critBonus: 0.10, desc: "靈活作戰 (HP+100, 有30%機率閃避攻擊)" }
     ]
 };
 
@@ -94,6 +100,12 @@ export function checkClassEvolution() {
 export function handleEvolutionChallenge() {
     console.log("Opening Evolution Confirmation Modal");
     if (!State.gameActive) return;
+
+    // --- 新增：檢查轉職限制 ---
+    if (State.player.nextEvolutionDepth && State.player.depth < State.player.nextEvolutionDepth) {
+        logMessage(`🔒 轉職試煉尚未準備好... 需歷練至第 ${State.player.nextEvolutionDepth} 層 (目前 ${State.player.depth} 層)。`, 'red');
+        return;
+    }
 
     if (elements.evolutionConfirmModalBackdrop) {
         elements.evolutionConfirmModalBackdrop.style.display = 'flex';
@@ -205,6 +217,27 @@ export let currentShopInventory = [];
 let currentCodexFilter = 'all';
 export let isDungeonAvailable = false;
 
+// 通用確認視窗函式
+export function showConfirmationModal(title, message, onConfirmCallback) {
+    if (!elements.confirmationModalBackdrop) return;
+
+    elements.confirmationTitle.textContent = title;
+    elements.confirmationContent.textContent = message;
+
+    // 綁定確認按鈕 (需移除之前的監聽器以防重複觸發，但簡單起見每次覆蓋 onclick)
+    elements.confirmationConfirmBtn.onclick = () => {
+        elements.confirmationModalBackdrop.style.display = 'none';
+        if (onConfirmCallback) onConfirmCallback();
+    };
+
+    // 綁定取消按鈕
+    elements.confirmationCancelBtn.onclick = () => {
+        elements.confirmationModalBackdrop.style.display = 'none';
+    };
+
+    elements.confirmationModalBackdrop.style.display = 'flex';
+}
+
 function openModal(title, content, modalClass) {
 
     if (!elements.modalBody || !elements.modalContent || !elements.modalTitle) {
@@ -256,7 +289,20 @@ export function showHowToPlay() {
         * 每250層會遇見奧利哈鋼幻影Boss,擊敗會掉落專屬道具。
         * 每1000層會遇見奧利哈鋼之軀Boss,擊敗會掉落專屬道具。
         * 每10000層會遇見奧利哈鋼之神Boss,擊敗會掉落專屬道具。
-        
+    
+    🪪職業系統 : 
+        1、初始選擇職業 : 騎士、商人、刺客
+        2、第一次經過1000層後抵達城鎮可以挑戰轉職
+        3、使用"回歸玉"後可以重新選擇職業, 歷經500層後可重新挑戰轉職
+        * 骑士 : 
+            * 聖騎士 : 受傷反彈 40%
+            * 狂戰士 : 攻擊吸血 10% 
+        * 商人 : 
+            * 黑市大亨 : 販賣所得+50%
+        * 刺客 : 
+            * 影武者 : 暴擊傷害 260%
+            * 暗影刺客 : 閃避率 30%
+
     🎯目標 : 
         * 在地城中探索得越深越好，並收集稀有裝備！
         * 祝你遊戲愉快！🎉
@@ -433,166 +479,131 @@ export function toggleCodex() {
         elements.codexFilters.style.display = 'none';
         // 移除事件綁定
         elements.codexFilters.onclick = null;
-
-        logMessage("📜 道具圖鑑已關閉。", 'cyan');
     }
 }
 
 export function toggleInventory() {
-    // 關鍵：獲取背包面板元素
-    const backpackPanel = elements.inventoryArea;
-    const equippedItemsDisplay = document.getElementById('equipped-items-display');
-    const gameLayout = document.querySelector('.game-layout');
-    const statusDisplay = document.getElementById('status-display');
+    const newState = !State.isInventoryOpen;
+    State.setIsInventoryOpen(newState);
 
-    // ⭐ 新增：獲取狀態面板內部的 Flex 容器
-    const statusFlexContainer = document.getElementById('status-flex-container');
+    if (newState) {
+        // --- 打開背包 ---
+        if (elements.inventoryArea) elements.inventoryArea.style.display = 'block';
 
-    if (!backpackPanel) {
-        logMessage("❌ 致命錯誤：找不到背包區塊！", 'red');
-        return;
-    }
+        // 1. 隱藏城鎮和冒險區塊
+        if (elements.hubArea) elements.hubArea.style.display = 'none';
 
-    // 這些是需要被隱藏的區塊 (簡化列表，但確保遊戲核心內容隱藏)
-    let contentToHide = [
-        elements.messages,
-        elements.hubArea,
-        elements.adventureActions,
-        elements.gameLog,
-        elements.controlsArea,
-        elements.logAndControlsGroup, // 新增：隱藏右側總容器
-    ];
+        // 2. 隱藏 logAndControlsGroup 以維持 flex 比例
+        if (elements.logAndControlsGroup) elements.logAndControlsGroup.style.display = 'none';
 
-    if (!State.isInventoryOpen) {
-        // --- [背包開啟] ---
-        setIsInventoryOpen(true);
-        backpackPanel.style.display = 'block';
+        // 3. 顯示裝備欄 (文字版)
+        const equippedDisplay = document.getElementById('equipped-items-display');
+        if (equippedDisplay) equippedDisplay.style.display = 'block';
 
-        // 設置並排布局
-        if (gameLayout) {
-            gameLayout.style.display = 'flex';
-            gameLayout.style.gap = '20px';
-            gameLayout.style.alignItems = 'flex-start';
+        // 4. 顯示視覺化裝備面板
+        if (elements.visualEquipmentPanel) {
+            elements.visualEquipmentPanel.style.display = 'flex';
+            updateVisualEquipment();
         }
 
-        // ⭐ 修改：應用橫向排列樣式
-        if (statusFlexContainer) {
-            statusFlexContainer.classList.add('status-side-by-side');
-        }
+        // 5. 隱藏背包按鈕本身
+        if (elements.inventoryBtn) elements.inventoryBtn.style.display = 'none';
 
-        // ⭐ 修改：設置狀態面板寬度 (加寬以容納兩列，但稍微縮減給背包空間)
-        if (statusDisplay) {
-            statusDisplay.style.flex = '0 0 420px';  // 調整為 420px
-            statusDisplay.style.maxWidth = '420px';
-        }
-
-        if (backpackPanel) {
-            backpackPanel.style.flex = '10';  // ⭐ 強制佔據所有剩餘空間
-            backpackPanel.style.width = '100%'; // ⭐ 強制寬度填滿
-            backpackPanel.style.minWidth = '600px';
-            backpackPanel.style.maxWidth = 'none'; // ⭐ 移除最大寬度限制
-        }
-
-        // 顯示狀態面板中的裝備區塊 (CSS class 也會處理，這裡雙重確保)
-        if (equippedItemsDisplay) {
-            equippedItemsDisplay.style.display = 'block';
-        }
-
-        // 隱藏所有與背包衝突的介面
-        contentToHide.forEach(el => {
-            if (el) el.style.display = 'none';
-        });
-
-        // 額外隱藏按鈕區塊，避免在背包打開時看到
-        elements.exploreModeButtons.style.display = 'none';
-        elements.combatModeButtons.style.display = 'none';
-
-        // 渲染背包內容
         renderInventoryList();
         renderMaterialInventory();
-        logMessage("🎒 背包已開啟。", 'white');
-
     } else {
-        // --- [背包關閉] ---
-        setIsInventoryOpen(false);
-        backpackPanel.style.display = 'none';
+        // --- 關閉背包 ---
+        if (elements.inventoryArea) elements.inventoryArea.style.display = 'none';
 
-        // 恢復原始布局
-        if (gameLayout) {
-            gameLayout.style.display = '';  // 恢復默認
-            gameLayout.style.gap = '';
-            gameLayout.style.alignItems = '';
+        // 恢復右側面板
+        if (elements.logAndControlsGroup) elements.logAndControlsGroup.style.display = 'flex';
+
+        // 恢復 Hub
+        if (State.player.actionsSinceTown === 0 && !State.isCombatActive) {
+            if (elements.hubArea) elements.hubArea.style.display = 'block';
         }
 
-        // ⭐ 修改：移除橫向排列樣式
-        if (statusFlexContainer) {
-            statusFlexContainer.classList.remove('status-side-by-side');
-        }
+        // 隱藏裝備欄
+        const equippedDisplay = document.getElementById('equipped-items-display');
+        if (equippedDisplay) equippedDisplay.style.display = 'none';
 
-        // ⭐ 修改：恢復狀態面板原始寬度
-        if (statusDisplay) {
-            statusDisplay.style.flex = '';
-            statusDisplay.style.minWidth = '';
-            statusDisplay.style.maxWidth = '';
-        }
+        // 隱藏視覺化裝備面板
+        if (elements.visualEquipmentPanel) elements.visualEquipmentPanel.style.display = 'none';
 
-        if (backpackPanel) {
-            backpackPanel.style.flex = '';
-            backpackPanel.style.minWidth = '';
-        }
-
-        // 隱藏狀態面板中的裝備區塊
-        if (equippedItemsDisplay) {
-            equippedItemsDisplay.style.display = 'none';
-        }
-
-        // 1. 恢復所有核心 UI 區塊 (日誌、控制台總區)
-        if (elements.logAndControlsGroup) elements.logAndControlsGroup.style.display = 'flex'; // 恢復右側總容器 (Flex)
-        if (elements.controlsArea) elements.controlsArea.style.display = 'block'; // 恢復「下一步行動」總容器
-        if (elements.messages) elements.messages.style.display = 'block';
-        if (elements.gameLog) elements.gameLog.style.display = 'block';
-
-        // 【關鍵修正 1：無條件恢復城鎮區塊】
-        if (elements.hubArea) elements.hubArea.style.display = 'block';
-
-        // 2. 根據狀態精確恢復按鈕模式
-        if (State.isCombatActive) {
-            // 戰鬥中：只顯示戰鬥按鈕
-            elements.combatModeButtons.style.display = 'block';
-            elements.exploreModeButtons.style.display = 'none';
-            if (elements.adventureActions) elements.adventureActions.style.display = 'block';
-
-        } else {
-            // 探索/城鎮狀態 (非戰鬥)：
-            elements.exploreModeButtons.style.display = 'block';
-            elements.combatModeButtons.style.display = 'none';
-            if (elements.adventureActions) elements.adventureActions.style.display = 'block';
-        }
-
-        logMessage("🎒 背包已關閉。恢復遊戲介面。", 'white');
+        // 恢復顯示背包按鈕
+        if (elements.inventoryBtn) elements.inventoryBtn.style.display = 'block';
     }
 }
 
 export function handleMaterialDrop(monsterId) {
     let dropsLogged = 0;
 
-    MATERIALS_DATA.forEach(material => { // MATERIALS_DATA 從 config.js 引入
+    MATERIALS_DATA.forEach(material => {
         if (Math.random() < material.dropRate / 10) {
 
             const materialId = material.id;
 
-            // 確保 materials 屬性存在
             if (!State.player.materials[materialId]) {
                 State.player.materials[materialId] = 0;
             }
 
-            // 增加素材數量 (每次掉落 1 個)
             State.player.materials[materialId] += 1;
             dropsLogged += 1;
             logMessage(`🧩 獲得素材 [${material.name}]！`, 'cyan');
         }
     });
+}
 
+function updateVisualEquipment() {
+    const slots = elements.visualSlots;
+    if (!slots) return;
+
+    const equipment = State.player.equipment;
+
+    const slotMap = [
+        { key: 'weapon', slot: slots.weapon },
+        { key: 'helmet', slot: slots.helmet },
+        { key: 'armor', slot: slots.armor },
+        { key: 'greaves', slot: slots.greaves },
+        { key: 'necklace', slot: slots.necklace },
+        { key: 'ring', slot: slots.ring }
+    ];
+
+    slotMap.forEach(item => {
+        if (!item.slot) return;
+
+        const equippedItem = equipment[item.key];
+        const contentDiv = item.slot.querySelector('.slot-content');
+
+        // 清除舊的稀有度樣式
+        item.slot.classList.remove('equipped', 'rare', 'epic', 'legendary');
+
+        if (equippedItem) {
+            item.slot.classList.add('equipped');
+
+            if (equippedItem.rarity) {
+                if (equippedItem.rarity >= 5) item.slot.classList.add('legendary');
+                else if (equippedItem.rarity >= 4) item.slot.classList.add('epic');
+                else if (equippedItem.rarity >= 3) item.slot.classList.add('rare');
+            }
+            item.slot.title = `${equippedItem.name} (${item.key})`;
+
+            // 更新內容：如果有圖片顯示圖片，否則顯示名稱簡寫
+            if (equippedItem.image) {
+                contentDiv.innerHTML = `<img src="${equippedItem.image}" alt="${equippedItem.name}">`;
+            } else {
+                contentDiv.textContent = equippedItem.name.substring(0, 1);
+            }
+
+        } else {
+            const defaultTitles = {
+                weapon: "武器", helmet: "頭盔", armor: "胸甲",
+                greaves: "護脛", necklace: "項鍊", ring: "戒指"
+            };
+            item.slot.title = defaultTitles[item.key];
+            contentDiv.textContent = "無";
+        }
+    });
 }
 
 export function getItemById(id) {
@@ -871,6 +882,12 @@ export function handleExplore() {
 }
 
 export function startGame(className, hpBonus, attackBonus, defenseBonus, critChanceBonus, goldBonus) {
+
+    // 0. 處理職業重選邏輯
+    if (State.isReselecting) {
+        changeClass(className, hpBonus, attackBonus, defenseBonus, critChanceBonus, goldBonus);
+        return;
+    }
 
     // 檢查狀態
     if (State.gameActive) return;
@@ -1165,6 +1182,7 @@ export function equipItem(inventoryIndex) {
 
     // --- 3. 存檔與介面更新 ---
     updateDisplay();
+    updateVisualEquipment();
 }
 
 export function useConsumable(inventoryIndex) {
@@ -1175,6 +1193,24 @@ export function useConsumable(inventoryIndex) {
     // 增加：獲取永久屬性值
     const permanentHpGain = itemToUse.hp || 0;
     const permanentDefenseGain = itemToUse.defense || 0;
+
+    // --- 新增：回歸玉邏輯 ---
+    if (itemToUse.id === 'return-jewel') {
+        showConfirmationModal(
+            '確定要使用回歸玉嗎？',
+            '這將允許您重新選擇職業，但您的轉職進度將被重置，且需再歷練 500 層才能再次轉職。',
+            () => {
+                // 消耗物品 (重新查找以防萬一)
+                const itemIndex = State.player.inventory.findIndex(i => i.id === 'return-jewel');
+                if (itemIndex !== -1) {
+                    State.player.inventory.splice(itemIndex, 1);
+                    saveGame();
+                    handleReturnJewel();
+                }
+            }
+        );
+        return;
+    }
 
     let effectLogged = false;
 
@@ -1240,10 +1276,21 @@ export function handleSellItem(inventoryIndex, sellPrice) {
     }
 
     // 3. 增加金幣
-    State.player.gold += sellPrice;
+    let finalPrice = sellPrice;
+
+    // 黑市大亨職業特效：販賣價格 1.5 倍
+    if (State.player.class === '黑市大亨') {
+        finalPrice = Math.floor(sellPrice * 1.5);
+    }
+
+    State.player.gold += finalPrice;
 
     // 4. 更新狀態與日誌
-    logMessage(`💰 成功販賣 [${itemToSell.name}]，獲得 ${sellPrice} 金幣。`, 'gold');
+    if (finalPrice > sellPrice) {
+        logMessage(`💰 [黑市大亨] 成功販賣 [${itemToSell.name}]，獲得 ${finalPrice} 金幣 (原價 ${sellPrice})。`, 'gold');
+    } else {
+        logMessage(`💰 成功販賣 [${itemToSell.name}]，獲得 ${finalPrice} 金幣。`, 'gold');
+    }
 
     // 5. 存檔與介面更新
     saveGame();
@@ -1287,8 +1334,12 @@ export function enterAdventureMode() {
     if (elements.adventureActions) elements.adventureActions.style.display = 'block';
     if (elements.controlsArea) elements.controlsArea.style.display = 'block';
 
-    // 確保 classSelection 被隱藏
-    if (elements.classSelection) elements.classSelection.style.display = 'none';
+    // 確保 classSelection 被隱藏 (修正：強制隱藏)
+    if (elements.classSelection) {
+        elements.classSelection.style.display = 'none';
+        // 額外確保 inline style 確實被覆蓋
+        elements.classSelection.setAttribute('style', 'display: none !important');
+    }
 }
 
 export function enterDeathMode() {
@@ -1467,7 +1518,16 @@ export function handleAttack() {
     // --- 暴擊判定 ---
     const finalCritChance = calculateTotalCritChance();
     const isCritical = Math.random() < finalCritChance;
-    const damageMultiplier = isCritical ? 2 : 1;
+
+    // 預設暴擊倍率 200%
+    let critMultiplier = 2;
+
+    // 影武者職業特效：暴擊傷害 260%
+    if (State.player.class === '影武者') {
+        critMultiplier = 2.6;
+    }
+
+    const damageMultiplier = isCritical ? critMultiplier : 1;
 
     // 1. 玩家先攻：計算基礎傷害
     let damageDealt = Math.max(5, totalAttack - monsterDefense);
@@ -1486,6 +1546,16 @@ export function handleAttack() {
     State.currentMonster.hp -= damageDealt;
     logMessage(`你攻擊了 ${State.currentMonster.name}，造成 ${damageDealt} 點傷害。`, 'white');
 
+    // 狂戰士職業特效：攻擊吸血 10%
+    if (State.player.class === '狂戰士' && damageDealt > 0) {
+        const healAmount = Math.floor(damageDealt * 0.1);
+        if (healAmount > 0) {
+            const oldHp = State.player.hp;
+            State.player.hp = Math.min(State.player.maxHp, State.player.hp + healAmount);
+            logMessage(`🩸 [狂戰士] 嗜血打擊！你從傷害中恢復了 ${healAmount} 點生命。`, 'lightgreen');
+        }
+    }
+
     // 3. 檢查勝利 
     if (State.currentMonster.hp <= 0) {
         endCombat(true);
@@ -1495,6 +1565,17 @@ export function handleAttack() {
     logMessage(`💥 ${State.currentMonster.name} 剩餘 HP: ${State.currentMonster.hp}`, 'yellow');
 
     // 4. 怪物反擊 -
+
+    // 暗影刺客職業特效：30% 機率閃避
+    if (State.player.class === '暗影刺客' && Math.random() < 0.3) {
+        logMessage(`⚡ [暗影刺客] 你的身形如鬼魅般閃爍，完全閃避了 ${State.currentMonster.name} 的攻擊！`, 'cyan');
+        // 閃避成功，不執行傷害計算，也不會有受傷訊息
+        updateDisplay();
+        logMessage(`--- 請選擇下一回合行動 ---`, 'white');
+        return;
+    }
+
+
     // 4-1. 怪物暴擊判定：固定為 40% 
     const MONSTER_CRIT_CHANCE = 0.40;
     const isMonsterCritical = Math.random() < MONSTER_CRIT_CHANCE;
@@ -1519,6 +1600,21 @@ export function handleAttack() {
 
     // ⭐ 修正點 3：日誌顯示正確的 totalDefense 值 ⭐
     logMessage(`❌ ${State.currentMonster.name} 對你造成了 ${damageReceived} 點傷害 (已減免 ${totalDefense} 防禦)！`, 'red');
+
+    // 聖騎士職業特效：受傷反彈 40%
+    if (State.player.class === '聖騎士' && damageReceived > 0) {
+        const reflectDamage = Math.floor(damageReceived * 0.4);
+        if (reflectDamage > 0) {
+            State.currentMonster.hp -= reflectDamage;
+            logMessage(`🛡️ [聖騎士] 神聖反擊！將 ${reflectDamage} 點傷害反彈給 ${State.currentMonster.name}。`, 'yellow');
+
+            // 檢查反彈傷害是否擊殺怪物
+            if (State.currentMonster.hp <= 0) {
+                endCombat(true);
+                return;
+            }
+        }
+    }
 
     // 6. 檢查死亡
     if (State.player.hp <= 0) {
@@ -2026,7 +2122,11 @@ export function enterTownMode() {
     if (elements.controlsArea) elements.controlsArea.style.display = 'block';
 
     // 確保不該出現的元素被隱藏
-    if (elements.classSelection) elements.classSelection.style.display = 'none';
+    // 確保不該出現的元素被隱藏
+    if (elements.classSelection) {
+        elements.classSelection.style.display = 'none';
+        elements.classSelection.setAttribute('style', 'display: none !important');
+    }
     if (elements.inventoryArea) elements.inventoryArea.style.display = 'none';
 
     // 確保城鎮功能開啟 (交易/升級)
@@ -2066,7 +2166,10 @@ export function handleRevive() {
 
 // 導向職業選擇
 export function enterSelectionMode() {
-    if (elements.classSelection) elements.classSelection.style.display = 'flex';
+    if (elements.classSelection) {
+        elements.classSelection.style.display = 'grid'; // Fallback
+        elements.classSelection.setAttribute('style', 'display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 10px !important;');
+    }
     if (elements.adventureActions) elements.adventureActions.style.display = 'none';
     if (elements.hubArea) elements.hubArea.style.display = 'block';
     if (elements.exploreModeButtons) elements.exploreModeButtons.style.display = 'none';
@@ -2466,3 +2569,61 @@ export function handleExchangeGoldWithAchievements() {
         checkAchievements();
     }
 }
+
+
+// =========================================
+// 回歸玉功能 (Return Jewel Logic)
+// =========================================
+
+export function handleReturnJewel() {
+    State.setIsReselecting(true);
+
+    // 1. 如果背包打開，先關閉它
+    if (State.isInventoryOpen) {
+        toggleInventory();
+    }
+
+    // 2. 確保遊戲主容器顯示 (因為 classSelection 在裡面)
+    if (elements.gameContent) elements.gameContent.style.display = 'block';
+
+    // 3. 隱藏不相關 UI
+    if (elements.hubArea) elements.hubArea.style.display = 'none';
+    if (elements.adventureActions) elements.adventureActions.style.display = 'none';
+    if (elements.combatModeButtons) elements.combatModeButtons.style.display = 'none';
+    if (elements.deathModeButtons) elements.deathModeButtons.style.display = 'none';
+    if (elements.inventoryArea) elements.inventoryArea.style.display = 'none'; // 強制隱藏背包容器
+
+    // 4. 顯示職業選擇
+    if (elements.classSelection) {
+        elements.classSelection.style.display = 'grid';
+        elements.classSelection.setAttribute('style', 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;');
+    }
+
+    logMessage("🔮 使用了回歸玉... 時光倒流，請重新選擇您的道路。", 'purple');
+}
+
+function changeClass(className, hpBonus, attackBonus, defenseBonus, critChanceBonus, goldBonus) {
+    State.player.className = className;
+    State.player.class = null; // 重置進階職業
+
+    // 設定轉職鎖定：當前層數 + 500
+    State.player.nextEvolutionDepth = State.player.depth + 500;
+
+    State.setIsReselecting(false);
+
+    State.setIsReselecting(false);
+
+    if (elements.classSelection) {
+        elements.classSelection.style.display = 'none';
+        elements.classSelection.setAttribute('style', 'display: none !important');
+    }
+
+    // 恢復正常介面
+    enterAdventureMode();
+
+    saveGame();
+    updateDisplay();
+    logMessage(`✨ 命運重塑！您現在是 [${className}]。`, 'gold');
+    logMessage(`🔒 轉職試煉已重置，需在第 ${State.player.nextEvolutionDepth} 層後方能再次挑戰。`, 'gray');
+}
+

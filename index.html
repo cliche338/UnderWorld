@@ -1,7 +1,7 @@
 <head>
     <title>地下城-奧利哈鋼</title>
     <link rel="icon" type="image/png" href="Orichalcum.png">
-    <link rel="stylesheet" href="style.css?v=1.3">
+    <link rel="stylesheet" href="style.css?v=2.0">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -210,9 +210,11 @@
                 <div id="status-display" class="panel">
                     <h3>⚔️ 冒險家狀態</h3>
 
-                    <div id="status-flex-container">
-                        <div id="status-stats-container">
-                            <p>職業 : <span id="class-name-value" style="color: #f1c40f; font-weight: bold;">無</span></p>
+                    <div id="status-flex-container"
+                        style="display: flex; flex-direction: row; gap: 15px; align-items: stretch;">
+                        <div id="status-stats-container" style="flex: 1;">
+                            <p style="margin-top: 0;">職業 : <span id="class-name-value"
+                                    style="color: #f1c40f; font-weight: bold;">無</span></p>
                             <p>HP : <span id="hp-value">0</span> / <span id="max-hp-value">0</span></p>
                             <p>ATK : <span id="attack-value">0</span></p>
                             <p>DEF : <span id="defense-value">0</span></p>
@@ -224,7 +226,7 @@
 
                         <!-- 裝備顯示區塊 - 只在打開背包時顯示 -->
                         <div id="equipped-items-display"
-                            style="display: none; margin-top: 10px; padding-top: 10px; border-top: 2px solid #6e5a3d;">
+                            style="display: none; flex: 1; padding-left: 10px; border-left: 2px solid #6e5a3d;">
                             <h4 style="margin: 0 0 10px 0; color: #f1c40f;">⚔️ 當前裝備</h4>
                             <p>武器 : <span id="equipped-weapon-name">無</span></p>
                             <p>頭盔 : <span id="equipped-helmet-name">無</span></p>
@@ -236,6 +238,19 @@
                     </div>
 
                     <button id="inventory-btn">背包</button>
+                </div>
+
+                <!-- 裝備展示面板 (新增) -->
+                <div id="visual-equipment-display" class="panel" style="display: none;">
+                    <h3>🛡️ 裝備展示</h3>
+                    <div class="equipment-grid">
+                        <div class="equipment-slot" data-slot="weapon" title="武器"></div>
+                        <div class="equipment-slot" data-slot="helmet" title="頭盔"></div>
+                        <div class="equipment-slot" data-slot="armor" title="胸甲"></div>
+                        <div class="equipment-slot" data-slot="greaves" title="護脛"></div>
+                        <div class="equipment-slot" data-slot="necklace" title="項鍊"></div>
+                        <div class="equipment-slot" data-slot="ring" title="戒指"></div>
+                    </div>
                 </div>
 
 
@@ -303,10 +318,14 @@
                     <div id="controls-area" class="panel">
                         <h3 id="current-stage-title">下一步行動</h3>
 
-                        <div id="class-selection">
-                            <button id="select-knight-btn">🛡️ 騎士<br>+50HP<br>+20DEF</button>
-                            <button id="select-merchant-btn">💰 商人<br>+200金幣<br>-20%暴擊率</button>
-                            <button id="select-thief-btn">🗡️ 刺客<br>+25ATK<br>+20%暴擊率</button>
+                        <div id="class-selection" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                            <button id="select-knight-btn" style="width: 100%; min-width: 0;">🛡️
+                                騎士<br>+50HP<br>+20DEF</button>
+                            <button id="select-merchant-btn" style="width: 100%; min-width: 0;">💰
+                                商人<br>+200金幣<br>-20%暴擊率</button>
+                            <button id="select-thief-btn" style="width: 100%; min-width: 0;">🗡️
+                                刺客<br>+25ATK<br>+20%暴擊率</button>
+
                         </div>
 
                         <div id="adventure-actions">
@@ -332,8 +351,59 @@
 
                 </div>
 
-                <div id="backpack-content-panel" class="panel" style="display: none;">
-                    <h3>🎒 背包道具</h3>
+                <!-- 新增：視覺化裝備面板 (中間欄) -->
+                <div id="visual-equipment-panel" class="panel"
+                    style="display: none; flex: 0.8; flex-direction: column; align-items: center; padding-top: 0; min-width: 160px; background: #2f2519; border-color: #8c704c; margin-left: 15px; margin-right: 15px;">
+                    <h3
+                        style="margin-top: 0; margin-bottom: 15px; color: #f1c40f; width: 100%; text-align: center; border-bottom: 2px solid #5a4632; padding-bottom: 5px;">
+                        裝備</h3>
+
+                    <div class="equipment-slots-container"
+                        style="display: flex; flex-direction: row; gap: 20px; justify-content: center; width: 100%;">
+
+                        <!-- 左側欄位：防具類 -->
+                        <div class="equipment-column" style="display: flex; flex-direction: column; gap: 15px;">
+                            <!-- 頭盔 -->
+                            <div class="equip-slot" id="visual-slot-helmet" title="頭盔">
+                                <div class="slot-content">無</div>
+                                <div class="slot-bg"></div>
+                            </div>
+                            <!-- 胸甲 -->
+                            <div class="equip-slot" id="visual-slot-armor" title="胸甲">
+                                <div class="slot-content">無</div>
+                                <div class="slot-bg"></div>
+                            </div>
+                            <!-- 護脛 -->
+                            <div class="equip-slot" id="visual-slot-greaves" title="護脛">
+                                <div class="slot-content">無</div>
+                                <div class="slot-bg"></div>
+                            </div>
+                        </div>
+
+                        <!-- 右側欄位：武器飾品類 -->
+                        <div class="equipment-column" style="display: flex; flex-direction: column; gap: 15px;">
+                            <!-- 武器 -->
+                            <div class="equip-slot" id="visual-slot-weapon" title="武器">
+                                <div class="slot-content">無</div>
+                                <div class="slot-bg"></div>
+                            </div>
+                            <!-- 項鍊 -->
+                            <div class="equip-slot" id="visual-slot-necklace" title="項鍊">
+                                <div class="slot-content">無</div>
+                                <div class="slot-bg"></div>
+                            </div>
+                            <!-- 戒指 -->
+                            <div class="equip-slot" id="visual-slot-ring" title="戒指">
+                                <div class="slot-content">無</div>
+                                <div class="slot-bg"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="backpack-content-panel" class="panel" style="display: none; padding-top: 0;">
+                    <h3 style="margin-top: 0;">🎒 背包道具</h3>
                     <div id="inventory-list">目前沒有物品。</div>
                     <button id="close-inventory-btn" style="background-color: #666;">關閉背包</button>
 
@@ -392,6 +462,23 @@
             </div>
             <button id="close-achievements-btn" onclick="window.closeAchievements()"
                 style="margin-top: 15px; display: block; margin-left: auto; margin-right: auto;">關閉成就</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal-backdrop"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); justify-content: center; align-items: center; z-index: 1010;">
+        <div id="confirmation-panel"
+            style="display: block; background: #1a1515; border: 3px solid #e67e22; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%; box-shadow: 0 0 20px rgba(230, 126, 34, 0.4); text-align: center;">
+            <h3 id="confirmation-title" style="color: #e67e22; margin-top: 0; font-size: 1.5em;">確認</h3>
+            <p id="confirmation-content" style="color: #ddd; margin: 20px 0; font-size: 1.1em; line-height: 1.5;">...
+            </p>
+            <div style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
+                <button id="confirmation-confirm-btn"
+                    style="background: linear-gradient(#27ae60, #2ecc71); padding: 10px 30px; font-size: 1.1em; border: 2px solid #2ecc71;">確定</button>
+                <button id="confirmation-cancel-btn"
+                    style="background: #e74c3c; padding: 10px 30px; font-size: 1.1em; border: 2px solid #c0392b;">取消</button>
+            </div>
         </div>
     </div>
 
