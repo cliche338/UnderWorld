@@ -73,10 +73,12 @@ export const EVOLUTION_BOSS = {
 };
 
 export function checkClassEvolution() {
-    // 檢查條件：深度 1000 以上，且尚未轉職
+    // 檢查條件：深度 1000 以上 (或下一次轉職層數)，且尚未轉職
     // logMessage(`DEBUG: Checking Evolution. Depth=${State.player.depth}, Evolved=${State.player.isEvolved}`, 'gray');
 
-    if (State.player.depth >= 1000 && !State.player.isEvolved) {
+    const targetDepth = State.player.nextEvolutionDepth || 1000;
+
+    if (State.player.depth >= targetDepth && !State.player.isEvolved) {
         // 顯示挑戰面板
         if (elements.evolutionChallengePanel) {
             elements.evolutionChallengePanel.style.display = 'flex'; // Use flex to maintain internal layout
@@ -2595,8 +2597,7 @@ function changeClass(className, hpBonus, attackBonus, defenseBonus, critChanceBo
 
     // 設定轉職鎖定：當前層數 + 500
     State.player.nextEvolutionDepth = State.player.depth + 500;
-
-    State.setIsReselecting(false);
+    State.player.isEvolved = false; // 重置轉職狀態
 
     State.setIsReselecting(false);
 
