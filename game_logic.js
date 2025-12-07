@@ -1983,13 +1983,38 @@ export function renderShop() {
         shopDiv.style.alignItems = 'center';
         shopDiv.style.justifyContent = 'space-between';
 
-        const displayType = item.type === 'weapon' ? '⚔️ 武器' :
-            item.type === 'armor' ? '🛡️ 胸甲' :
-                item.type === 'necklace' ? '📿 項鍊' :
-                    item.type === 'ring' ? '💍 戒指' :
-                        item.type === 'helmet' ? '🪖 頭盔' :
-                            item.type === 'greaves' ? '👢 護脛' :
-                                '🧪 藥水';
+        // 定義類型對應的名稱與emoji
+        const typeNameMap = {
+            'weapon': '武器',
+            'armor': '胸甲',
+            'necklace': '項鍊',
+            'ring': '戒指',
+            'helmet': '頭盔',
+            'greaves': '護脛',
+            'consumable': '藥水'
+        };
+
+        const typeEmojiMap = {
+            'weapon': '⚔️',
+            'armor': '🛡️',
+            'necklace': '📿',
+            'ring': '💍',
+            'helmet': '🪖',
+            'greaves': '�',
+            'consumable': '🧪'
+        };
+
+        let displayType = '';
+        const typeName = typeNameMap[item.type] || '物品';
+
+        if (item.image) {
+            // 如果有圖片，顯示圖片 + 類型名稱
+            displayType = `<img src="${item.image}" alt="${typeName}" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle; margin-right: 4px;"> ${typeName}`;
+        } else {
+            // 否則顯示 Emoji + 類型名稱
+            const emoji = typeEmojiMap[item.type] || '❓';
+            displayType = `${emoji} ${typeName}`;
+        }
 
         let displayStat = '';
         const parts = []; // 統一使用 parts 陣列收集屬性
