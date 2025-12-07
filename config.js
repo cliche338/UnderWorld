@@ -52,6 +52,7 @@ export const MONSTERS = [
 
         // 活動 Boss
         { id: 'xmasboss', name: "猩紅尼古拉", hp: 1500, attack: 320, defense: 150, goldReward: 1350, difficulty: 8, isBoss: true },
+        { id: 'moon-shadow', name: "殘月魅影", hp: 91500, attack: 3550, defense: 550, goldReward: 5120, difficulty: 8, isBoss: true },
 
         // 世界級 Boss
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 37373, attack: 377, defense: 377, goldReward: 370, difficulty: 10, isBoss: true },
@@ -63,7 +64,7 @@ export const ITEMS = [
 
         // 特殊道具
         {
-                id: 'return-jewel', name: '回歸玉', type: 'consumable',
+                id: 'return-jewel', name: '回歸玉', type: 'special',
                 value: 5000, price: 100000, rarity: 5,
                 image: 'icon/special/return-jewel.png',
                 intro: '使用後可重新選擇職業，但需再歷練500層才能再次轉職。'
@@ -142,8 +143,10 @@ export const ITEMS = [
                 id: 'w14', name: '滅龍聖劍', type: 'weapon', attack: 190, defense: -25, critChance: 0.35, image: 'icon/weapon/w14.png',
                 value: 1400, price: 3000, rarity: 9, intro: '曾經對巨龍造成重創的劍'
         },
-        //{ id: 'w15', name: '解', type: 'weapon', attack: 550, critChance: 0.55, image: 'icon/weapon/w15.png',
-        //value: 1400, price: 3000, rarity: 10, intro: '「龍麟 反發 成雙之流星」'},
+        {
+                id: 'w15', name: '解', type: 'weapon', attack: 550, critChance: 0.55, image: 'icon/weapon/w15.png',
+                value: 1400, price: 3000, rarity: 10, intro: '「龍麟 反發 成雙之流星」'
+        },
         {
                 id: 'w16', name: '噬魂七星劍', type: 'weapon', attack: 250, critChance: 0.65, defense: -150, image: 'icon/weapon/w16.png',
                 value: 1700, price: 2600, rarity: 9, intro: '「想獲得強大的力量就必須犧牲點什麼...」'
@@ -151,6 +154,10 @@ export const ITEMS = [
         {
                 id: 'w17', name: '名刀月隱', type: 'weapon', attack: 125, critChance: 0.25, image: 'icon/weapon/w17.png',
                 value: 700, price: 1600, rarity: 9, intro: '由瑟利亞的刀匠以輝石鍛造\n因其收刀入鞘時會散發微光而得名。'
+        },
+        {
+                id: 'w18', name: '天鯊海燕', type: 'weapon', attack: 750, image: 'icon/weapon/w18.png',
+                value: 5000, price: 25000, rarity: 10, intro: '「劈分汪洋，斬裂天際」'
         },
 
         // 頭盔
