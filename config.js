@@ -217,7 +217,7 @@ export const ITEMS = [
         },
         // 合成
         {
-                id: 'w18', name: '天鯊海燕', type: 'weapon', attack: 750, image: 'icon/weapon/w18.png',
+                id: 'w18', name: '天鯊海燕', type: 'weapon', attack: 450, defense: 55, critChance: 0.15,image: 'icon/weapon/w18.png',
                 value: 5000, price: 25000, rarity: 10, intro: '「劈分汪洋，斬裂天際」'
         },
         {
