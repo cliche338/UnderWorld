@@ -1862,6 +1862,20 @@ export function endCombat(isVictory) {
         // Trigger achievement check AFTER all stats (kills, gold, boss kills) are updated
         checkAchievements();
 
+        // === 通用Boss掉落处理 ===
+        // 检查boss是否有drops配置数组
+        if (enemy.isBoss && enemy.drops && Array.isArray(enemy.drops) && enemy.drops.length > 0) {
+            // 从drops数组中随机选择一个道具ID
+            const randomIndex = Math.floor(Math.random() * enemy.drops.length);
+            const dropItemId = enemy.drops[randomIndex];
+
+            const droppedItem = getItemById(dropItemId);
+            if (droppedItem) {
+                addItemToInventory(JSON.parse(JSON.stringify(droppedItem)));
+                logMessage(`🎁 从 ${enemy.name} 獲得了稀有道具：[${droppedItem.name}]！`, 'gold');
+            }
+        }
+
         // 擊敗 奧利哈鋼幻影
         if (enemy.id === 'ori-shadow') {
 

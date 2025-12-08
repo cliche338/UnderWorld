@@ -1001,15 +1001,6 @@ export const ACHIEVEMENTS = [
                 checkFunction: 'checkItemCollection',
                 requiredItems: ['xmas-sword', 'xmas-helmet', 'xmas-armor', 'xmas-greaves']
         },
-        {
-                id: 'item_collection_heart_pieces',
-                name: '心之碎片收藏家',
-                description: '收集心之古刀的所有碎片道具',
-                category: 'COLLECTION',
-                tier: 'RARE',
-                checkFunction: 'checkItemCollectionAchievement',
-                targetItems: ['heart-broken-scabbard', 'heart-broken-blade', 'heart-design-drawing']
-        },
 
         // 鍛造武器成就
         {
