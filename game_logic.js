@@ -26,6 +26,9 @@ export function showUpdateLog() {
 - 新增鍛造系統, 可合成更強大的武器 : 天鯊海燕、心相湧流
 - 天鯊海燕合成素材 : 擊敗指定Boss掉落
 - 心相湧流合成素材 : 商店隨機刷出
+- 商店道具顏色顯示
+- 背包道具顏色顯示
+- 裝備顯示區UI更新 : 現在移動到上面可以獲取數值；點選可以卸下
 
 
     `;
@@ -34,7 +37,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none';
     }
 
-    const title = "v4.2 遊戲更新日誌";
+    const title = "v4.3 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal');
 }
 
@@ -569,41 +572,137 @@ function updateVisualEquipment() {
         { key: 'ring', slot: slots.ring }
     ];
 
+    // 稀有度颜色映射
+    const rarityColorMap = {
+        1: '#ffffff', 2: '#00ff00', 3: '#4da6ff',
+        4: '#4da6ff', 5: '#9d4dff', 6: '#9d4dff',
+        7: '#ff8000', 8: '#ffd700', 9: '#ff0000',
+        10: '#ff1493', 11: '#00ffff'
+    };
+
+    const rarityNames = {
+        1: '普通', 2: '優良', 3: '精良', 4: '精良',
+        5: '史詩', 6: '史詩', 7: '橙裝', 8: '神話',
+        9: '傳說', 10: '不朽', 11: '特殊'
+    };
+
     slotMap.forEach(item => {
         if (!item.slot) return;
 
         const equippedItem = equipment[item.key];
-        const contentDiv = item.slot.querySelector('.slot-content');
 
         // 清除舊的稀有度樣式
         item.slot.classList.remove('equipped', 'rare', 'epic', 'legendary');
 
+        // 移除舊的事件監聽器（通過克隆節點）
+        const newSlot = item.slot.cloneNode(true);
+        item.slot.parentNode.replaceChild(newSlot, item.slot);
+
+        // ⭐ 關鍵修復：更新 elements.visualSlots 中的引用
+        elements.visualSlots[item.key] = newSlot;
+
         if (equippedItem) {
-            item.slot.classList.add('equipped');
+            newSlot.classList.add('equipped');
 
             if (equippedItem.rarity) {
-                if (equippedItem.rarity >= 5) item.slot.classList.add('legendary');
-                else if (equippedItem.rarity >= 4) item.slot.classList.add('epic');
-                else if (equippedItem.rarity >= 3) item.slot.classList.add('rare');
+                if (equippedItem.rarity >= 5) newSlot.classList.add('legendary');
+                else if (equippedItem.rarity >= 4) newSlot.classList.add('epic');
+                else if (equippedItem.rarity >= 3) newSlot.classList.add('rare');
             }
-            item.slot.title = `${equippedItem.name} (${item.key})`;
 
-            // 更新內容：如果有圖片顯示圖片，否則顯示名稱簡寫
+            // 更新內容
+            const newContentDiv = newSlot.querySelector('.slot-content');
             if (equippedItem.image) {
-                contentDiv.innerHTML = `<img src="${equippedItem.image}" alt="${equippedItem.name}">`;
+                newContentDiv.innerHTML = `<img src="${equippedItem.image}" alt="${equippedItem.name}">`;
             } else {
-                contentDiv.textContent = equippedItem.name.substring(0, 1);
+                newContentDiv.textContent = equippedItem.name.substring(0, 1);
             }
+
+            // === 添加 Tooltip 显示 ===
+            let tooltipElement = null;
+
+            newSlot.addEventListener('mouseenter', (e) => {
+                const rarityColor = rarityColorMap[equippedItem.rarity] || '#ffffff';
+                const rarityName = rarityNames[equippedItem.rarity] || '未知';
+
+                // 创建tooltip
+                tooltipElement = document.createElement('div');
+                tooltipElement.className = 'equipment-tooltip';
+
+                // 构建属性列表
+                const stats = [];
+                if (equippedItem.attack) stats.push(`攻擊: +${equippedItem.attack}`);
+                if (equippedItem.defense) stats.push(`防禦: +${equippedItem.defense}`);
+                if (equippedItem.hp) stats.push(`生命: +${equippedItem.hp}`);
+                if (equippedItem.critChance) stats.push(`暴擊率: +${(equippedItem.critChance * 100).toFixed(1)}%`);
+
+                const statsHtml = stats.length > 0
+                    ? `<div class="tooltip-stats">${stats.map(s => `<div class="tooltip-stat">${s}</div>`).join('')}</div>`
+                    : '';
+
+                tooltipElement.innerHTML = `
+                    <div class="tooltip-name" style="color: ${rarityColor};">${equippedItem.name}</div>
+                    <div class="tooltip-rarity">稀有度: ${rarityName} (Lv.${equippedItem.rarity})</div>
+                    ${statsHtml}
+                    <div style="margin-top: 8px; color: #95a5a6; font-size: 0.85em;">點擊卸下裝備</div>
+                `;
+
+                document.body.appendChild(tooltipElement);
+                updateTooltipPosition(e, tooltipElement);
+            });
+
+            newSlot.addEventListener('mousemove', (e) => {
+                if (tooltipElement) {
+                    updateTooltipPosition(e, tooltipElement);
+                }
+            });
+
+            newSlot.addEventListener('mouseleave', () => {
+                if (tooltipElement && tooltipElement.parentNode) {
+                    tooltipElement.parentNode.removeChild(tooltipElement);
+                    tooltipElement = null;
+                }
+            });
+
+            // === 添加点击卸下装备 ===
+            newSlot.addEventListener('click', () => {
+                unequipItem(item.key);
+                // 移除tooltip
+                if (tooltipElement && tooltipElement.parentNode) {
+                    tooltipElement.parentNode.removeChild(tooltipElement);
+                    tooltipElement = null;
+                }
+            });
 
         } else {
             const defaultTitles = {
                 weapon: "武器", helmet: "頭盔", armor: "胸甲",
                 greaves: "護脛", necklace: "項鍊", ring: "戒指"
             };
-            item.slot.title = defaultTitles[item.key];
-            contentDiv.textContent = "無";
+            newSlot.title = defaultTitles[item.key];
+            const newContentDiv = newSlot.querySelector('.slot-content');
+            newContentDiv.textContent = "無";
         }
     });
+}
+
+// Tooltip位置更新辅助函数
+function updateTooltipPosition(e, tooltip) {
+    const offset = 15;
+    let x = e.clientX + offset;
+    let y = e.clientY + offset;
+
+    // 防止tooltip超出屏幕
+    const rect = tooltip.getBoundingClientRect();
+    if (x + rect.width > window.innerWidth) {
+        x = e.clientX - rect.width - offset;
+    }
+    if (y + rect.height > window.innerHeight) {
+        y = e.clientY - rect.height - offset;
+    }
+
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
 }
 
 export function getItemById(id) {
@@ -1188,6 +1287,33 @@ export function equipItem(inventoryIndex) {
     updateVisualEquipment();
 }
 
+/**
+ * 卸下装备
+ * @param {string} slotType - 装备槽类型 (weapon, helmet, armor, greaves, necklace, ring)
+ */
+export function unequipItem(slotType) {
+    const equipped = State.player.equipment[slotType];
+    if (!equipped) {
+        logMessage('該裝備欄沒有裝備', 'gray');
+        return;
+    }
+
+    // 將装备返回背包
+    State.player.inventory.push(equipped);
+    State.player.equipment[slotType] = null;
+
+    // 重新计算HP上限，确保当前HP不超过新的上限
+    const newMaxHp = calculateTotalMaxHp();
+    State.player.hp = Math.min(State.player.hp, newMaxHp);
+
+    logMessage(`🔄 已卸下 [${equipped.name}]`, 'yellow');
+
+    // 更新显示
+    updateDisplay();
+    updateVisualEquipment();
+    saveGame();
+}
+
 export function useConsumable(inventoryIndex) {
     const itemToUse = State.player.inventory[inventoryIndex];
     if (!itemToUse || itemToUse.type !== 'consumable') return; // 安全檢查
@@ -1201,7 +1327,7 @@ export function useConsumable(inventoryIndex) {
     if (itemToUse.id === 'return-jewel') {
         showConfirmationModal(
             '確定要使用回歸玉嗎？',
-            '這將允許您重新選擇職業，但您的轉職進度將被重置，且需再歷練 500 層才能再次轉職。',
+            '這將使您重新選擇職業，您的轉職進度將被重置，需再歷練 500 層才能再次轉職。',
             () => {
                 // 消耗物品 (重新查找以防萬一)
                 const itemIndex = State.player.inventory.findIndex(i => i.id === 'return-jewel');
@@ -2033,6 +2159,25 @@ export function renderShop() {
             displayType = `${emoji} ${typeName}`;
         }
 
+        // 根據稀有度設置道具名稱顏色
+        const rarityColorMap = {
+            1: '#ffffff',   // 普通 - 白色
+            2: '#00ff00',  // 優良 - 綠色
+            3: '#4da6ff',  // 精良 - 藍色
+            4: '#4da6ff',
+            5: '#9d4dff',  // 史詩 - 紫色
+            6: '#9d4dff',
+            7: '#ff8000',  //橙色
+            8: '#ffd700',  // 神話 - 金色
+            9: '#ff0000',  // 傳說 - 紅色
+            10: '#ff1493',  // 不朽 - 粉紅色
+            11: '#00ffff'   // 至高 - 青色
+
+        };
+
+        const rarityColor = rarityColorMap[item.rarity] || '#ffffff';
+        const itemNameWithColor = `<span style="color: ${rarityColor}; font-weight: bold;">${item.name}</span>`;
+
         let displayStat = '';
         const parts = []; // 統一使用 parts 陣列收集屬性
 
@@ -2064,7 +2209,7 @@ export function renderShop() {
         // ⭐ 修正 2: 創建 Span 來包裹資訊 (右側)
         // ----------------------------------------------------
         const itemInfoSpan = document.createElement('span');
-        itemInfoSpan.innerHTML = `${displayType}: *${item.name}*${statHtml} 價格: *${item.price}* 💰`;
+        itemInfoSpan.innerHTML = `${displayType}: ${itemNameWithColor}${statHtml} 價格: *${item.price}* 💰`;
 
         itemInfoSpan.style.flexGrow = '1'; // 佔據剩餘空間
         itemInfoSpan.style.textAlign = 'left'; // 讓文字靠右對齊
@@ -2532,6 +2677,10 @@ export function checkAchievements() {
                     );
                 }
                 break;
+            case 'checkCraftedWeapon':
+                // 檢查是否鍛造了特定武器
+                isUnlocked = checkCraftedWeapon(achievement);
+                break;
         }
 
         if (isUnlocked) {
@@ -2592,6 +2741,17 @@ export function showAchievementNotification(achievement) {
 
 // (Removed redundant achievement wrapper functions as logic is integrated into main functions)
 
+/**
+ * 檢查是否鍛造/擁有了特定武器
+ */
+export function checkCraftedWeapon(achievement) {
+    const targetWeapon = achievement.targetWeapon;
+    // 檢查背包中是否有該武器
+    const hasWeapon = State.player.inventory.some(item => item.id === targetWeapon);
+    // 或者檢查是否裝備了該武器
+    const isEquipped = State.player.equipment.weapon && State.player.equipment.weapon.id === targetWeapon;
+    return hasWeapon || isEquipped;
+}
 
 // =========================================
 // 回歸玉功能 (Return Jewel Logic)

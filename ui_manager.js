@@ -10,6 +10,7 @@ import {
     calculateTotalAttack,
     useConsumable,
     equipItem,
+    unequipItem,
     handleSellItem,
     getMaterialById,
     handleSellMaterial,
@@ -317,13 +318,30 @@ export function renderInventoryList() {
 
         statInfo = parts.join(', ');
 
+        // 根據稀有度設置道具名稱顏色
+        const rarityColorMap = {
+            1: '#ffffff',   // 普通 - 白色
+            2: '#00ff00',  // 優良 - 綠色
+            3: '#4da6ff',  // 精良 - 藍色
+            4: '#4da6ff',
+            5: '#9d4dff',  // 史詩 - 紫色
+            6: '#9d4dff',
+            7: '#ff8000',  //橙色
+            8: '#ffd700',  // 神話 - 金色
+            9: '#ff0000',  // 傳說 - 紅色
+            10: '#ff1493',  // 不朽 - 粉紅色
+            11: '#00ffff'   // 特殊道具 - 青色
+        };
+
+        const rarityColor = rarityColorMap[item.rarity] || '#ffffff';
+
         // 組合最終 HTML
         const countDisplay = (item.count && item.count > 1) ? ` <span style="color: yellow; font-weight: bold;">x${item.count}</span>` : '';
 
         // 修正：只有當 statInfo 有內容時才顯示括號
         const statDisplay = statInfo ? ` (${statInfo})` : '';
 
-        itemInfoDiv.innerHTML = `${itemDisplayHtml} <strong>${item.name}</strong>${countDisplay}${statDisplay}`;
+        itemInfoDiv.innerHTML = `${itemDisplayHtml} <strong style="color: ${rarityColor};">${item.name}</strong>${countDisplay}${statDisplay}`;
 
         itemDiv.appendChild(itemInfoDiv);
         elements.inventoryList.appendChild(itemDiv);

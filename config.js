@@ -82,7 +82,7 @@ export const ITEMS = [
         },
         {
                 id: 'heart-of-the-sea', name: '海洋之心', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
+                value: 5000, price: 100000, rarity: 11,
                 image: 'icon/special/heart-of-the-sea.png',
                 intro: '蘊含汪洋之力的寶物。使用後可獲得海洋之力。'
         },
@@ -1001,6 +1001,34 @@ export const ACHIEVEMENTS = [
                 checkFunction: 'checkItemCollection',
                 requiredItems: ['xmas-sword', 'xmas-helmet', 'xmas-armor', 'xmas-greaves']
         },
+        {
+                id: 'item_collection_heart_pieces',
+                name: '心之碎片收藏家',
+                description: '收集心之古刀的所有碎片道具',
+                category: 'COLLECTION',
+                tier: 'RARE',
+                checkFunction: 'checkItemCollectionAchievement',
+                targetItems: ['heart-broken-scabbard', 'heart-broken-blade', 'heart-design-drawing']
+        },
+
+        // 鍛造武器成就
+        {
+                id: 'craft_heart_flow',
+                name: '相由心生，洶湧而溢',
+                description: '鍛造傳說名刀《心相湧流》',
+                category: 'COLLECTION',
+                tier: 'EPIC',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'w19'
+        },
+        {
+                id: 'craft_sky_shark',
+                name: '蒼穹之蛟龍，滄溟之鴻雁',
+                description: '鍛造神刀《天鯊海燕》',
+                category: 'COLLECTION',
+                tier: 'LEGENDARY',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'w18'
+        },
 
 ];
-
