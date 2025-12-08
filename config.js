@@ -1009,6 +1009,7 @@ export const ACHIEVEMENTS = [
                 description: '鍛造傳說名刀《心相湧流》',
                 category: 'COLLECTION',
                 tier: 'EPIC',
+                icon: 'icon/weapon/w19.png',
                 checkFunction: 'checkCraftedWeapon',
                 targetWeapon: 'w19'
         },
@@ -1018,6 +1019,7 @@ export const ACHIEVEMENTS = [
                 description: '鍛造神刀《天鯊海燕》',
                 category: 'COLLECTION',
                 tier: 'LEGENDARY',
+                icon: 'icon/weapon/w18.png',
                 checkFunction: 'checkCraftedWeapon',
                 targetWeapon: 'w18'
         },

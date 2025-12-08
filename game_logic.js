@@ -1862,20 +1862,6 @@ export function endCombat(isVictory) {
         // Trigger achievement check AFTER all stats (kills, gold, boss kills) are updated
         checkAchievements();
 
-        // === 通用Boss掉落处理 ===
-        // 检查boss是否有drops配置数组
-        if (enemy.isBoss && enemy.drops && Array.isArray(enemy.drops) && enemy.drops.length > 0) {
-            // 从drops数组中随机选择一个道具ID
-            const randomIndex = Math.floor(Math.random() * enemy.drops.length);
-            const dropItemId = enemy.drops[randomIndex];
-
-            const droppedItem = getItemById(dropItemId);
-            if (droppedItem) {
-                addItemToInventory(JSON.parse(JSON.stringify(droppedItem)));
-                logMessage(`🎁 从 ${enemy.name} 獲得了稀有道具：[${droppedItem.name}]！`, 'gold');
-            }
-        }
-
         // 擊敗 奧利哈鋼幻影
         if (enemy.id === 'ori-shadow') {
 
@@ -2002,6 +1988,46 @@ export function endCombat(isVictory) {
             const dustCount = 1;
             State.player.materials[dustId] = (State.player.materials[dustId] || 0) + dustCount;
             logMessage(`✨ 獲得稀有素材 [聖誕星] x${dustCount}！`, 'gold');
+        }
+
+        // 擊敗 蒼穹-魔能飛燕
+        if (enemy.id === 'swallow-boss') {
+
+            const rareLootIds = [
+                'heart-of-the-sky',
+                'wings-of-the-swallow'
+            ];
+
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+
+            const newItem = getItemById(rareLootId);
+
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
+        }
+
+        // 擊敗 汪洋-魔能影鯊
+        if (enemy.id === 'shark-boss') {
+
+            const rareLootIds = [
+                'heart-of-the-sea',
+                'wings-of-the-shark'
+            ];
+
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+
+            const newItem = getItemById(rareLootId);
+
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
         }
 
         if (enemy.isBoss && enemy.id !== 'ori-shadow' && enemy.id !== 'ori-body' && enemy.id !== 'ori-god' && enemy.id !== 'xmasboss') {
