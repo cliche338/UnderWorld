@@ -739,6 +739,9 @@ export function addItemToInventory(item) {
         logMessage(`📜 道具 [${item.name}] 已記錄到圖鑑！`, 'yellow');
         State.savePermanentData(); // 儲存永久數據
     }
+
+    // ⭐ 新增：每次獲得物品後都檢查成就 (涵蓋收集類、鍛造類成就)
+    checkAchievements();
 }
 
 export function refreshShopInventory() {
@@ -2537,6 +2540,10 @@ export function handleSuccessfulLogin(username) {
 
     // 啟動遊戲 (載入永久數據和 Run Data)
     initializeGame();
+
+    // ⭐ 新增：登入成功後立即檢查成就
+    // 這可以解決玩家已經滿足條件(如擁有某物品)但之前未觸發解鎖的問題
+    checkAchievements();
 }
 
 export function handleCreateAccount() {
