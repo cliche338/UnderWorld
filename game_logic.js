@@ -8,7 +8,7 @@ import {
     setIsInventoryOpen, isCombatActive, gameActive,
 } from './state.js';
 
-import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, ACHIEVEMENTS, ACHIEVEMENT_TIERS, ACHIEVEMENT_CATEGORIES } from './config.js';
+import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, ACHIEVEMENTS, ACHIEVEMENT_TIERS, ACHIEVEMENT_CATEGORIES, CRAFTING_RECIPES } from './config.js';
 
 import {
     logMessage, updateDisplay, elements,
@@ -23,18 +23,10 @@ export { logMessage }; // Export logMessage for main.js usage
 export function showUpdateLog() {
     const updateLog = `
 
-- 新增各轉職職業特性
-    聖騎士 : 反傷 / 狂戰士 : 吸血
-    黑市大亨 : 換金增幅
-    影武者 : 暴擊傷害 / 暗影刺客 : 閃避率
-- 新增回歸玉, 可重新選擇職業, 但需再歷練500層才能再次轉職
-- 新增成就系統
-- 新增解鎖成就動畫
-- 新增橫向排列狀態面板
-- 修正裝備顯示區塊, 修改為打開背包後顯示
-- 新增視覺化裝備系統
-- 更新關閉背包位置
-- 修正尼古拉成就無法解鎖bug
+- 新增鍛造系統, 可合成更強大的武器 : 天鯊海燕、心相湧流
+- 天鯊海燕合成素材 : 擊敗指定Boss掉落
+- 心相湧流合成素材 : 商店隨機刷出
+
 
     `;
 
@@ -42,7 +34,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none';
     }
 
-    const title = "v4.1 遊戲更新日誌";
+    const title = "v4.2 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal');
 }
 
@@ -508,7 +500,10 @@ export function toggleInventory() {
             updateVisualEquipment();
         }
 
-        // 5. 隱藏背包按鈕本身
+        // 5. 顯示鍛造台面板
+        if (elements.craftingAccessPanel) elements.craftingAccessPanel.style.display = 'block';
+
+        // 6. 隱藏背包按鈕本身
         if (elements.inventoryBtn) elements.inventoryBtn.style.display = 'none';
 
         renderInventoryList();
@@ -531,6 +526,9 @@ export function toggleInventory() {
 
         // 隱藏視覺化裝備面板
         if (elements.visualEquipmentPanel) elements.visualEquipmentPanel.style.display = 'none';
+
+        // 隱藏鍛造台面板
+        if (elements.craftingAccessPanel) elements.craftingAccessPanel.style.display = 'none';
 
         // 恢復顯示背包按鈕
         if (elements.inventoryBtn) elements.inventoryBtn.style.display = 'block';
@@ -667,7 +665,13 @@ export function refreshShopInventory() {
     }
 
     // 2. 過濾所有可販賣的物品 (ITEMS 從 config.js 引入)
-    const sellableItems = ITEMS.filter(item => item.price && item.rarity <= maxRarityAvailable);
+    // 排除boss專屬掉落的材料
+    const bossOnlyItems = ['heart-of-the-sea', 'heart-of-the-sky', 'wings-of-the-swallow', 'wings-of-the-shark'];
+    const sellableItems = ITEMS.filter(item =>
+        item.price &&
+        item.rarity <= maxRarityAvailable &&
+        !bossOnlyItems.includes(item.id) // 排除boss專屬材料
+    );
 
     // 3. 隨機選取 5 個物品作為當前商店的清單
     const SHOP_SLOTS = 5;
@@ -2594,6 +2598,40 @@ export function showAchievementNotification(achievement) {
 // =========================================
 
 export function handleReturnJewel() {
+    // 显示自定义确认模态框
+    if (!elements.returnJewelModalBackdrop) {
+        logMessage('⚠️ 模态框元素未找到', 'red');
+        return;
+    }
+
+    elements.returnJewelModalBackdrop.style.display = 'flex';
+
+    // 绑定确认按钮
+    const confirmHandler = () => {
+        elements.returnJewelModalBackdrop.style.display = 'none';
+        executeReturnJewel();
+        cleanup();
+    };
+
+    // 绑定取消按钮
+    const cancelHandler = () => {
+        elements.returnJewelModalBackdrop.style.display = 'none';
+        logMessage('❌ 取消使用回歸玉', 'gray');
+        cleanup();
+    };
+
+    // 清理事件监听器
+    const cleanup = () => {
+        elements.returnJewelConfirmBtn.removeEventListener('click', confirmHandler);
+        elements.returnJewelCancelBtn.removeEventListener('click', cancelHandler);
+    };
+
+    elements.returnJewelConfirmBtn.addEventListener('click', confirmHandler);
+    elements.returnJewelCancelBtn.addEventListener('click', cancelHandler);
+}
+
+// 执行回归玉效果的内部函数
+function executeReturnJewel() {
     State.setIsReselecting(true);
 
     // 1. 如果背包打開，先關閉它
@@ -2658,4 +2696,151 @@ window.cheat_jump = (depth) => {
     updateDisplay();
     logMessage(`🚀 [CHEAT] Warp to depth ${depth}.`, 'magenta');
 };
+
+// =========================================================
+// 合成系統 (Crafting System)
+// =========================================================
+
+/**
+ * 檢查玩家是否擁有指定配方的所有材料
+ * @param {Object} recipe - 合成配方物件
+ * @returns {boolean} - 是否可合成
+ */
+export function checkRecipeAvailable(recipe) {
+    if (!recipe || !recipe.materials) return false;
+
+    // 檢查每個材料是否足夠
+    return recipe.materials.every(material => {
+        const itemInInventory = State.player.inventory.find(item => item.id === material.itemId);
+        if (!itemInInventory) return false;
+
+        // 如果是可堆疊物品，檢查數量
+        if (itemInInventory.count) {
+            return itemInInventory.count >= material.count;
+        }
+
+        // 非堆疊物品，計算背包中相同ID物品的數量
+        const totalCount = State.player.inventory.filter(item => item.id === material.itemId).length;
+        return totalCount >= material.count;
+    });
+}
+
+/**
+ * 執行合成操作
+ * @param {Object} recipe - 合成配方物件
+ */
+export function executeCraft(recipe) {
+    // 再次檢查材料（防禦性編程）
+    if (!checkRecipeAvailable(recipe)) {
+        logMessage('❌ 材料不足，無法合成！', 'red');
+        return;
+    }
+
+    // 檢查金幣（如果需要）
+    if (recipe.goldCost && State.player.gold < recipe.goldCost) {
+        logMessage(`❌ 金幣不足！需要 ${recipe.goldCost} 金幣。`, 'red');
+        return;
+    }
+
+    // 消耗材料
+    recipe.materials.forEach(material => {
+        let remainingToRemove = material.count;
+
+        // 從背包中移除材料
+        for (let i = State.player.inventory.length - 1; i >= 0 && remainingToRemove > 0; i--) {
+            const item = State.player.inventory[i];
+            if (item.id === material.itemId) {
+                if (item.count && item.count > 1) {
+                    // 可堆疊物品
+                    const removeCount = Math.min(item.count, remainingToRemove);
+                    item.count -= removeCount;
+                    remainingToRemove -= removeCount;
+
+                    if (item.count <= 0) {
+                        State.player.inventory.splice(i, 1);
+                    }
+                } else {
+                    // 非堆疊物品，直接移除
+                    State.player.inventory.splice(i, 1);
+                    remainingToRemove--;
+                }
+            }
+        }
+    });
+
+    // 扣除金幣（如果需要）
+    if (recipe.goldCost) {
+        State.player.gold -= recipe.goldCost;
+    }
+
+    // 生成目標物品
+    const resultItem = getItemById(recipe.resultItemId);
+    if (resultItem) {
+        const newItem = JSON.parse(JSON.stringify(resultItem));
+        addItemToInventory(newItem);
+        logMessage(`✨ 成功合成 [${resultItem.name}]！`, 'gold');
+    }
+
+    // 保存遊戲
+    saveGame();
+    updateDisplay();
+
+    // 重新渲染背包和合成面板
+    if (State.isInventoryOpen) {
+        renderInventoryList();
+    }
+}
+
+/**
+ * 獲取所有可用配方（僅顯示材料充足的）
+ * @returns {Array} - 可用配方列表
+ */
+export function getAvailableRecipes() {
+    return CRAFTING_RECIPES.filter(recipe => checkRecipeAvailable(recipe));
+}
+
+/**
+ * 獲取所有配方（包含不可用的）
+ * @returns {Array} - 所有配方列表
+ */
+export function getAllRecipes() {
+    return CRAFTING_RECIPES;
+}
+
+/**
+ * 切換合成面板顯示狀態
+ */
+export function toggleCraftingPanel() {
+    // 僅在城鎮中可使用
+    if (State.player.actionsSinceTown > 0) {
+        logMessage('🔒 必須返回城鎮才能使用鍛造台！', 'red');
+        return;
+    }
+
+    const panel = elements.craftingPanel;
+    if (!panel) return;
+
+    const isCurrentlyVisible = panel.style.display !== 'none';
+
+    if (isCurrentlyVisible) {
+        // 關閉合成面板
+        panel.style.display = 'none';
+    } else {
+        // 打開合成面板（模态框）
+        panel.style.display = 'flex';
+        renderCraftingPanel();
+    }
+}
+
+/**
+ * 渲染合成面板（需要在 ui_manager.js 中實現）
+ */
+function renderCraftingPanel() {
+    // 這個函數將在 ui_manager.js 中實現
+    // 這裡只是一個佔位符，確保函數存在
+    if (typeof window.renderCraftingPanel === 'function') {
+        window.renderCraftingPanel();
+    }
+}
+
 

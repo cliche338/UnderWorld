@@ -36,6 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.inventoryBtn) elements.inventoryBtn.onclick = GameLogic.toggleInventory;
     if (elements.closeInventoryBtn) elements.closeInventoryBtn.onclick = GameLogic.toggleInventory;
 
+    // 綁定合成面板
+    if (elements.craftingAccessPanel) elements.craftingAccessPanel.onclick = GameLogic.toggleCraftingPanel;
+    if (elements.closeCraftingBtn) elements.closeCraftingBtn.onclick = GameLogic.toggleCraftingPanel;
+
     // 5. 綁定戰鬥按鈕
     if (elements.attackBtn) elements.attackBtn.onclick = GameLogic.handleAttack;
     if (elements.runBtn) elements.runBtn.onclick = GameLogic.handleEscape;

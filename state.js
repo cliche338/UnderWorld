@@ -49,7 +49,7 @@ export let player = {
     totalMonstersKilled: 0,
     maxDepthReached: 0,
     totalGoldEarned: 0,
-    bossKills: {}, // 追蹤擊殺的 Boss，格式：{ 'boss1': 2, 'boss2': 1 }
+    bossKills: {},
 };
 
 export function setGameActive(value) {

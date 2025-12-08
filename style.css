@@ -1309,6 +1309,125 @@ input:focus {
     align-items: center;
 }
 
+/* ========================================= */
+/* 13. 合成系統樣式 (CRAFTING SYSTEM) */
+/* ========================================= */
+
+#crafting-panel {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #d4af37;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+#crafting-panel h3 {
+    margin-top: 0;
+    color: #d4af37;
+    text-align: center;
+}
+
+#crafting-recipes-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.recipe-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #6e5a3d;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.recipe-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.recipe-item.available {
+    border-color: #27ae60;
+    box-shadow: 0 0 10px rgba(39, 174, 96, 0.3);
+}
+
+.recipe-item.unavailable {
+    opacity: 0.6;
+    border-color: #e74c3c;
+}
+
+.recipe-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.recipe-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #f1c40f;
+}
+
+.recipe-description {
+    font-size: 0.9em;
+    color: #bbb;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.recipe-materials {
+    margin-bottom: 10px;
+}
+
+.material-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 0.9em;
+}
+
+.material-item.has {
+    color: #27ae60;
+}
+
+.material-item.missing {
+    color: #e74c3c;
+}
+
+.recipe-result {
+    background: rgba(241, 196, 15, 0.1);
+    border: 1px solid #f1c40f;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #f1c40f;
+}
+
+.craft-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    background: linear-gradient(#27ae60, #229954);
+    border: 2px solid #27ae60;
+    color: white;
+    font-weight: bold;
+}
+
+.craft-button:hover:not(:disabled) {
+    background: linear-gradient(#2ecc71, #27ae60);
+    box-shadow: 0 0 15px rgba(39, 174, 96, 0.6);
+}
+
+.craft-button:disabled {
+    background: #555;
+    border-color: #777;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+
 .slot-content img {
     width: 80%;
     height: 80%;

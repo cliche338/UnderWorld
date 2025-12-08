@@ -16,6 +16,7 @@ import {
     calculateTotalCritChance,
     calculateTotalDefense, // 確保已引入
     calculateTotalMaxHp,
+    handleReturnJewel, // 添加回歸玉處理函數
 } from './game_logic.js'; //
 
 
@@ -179,6 +180,17 @@ export const elements = {
     confirmationContent: document.getElementById('confirmation-content'),
     confirmationConfirmBtn: document.getElementById('confirmation-confirm-btn'),
     confirmationCancelBtn: document.getElementById('confirmation-cancel-btn'),
+
+    // Crafting System
+    craftingPanel: document.getElementById('crafting-panel'),
+    craftingRecipesList: document.getElementById('crafting-recipes-list'),
+    craftingAccessPanel: document.getElementById('crafting-access-panel'),
+    closeCraftingBtn: document.getElementById('close-crafting-btn'),
+
+    // Return Jewel Modal
+    returnJewelModalBackdrop: document.getElementById('return-jewel-modal-backdrop'),
+    returnJewelConfirmBtn: document.getElementById('return-jewel-confirm-btn'),
+    returnJewelCancelBtn: document.getElementById('return-jewel-cancel-btn'),
 };
 
 // DEBUG: Check if critical elements are found
@@ -235,6 +247,16 @@ export function renderInventoryList() {
         if (item.type === 'consumable') {
             actionButton.textContent = '使用';
             actionButton.onclick = () => useConsumable(index);
+        } else if (item.type === 'special') {
+            // 特殊道具（如回歸玉）顯示使用按鈕
+            actionButton.textContent = '使用';
+            actionButton.onclick = () => {
+                if (item.id === 'return-jewel') {
+                    handleReturnJewel();
+                } else {
+                    logMessage(`⚠️ 未知的特殊道具: ${item.name}`, 'yellow');
+                }
+            };
         } else {
             actionButton.textContent = '裝備';
             actionButton.onclick = () => equipItem(index);
@@ -723,3 +745,121 @@ export function renderVisualEquipment() {
         }
     });
 }
+
+// =========================================
+// 13. 合成系統 UI 渲染 (CRAFTING SYSTEM RENDER)
+// =========================================
+
+export function renderCraftingPanel() {
+    if (!elements.craftingRecipesList) return;
+
+    // 需要從 game_logic.js 導入這些函數
+    import('./game_logic.js').then(module => {
+        const { getAllRecipes, checkRecipeAvailable, executeCraft, getItemById } = module;
+        const allRecipes = getAllRecipes();
+
+        elements.craftingRecipesList.innerHTML = '';
+
+        if (allRecipes.length === 0) {
+            elements.craftingRecipesList.innerHTML = '<p style="text-align: center; color: #999;">目前沒有可用的配方</p>';
+            return;
+        }
+
+        allRecipes.forEach(recipe => {
+            const isAvailable = checkRecipeAvailable(recipe);
+            const resultItem = getItemById(recipe.resultItemId);
+
+            // 創建配方項目
+            const recipeDiv = document.createElement('div');
+            recipeDiv.className = `recipe-item ${isAvailable ? 'available' : 'unavailable'}`;
+
+            // 標題
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'recipe-header';
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'recipe-name';
+            nameSpan.textContent = recipe.name;
+            headerDiv.appendChild(nameSpan);
+            recipeDiv.appendChild(headerDiv);
+
+            // 描述
+            if (recipe.description) {
+                const descP = document.createElement('p');
+                descP.className = 'recipe-description';
+                descP.textContent = recipe.description;
+                recipeDiv.appendChild(descP);
+            }
+
+            // 合成結果
+            if (resultItem) {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'recipe-result';
+                resultDiv.innerHTML = `⚔️ 鍛造 : <strong>${resultItem.name}</strong>`;
+                recipeDiv.appendChild(resultDiv);
+            }
+
+            // 材料需求
+            const materialsDiv = document.createElement('div');
+            materialsDiv.className = 'recipe-materials';
+            const materialsTitle = document.createElement('p');
+            materialsTitle.innerHTML = '<strong>所需材料:</strong>';
+            materialsDiv.appendChild(materialsTitle);
+
+            recipe.materials.forEach(material => {
+                const materialItem = getItemById(material.itemId);
+                if (!materialItem) return;
+
+                // 計算玩家擁有的數量
+                let ownedCount = 0;
+                player.inventory.forEach(item => {
+                    if (item.id === material.itemId) {
+                        if (item.count) {
+                            ownedCount += item.count;
+                        } else {
+                            ownedCount += 1;
+                        }
+                    }
+                });
+
+                const hasEnough = ownedCount >= material.count;
+                const materialDiv = document.createElement('div');
+                materialDiv.className = `material-item ${hasEnough ? 'has' : 'missing'}`;
+
+                const materialName = document.createElement('span');
+                materialName.textContent = materialItem.name;
+
+                const materialCount = document.createElement('span');
+                materialCount.textContent = `${ownedCount}/${material.count}`;
+                materialCount.style.fontWeight = 'bold';
+
+                materialDiv.appendChild(materialName);
+                materialDiv.appendChild(materialCount);
+                materialsDiv.appendChild(materialDiv);
+            });
+
+            recipeDiv.appendChild(materialsDiv);
+
+            // 合成按鈕
+            const craftBtn = document.createElement('button');
+            craftBtn.className = 'craft-button';
+            craftBtn.textContent = isAvailable ? '🔨 合成' : '❌ 材料不足';
+            craftBtn.disabled = !isAvailable;
+
+            if (isAvailable) {
+                craftBtn.onclick = () => {
+                    executeCraft(recipe);
+                    renderCraftingPanel(); // 重新渲染面板
+                };
+            }
+
+            recipeDiv.appendChild(craftBtn);
+            elements.craftingRecipesList.appendChild(recipeDiv);
+        });
+    }).catch(error => {
+        console.error('Failed to load crafting recipes:', error);
+        elements.craftingRecipesList.innerHTML = '<p style="color: red;">載入配方失敗，請重新整理頁面</p>';
+    });
+}
+
+// 將 renderCraftingPanel 導出到全局，供 game_logic.js 調用
+window.renderCraftingPanel = renderCraftingPanel;

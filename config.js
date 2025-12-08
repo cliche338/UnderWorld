@@ -49,6 +49,16 @@ export const MONSTERS = [
         { id: 'boss5', name: "凋零女王", hp: 600, attack: 250, defense: 115, goldReward: 500, difficulty: 5, isBoss: true },
         { id: 'boss6', name: "泰坦戰甲", hp: 750, attack: 180, defense: 180, goldReward: 850, difficulty: 5, isBoss: true },
         { id: 'x-mo4', name: "混沌-魔能戰魂", hp: 1800, attack: 220, defense: 150, goldReward: 350, difficulty: 5 },
+        {
+                id: 'swallow-boss', name: "蒼穹-魔能飛燕", hp: 18500, attack: 550, defense: 450,
+                goldReward: 1350, difficulty: 5, isBoss: true,
+                drops: ['heart-of-the-sky', 'wings-of-the-swallow'] // 專屬掉落：蒼穹之核、飛燕之羽
+        },
+        {
+                id: 'shark-boss', name: "汪洋-魔能影鯊", hp: 18500, attack: 550, defense: 450,
+                goldReward: 1350, difficulty: 5, isBoss: true,
+                drops: ['heart-of-the-sea', 'wings-of-the-shark'] // 專屬掉落：海洋之心、暗鯊之鰭
+        },
 
         // 活動 Boss
         { id: 'xmasboss', name: "猩紅尼古拉", hp: 1500, attack: 320, defense: 150, goldReward: 1350, difficulty: 8, isBoss: true },
@@ -68,7 +78,57 @@ export const ITEMS = [
                 value: 5000, price: 100000, rarity: 5,
                 image: 'icon/special/return-jewel.png',
                 intro: '使用後可重新選擇職業，但需再歷練500層才能再次轉職。'
+
         },
+        {
+                id: 'heart-of-the-sea', name: '海洋之心', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-of-the-sea.png',
+                intro: '蘊含汪洋之力的寶物。使用後可獲得海洋之力。'
+        },
+        {
+                id: 'heart-of-the-sky', name: '蒼穹之核', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-of-the-sky.png',
+                intro: '蘊含蒼穹之力的寶物。使用後可獲得蒼穹之力。'
+        },
+        {
+                id: 'wings-of-the-swallow', name: '飛燕之羽', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/wings-of-the-swallow.png',
+                intro: '飛燕的羽毛，可以使用後獲得飛燕之力。'
+        },
+        {
+                id: 'wings-of-the-shark', name: '暗鯊之鰭', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/wings-of-the-shark.png',
+                intro: '深海暗鯊的鰭。'
+        },
+        {
+                id: 'heart-broken-scabbard', name: '心之碎裂刀鞘', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-broken-scabbard.png',
+                intro: '名刀的刀鞘，已碎裂。'
+        },
+        {
+                id: 'heart-broken-blade', name: '心之碎裂刀刃', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-broken-blade.png',
+                intro: '名刀的刀刃，已碎裂。'
+        },
+        {
+                id: 'heart-broken-jaw', name: '心之碎裂刀顎', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-broken-jaw.png',
+                intro: '名刀的刀顎，已碎裂。'
+        },
+        {
+                id: 'heart-design-drawing', name: '心之古刀羊皮紙', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-design-drawing.png',
+                intro: '古代羊皮紙，上面記載了古刀的設計稿。'
+        },
+
 
         // 武器
         {
@@ -155,9 +215,14 @@ export const ITEMS = [
                 id: 'w17', name: '名刀月隱', type: 'weapon', attack: 125, critChance: 0.25, image: 'icon/weapon/w17.png',
                 value: 700, price: 1600, rarity: 9, intro: '由瑟利亞的刀匠以輝石鍛造\n因其收刀入鞘時會散發微光而得名。'
         },
+        // 合成
         {
                 id: 'w18', name: '天鯊海燕', type: 'weapon', attack: 750, image: 'icon/weapon/w18.png',
                 value: 5000, price: 25000, rarity: 10, intro: '「劈分汪洋，斬裂天際」'
+        },
+        {
+                id: 'w19', name: '心相湧流', type: 'weapon', attack: 350, defense: 350, image: 'icon/weapon/w19.png',
+                value: 5000, price: 25000, rarity: 10, intro: '「心刃合一，無盡湧動」'
         },
 
         // 頭盔
@@ -510,6 +575,7 @@ export const MATERIALS_DATA = [
 
         // 活動Boss掉落
         { id: 'xmas-star', name: '聖誕星', value: 1500, dropRate: 0.005 },
+        { id: 'broken-moon', name: '碎裂冰鑑', value: 1500, dropRate: 0.005 },
 
         // 奧利哈鋼系列掉落 
         { id: 'ori_dust', name: '奧利哈鋼粉塵', value: 5000, dropRate: 0.003 },
@@ -527,6 +593,41 @@ export const STARTER_LOOT_IDS = [
         'c1',
         'c1',
         'c2',
+];
+
+// =========================================================
+// 合成系統 Crafting System
+// =========================================================
+
+export const CRAFTING_RECIPES = [
+
+        {
+                id: 'craft_w18',
+                name: '《天鯊海燕》',
+                resultItemId: 'w18',
+                materials: [
+                        { itemId: 'heart-of-the-sea', count: 1 },
+                        { itemId: 'heart-of-the-sky', count: 1 },
+                        { itemId: 'wings-of-the-swallow', count: 1 },
+                        { itemId: 'wings-of-the-shark', count: 1 }
+                ],
+                description: '融合深海和蒼穹的神力，鍛造自然神刀',
+                goldCost: 50000
+        },
+        {
+                id: 'craft_w19',
+                name: '《心相湧流》',
+                resultItemId: 'w19',
+                materials: [
+                        { itemId: 'heart-broken-scabbard', count: 1 },
+                        { itemId: 'heart-broken-blade', count: 1 },
+                        { itemId: 'heart-broken-jaw', count: 1 },
+                        { itemId: 'heart-design-drawing', count: 1 }
+                ],
+                description: '收集心之古刀的所有碎片，重鑄傳說名刀',
+                goldCost: 50000
+        },
+
 ];
 
 // =========================================================
