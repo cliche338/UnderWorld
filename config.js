@@ -234,7 +234,7 @@ export const ITEMS = [
         },
         // 合成
         {
-                id: 'w18', name: '天鯊海燕', type: 'weapon', attack: 450, defense: 55, critChance: 0.15,image: 'icon/weapon/w18.png',
+                id: 'w18', name: '天鯊海燕', type: 'weapon', attack: 450, defense: 55, critChance: 0.15, image: 'icon/weapon/w18.png',
                 value: 5000, price: 25000, rarity: 10, intro: '「劈分汪洋，斬裂天際」'
         },
         {
@@ -242,7 +242,7 @@ export const ITEMS = [
                 value: 5000, price: 25000, rarity: 10, intro: '「心刃合一，無盡湧動」'
         },
         {
-                id: 'w21', name: '涅槃真火-大夏龍雀', type: 'weapon', attack: 115, image: 'icon/weapon/w21.png',
+                id: 'w21', name: '涅槃真火-大夏龍雀', type: 'weapon', attack: 405, defense: 45, hp: 500, image: 'icon/weapon/w21.png',
                 value: 47000, price: 65000, rarity: 11, intro: '恢復神力的鳳凰神刀'
         },
 
@@ -570,7 +570,7 @@ export const ITEMS = [
                 value: 1500, price: 2800, rarity: 8, intro: '鳳凰血液製成的藥劑\n有效繼承了鳳凰的恢復能力'
         },
         {
-                id: 'c10', name: '賢者之心', type: 'consumable', heal: 150, defense: 50, image: 'icon/consumable/c10.png',
+                id: 'c10', name: '賢者之心', type: 'consumable', hp: 150, defense: 50, image: 'icon/consumable/c10.png',
                 value: 1700, price: 2400, rarity: 9, intro: '古代賢者死後保存的心臟\n僅能給天選之人服用\n提供強大治療和防禦'
         },
 
