@@ -169,6 +169,10 @@ export const ITEMS = [
                 id: 'w21', name: '涅槃真火-大夏龍雀', type: 'weapon', attack: 405, defense: 45, hp: 500, image: 'icon/weapon/w21.png',
                 value: 47000, price: 65000, rarity: 11, intro: '恢復神力的鳳凰神刀'
         },
+        {
+                id: 'w22', name: '霜月之輪刃', type: 'weapon', attack: 215, defense: -35, hp: 100, image: 'icon/weapon/w22.png',
+                value: 7000, price: 15000, rarity: 11, intro: '於冰月之地吸收月光精華而煉成的武器'
+        },
 
         // 頭盔
         {
@@ -667,9 +671,22 @@ export const CRAFTING_RECIPES = [
 
                 ],
                 description: '集齊失落的鳳凰聖物，鍛造蘊火神刀',
-                goldCost: 500000
+                goldCost: 50000
         },
+        {
+                id: 'craft_w22',
+                name: '《霜月之輪刃》',
+                resultItemId: 'w22',
+                materials: [
+                        { itemId: 'w8', count: 1 },
+                        { itemId: 'w9', count: 1 },
+                        { itemId: 'w17', count: 1 },
+                        { itemId: 'broken-moon', count: 1 },
 
+                ],
+                description: '集齊四大冰霜聖器，鍛造霜月之器',
+                goldCost: 50000
+        },
 ];
 
 // =========================================================
