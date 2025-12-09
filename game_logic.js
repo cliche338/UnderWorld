@@ -767,12 +767,35 @@ export function refreshShopInventory() {
         maxRarityAvailable = 2;
     }
 
-    // 2. 過濾所有可販賣的物品 (ITEMS 從 config.js 引入)
-    // 排除boss專屬掉落的材料
-    const bossOnlyItems = ['heart-of-the-sea', 'heart-of-the-sky', 'wings-of-the-swallow', 'wings-of-the-shark'];
+    // 2. 過濾所有可販賣的物品 
+    // 排除boss專屬掉落的材料和特殊道具
+    const bossOnlyItems = [
+        // 合成材料類 - 特殊Boss掉落
+        'heart-of-the-sea', 'heart-of-the-sky', 'wings-of-the-swallow', 'wings-of-the-shark',
+        'heart-broken-scabbard', 'heart-broken-blade', 'heart-broken-jaw', 'heart-design-drawing',
+        'broken-fire-wings', 'heart-of-phoenix', 'flame-of-the-truth',
+
+        // 合成武器
+        'w18', 'w19', 'w21',
+
+        // 奧利哈鋼系列
+        'ori-broken-sword', 'ori-sword', 'ori-god-sword',
+        'ori-broken-helmet', 'ori-helmet', 'ori-god-helmet',
+        'ori-broken-armor', 'ori-armor', 'ori-god-armor',
+        'ori-broken-greaves', 'ori-greaves', 'ori-god-greaves',
+        'ori-broken-necklace', 'ori-necklace', 'ori-god-necklace',
+        'ori-broken-ring', 'ori-ring', 'ori-god-ring',
+        'ori-blood',
+
+        // 活動限定裝備
+        'n11', 'r12',
+        'xmas-sword', 'xmas-helmet', 'xmas-armor', 'xmas-greaves'
+    ];
+
     const sellableItems = ITEMS.filter(item =>
         item.price &&
         item.rarity <= maxRarityAvailable &&
+        item.type !== 'special' && // 排除所有特殊類型道具
         !bossOnlyItems.includes(item.id) // 排除boss專屬材料
     );
 
