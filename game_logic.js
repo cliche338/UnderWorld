@@ -14,22 +14,20 @@ import {
     logMessage, updateDisplay, elements,
     renderInventoryList, renderMaterialInventory,
     updateExchangeDisplay, getItemIcon,
-    renderVisualEquipment // 新增
+    renderVisualEquipment, showToast // 新增浮動提示
 } from './ui_manager.js';
 
 export { logMessage }; // Export logMessage for main.js usage
 
-// 更新日誌
 export function showUpdateLog() {
     const updateLog = `
 
-- 新增鍛造系統, 可合成更強大的武器 : 天鯊海燕、心相湧流
-- 天鯊海燕合成素材 : 擊敗指定Boss掉落
-- 心相湧流合成素材 : 商店隨機刷出
-- 商店道具顏色顯示
-- 背包道具顏色顯示
-- 裝備顯示區UI更新 : 現在移動到上面可以獲取數值；點選可以卸下
-- 修正素材掉落問題
+- 新增未來限時活動Boss及道具
+- 修正特殊道具稀有等級
+- 修正藥水類道具功能失效Bug
+- 修正狂戰士吸血Bug
+- 修正治療後UI顯示Bug
+
 
 
     `;
@@ -38,9 +36,10 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none';
     }
 
-    const title = "v4.3 遊戲更新日誌";
+    const title = "v4.4 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal');
 }
+
 
 // 職業轉職系統
 export const ADVANCED_CLASSES = {
@@ -403,8 +402,8 @@ function updateCodexDisplay(filterType) {
 
     // 創建進度顯示 HTML
     const progressDisplay = `
-        <div style="text-align: center; margin: 0 0 2px 0; font-weight: bold; font-size: 1.1em; color: #f39c12; border-bottom: 2px solid #3d3326; padding-bottom: 5px;">
-            收集進度: ${knownItemsCount} / ${totalItems}
+        <div style="text-align: center; margin: 0 auto 2px auto; font-weight: bold; font-size: 1.1em; color: #f39c12; border-bottom: 2px solid #3d3326; padding: 5px 0; width: 100%; display: block;">
+            <span style="display: inline-block;">收集進度: ${knownItemsCount} / ${totalItems}</span>
         </div>
     `;
 
@@ -519,8 +518,9 @@ export function toggleInventory() {
         // 恢復右側面板
         if (elements.logAndControlsGroup) elements.logAndControlsGroup.style.display = 'flex';
 
-        // 恢復 Hub
-        if (!State.isCombatActive && State.player.hp > 0) {
+        // 恢復 Hub  
+        // 修復：無論actionsSinceTown如何，只要玩家存活且不在戰鬥中，就應該顯示hub
+        if (State.player.hp > 0 && !State.isCombatActive) {
             if (elements.hubArea) elements.hubArea.style.display = 'block';
         }
 
@@ -584,7 +584,7 @@ function updateVisualEquipment() {
     const rarityNames = {
         1: '普通', 2: '優良', 3: '精良', 4: '精良',
         5: '史詩', 6: '史詩', 7: '橙裝', 8: '神話',
-        9: '傳說', 10: '不朽', 11: '特殊'
+        9: '傳說', 10: '不朽', 11: '至高'
     };
 
     slotMap.forEach(item => {
@@ -1025,6 +1025,10 @@ export function startGame(className, hpBonus, attackBonus, defenseBonus, critCha
         ring: null, //戒指
     };
 
+    // 初始化轉職系統
+    State.player.nextEvolutionDepth = 500; // 第一次轉職在500層
+    State.player.isEvolved = false;
+
 
     // 3. 發放起始道具 
     STARTER_LOOT_IDS.forEach(itemId => {
@@ -1320,7 +1324,9 @@ export function unequipItem(slotType) {
 
 export function useConsumable(inventoryIndex) {
     const itemToUse = State.player.inventory[inventoryIndex];
-    if (!itemToUse || itemToUse.type !== 'consumable') return; // 安全檢查
+    if (!itemToUse || (itemToUse.type !== 'consumable' && itemToUse.type !== 'special')) {
+        return; // 只允許consumable和special類型
+    }
 
     const healAmount = itemToUse.heal || 0;
     // 增加：獲取永久屬性值
@@ -1333,15 +1339,23 @@ export function useConsumable(inventoryIndex) {
             '確定要使用回歸玉嗎？',
             '這將使您重新選擇職業，您的轉職進度將被重置，需再歷練 500 層才能再次轉職。',
             () => {
-                // 消耗物品 (重新查找以防萬一)
+                // 消耗物品
                 const itemIndex = State.player.inventory.findIndex(i => i.id === 'return-jewel');
                 if (itemIndex !== -1) {
                     State.player.inventory.splice(itemIndex, 1);
                     saveGame();
-                    handleReturnJewel();
+                    updateDisplay();
                 }
+                // 直接執行回歸玉效果（跳過handleReturnJewel的模態框）
+                executeReturnJewel();
             }
         );
+        return;
+    }
+
+    // 其他special物品(已改為material類型,這是備用檢查)
+    if (itemToUse.type === 'special') {
+        logMessage(`⚠️ [${itemToUse.name}] 是材料道具，無法直接使用。`, 'yellow');
         return;
     }
 
@@ -1350,11 +1364,22 @@ export function useConsumable(inventoryIndex) {
     // 1. 執行治療效果
     if (healAmount > 0) {
         const oldHp = State.player.hp;
-        State.player.hp = Math.min(State.player.maxHp, State.player.hp + healAmount);
+        const totalMaxHp = calculateTotalMaxHp(); // 使用總maxHp(包含裝備加成)
+        State.player.hp = Math.min(totalMaxHp, State.player.hp + healAmount);
         const actualHealed = State.player.hp - oldHp;
 
-        logMessage(`🧪 使用了 [${itemToUse.name}]，恢復了 ${actualHealed} 點生命。`, 'lightgreen');
-        effectLogged = true;
+        if (actualHealed > 0) {
+            logMessage(`🧪 使用了 [${itemToUse.name}]，恢復了 ${actualHealed} 點生命。`, 'lightgreen');
+            effectLogged = true;
+        } else {
+            // 滿血時，如果物品沒有永久加成，則不消耗
+            if (permanentHpGain === 0 && permanentDefenseGain === 0) {
+                // 使用浮動提示而非遊戲日誌
+                showToast(`❤️ 生命值已滿，無需使用 [${itemToUse.name}]`, 'warning');
+                return; // 只有純治療藥水才會在滿血時被拒絕
+            }
+            // 如果有永久加成，即使滿血也繼續執行
+        }
     }
 
     // 2. 執行永久 HP 上限增加 
@@ -2020,6 +2045,87 @@ export function endCombat(isVictory) {
             const rareLootIds = [
                 'heart-of-the-sea',
                 'wings-of-the-shark'
+            ];
+
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+
+            const newItem = getItemById(rareLootId);
+
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
+        }
+
+        // 擊敗 墮落折翼鳳凰
+        if (enemy.id === 'phoenix-boss') {
+
+            const rareLootIds = [
+                'w20',
+                'broken-fire-wings',
+                'c8'
+            ];
+
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+
+            const newItem = getItemById(rareLootId);
+
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
+        }
+
+        // 擊敗 涅槃之朱雀 鳳
+        if (enemy.id === 'revive-phoenix-1') {
+
+            const rareLootIds = [
+                'heart-of-phoenix',
+                'c9'
+            ];
+
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+
+            const newItem = getItemById(rareLootId);
+
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
+        }
+
+        // 擊敗 真火之朱雀 凰
+        if (enemy.id === 'revive-phoenix-2') {
+
+            const rareLootIds = [
+                'flame-of-truth',
+                'c9'
+            ];
+
+            // 隨機選擇其中一件
+            const randomIndex = Math.floor(Math.random() * rareLootIds.length);
+            const rareLootId = rareLootIds[randomIndex];
+
+            const newItem = getItemById(rareLootId);
+
+            if (newItem) {
+                addItemToInventory(newItem);
+                logMessage(`🎉 恭喜！您從 ${enemy.name} 身上獲得了神話道具：[${newItem.name}]！`, 'gold');
+            }
+        }
+
+        // 擊敗 殘月魅影
+        if (enemy.id === 'moon-shadow') {
+
+            const rareLootIds = [
+                'n11',
+                'r12'
             ];
 
             // 隨機選擇其中一件
@@ -2705,9 +2811,17 @@ export function checkAchievements() {
                 isUnlocked = State.permanentData.knownItems.length >= achievement.requirement;
                 break;
             case 'checkBossKill':
-                // 檢查是否擊敗特定 Boss
+                // 檢查是否擊敗特定 Boss (支持單個或多個Boss)
                 if (achievement.bossId && State.player.bossKills) {
-                    isUnlocked = (State.player.bossKills[achievement.bossId] || 0) >= achievement.requirement;
+                    if (Array.isArray(achievement.bossId)) {
+                        // 數組形式：檢查是否擊敗了所有指定的Boss
+                        isUnlocked = achievement.bossId.every(bossId =>
+                            (State.player.bossKills[bossId] || 0) >= achievement.requirement
+                        );
+                    } else {
+                        // 單個Boss
+                        isUnlocked = (State.player.bossKills[achievement.bossId] || 0) >= achievement.requirement;
+                    }
                 }
                 break;
             case 'checkUniqueBossKills':
@@ -2817,6 +2931,15 @@ export function handleReturnJewel() {
     // 绑定确认按钮
     const confirmHandler = () => {
         elements.returnJewelModalBackdrop.style.display = 'none';
+
+        // 消耗回歸玉物品
+        const itemIndex = State.player.inventory.findIndex(i => i.id === 'return-jewel');
+        if (itemIndex !== -1) {
+            State.player.inventory.splice(itemIndex, 1);
+            saveGame();
+            updateDisplay(); // 更新背包顯示
+        }
+
         executeReturnJewel();
         cleanup();
     };

@@ -251,13 +251,13 @@ export function renderInventoryList() {
         } else if (item.type === 'special') {
             // 特殊道具（如回歸玉）顯示使用按鈕
             actionButton.textContent = '使用';
-            actionButton.onclick = () => {
-                if (item.id === 'return-jewel') {
-                    handleReturnJewel();
-                } else {
-                    logMessage(`⚠️ 未知的特殊道具: ${item.name}`, 'yellow');
-                }
-            };
+            actionButton.onclick = () => useConsumable(index); // 統一由useConsumable處理
+        } else if (item.type === 'material') {
+            // 材料不顯示使用按鈕,只顯示說明
+            actionButton.textContent = '材料';
+            actionButton.disabled = true;
+            actionButton.style.opacity = '0.6';
+            actionButton.style.cursor = 'not-allowed';
         } else {
             actionButton.textContent = '裝備';
             actionButton.onclick = () => equipItem(index);
@@ -442,6 +442,67 @@ export function logMessage(message, color = 'white') {
     }
 }
 
+// 浮動提示通知（Toast Notification）
+export function showToast(message, type = 'info', duration = 2000) {
+    // 創建toast容器（如果不存在）
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        `;
+        document.body.appendChild(toastContainer);
+    }
+
+    // 創建toast元素
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        background: ${type === 'warning' ? 'rgba(255, 193, 7, 0.95)' : type === 'error' ? 'rgba(220, 53, 69, 0.95)' : 'rgba(40, 167, 69, 0.95)'};
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        animation: slideIn 0.3s ease-out, slideOut 0.3s ease-out ${duration - 300}ms;
+        pointer-events: auto;
+    `;
+    toast.textContent = message;
+
+    // 添加動畫樣式
+    if (!document.getElementById('toast-animations')) {
+        const style = document.createElement('style');
+        style.id = 'toast-animations';
+        style.textContent = `
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateY(-20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes slideOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-20px); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    toastContainer.appendChild(toast);
+
+    // 自動移除
+    setTimeout(() => {
+        toast.remove();
+    }, duration);
+}
+
 export function updateDisplay() {
     // 1. 計算總攻擊力 (從 game_logic.js 取得)
     const totalMaxHp = calculateTotalMaxHp();
@@ -522,7 +583,16 @@ export function updateDisplay() {
     });
 
 
-    // 6. 更新戰鬥顯示 (如果戰鬥中)
+    // 7. 更新轉職挑戰按鈕顯示
+    if (elements.evolutionChallengeBtn && player.nextEvolutionDepth !== undefined) {
+        if (player.depth >= player.nextEvolutionDepth && !player.isEvolved) {
+            elements.evolutionChallengeBtn.style.display = 'block';
+        } else {
+            elements.evolutionChallengeBtn.style.display = 'none';
+        }
+    }
+
+    // 8. 更新戰鬥顯示 (如果戰鬥中)
     if (isCombatActive && elements.combatArea && elements.combatArea.style.display !== 'none') {
         updateCombatDisplay();
     }
@@ -856,6 +926,21 @@ export function renderCraftingPanel() {
             });
 
             recipeDiv.appendChild(materialsDiv);
+
+            // 金幣需求顯示
+            if (recipe.goldCost && recipe.goldCost > 0) {
+                const goldDiv = document.createElement('div');
+                goldDiv.className = 'recipe-gold-cost';
+                goldDiv.style.marginTop = '8px';
+                goldDiv.style.padding = '5px';
+                goldDiv.style.backgroundColor = 'rgba(255, 215, 0, 0.1)';
+                goldDiv.style.borderRadius = '4px';
+
+                const hasEnoughGold = player.gold >= recipe.goldCost;
+                goldDiv.innerHTML = `<strong>💰 所需金幣:</strong> <span style="color: ${hasEnoughGold ? '#00ff00' : '#ff4444'}; font-weight: bold;">${recipe.goldCost.toLocaleString()}</span>`;
+
+                recipeDiv.appendChild(goldDiv);
+            }
 
             // 合成按鈕
             const craftBtn = document.createElement('button');

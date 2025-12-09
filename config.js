@@ -49,20 +49,15 @@ export const MONSTERS = [
         { id: 'boss5', name: "凋零女王", hp: 600, attack: 250, defense: 115, goldReward: 500, difficulty: 5, isBoss: true },
         { id: 'boss6', name: "泰坦戰甲", hp: 750, attack: 180, defense: 180, goldReward: 850, difficulty: 5, isBoss: true },
         { id: 'x-mo4', name: "混沌-魔能戰魂", hp: 1800, attack: 220, defense: 150, goldReward: 350, difficulty: 5 },
-        {
-                id: 'swallow-boss', name: "蒼穹-魔能飛燕", hp: 18500, attack: 550, defense: 450,
-                goldReward: 1350, difficulty: 5, isBoss: true,
-                drops: ['heart-of-the-sky', 'wings-of-the-swallow'] // 專屬掉落：蒼穹之核、飛燕之羽
-        },
-        {
-                id: 'shark-boss', name: "汪洋-魔能影鯊", hp: 18500, attack: 550, defense: 450,
-                goldReward: 1350, difficulty: 5, isBoss: true,
-                drops: ['heart-of-the-sea', 'wings-of-the-shark'] // 專屬掉落：海洋之心、暗鯊之鰭
-        },
+        { id: 'swallow-boss', name: "蒼穹-魔能飛燕", hp: 18500, attack: 550, defense: 450, goldReward: 1350, difficulty: 5, isBoss: true },
+        { id: 'shark-boss', name: "汪洋-魔能影鯊", hp: 18500, attack: 550, defense: 450, goldReward: 1350, difficulty: 5, isBoss: true },
+        { id: 'phoenix-boss', name: "墮落折翼鳳凰", hp: 50505, attack: 450, defense: 450, goldReward: 1450, difficulty: 5, isBoss: true },
 
         // 活動 Boss
         { id: 'xmasboss', name: "猩紅尼古拉", hp: 1500, attack: 320, defense: 150, goldReward: 1350, difficulty: 8, isBoss: true },
-        { id: 'moon-shadow', name: "殘月魅影", hp: 91500, attack: 3550, defense: 550, goldReward: 5120, difficulty: 8, isBoss: true },
+        { id: 'moon-shadow', name: "殘月魅影", hp: 35515, attack: 1550, defense: 550, goldReward: 5120, difficulty: 8, isBoss: true },
+        { id: 'revive-phoenix-1', name: "涅槃之朱雀 鳳", hp: 500000, attack: 6060, defense: 660, goldReward: 8888, difficulty: 9, isBoss: true },
+        { id: 'revive-phoenix-2', name: "真火之朱雀 凰", hp: 500000, attack: 6060, defense: 660, goldReward: 8888, difficulty: 9, isBoss: true },
 
         // 世界級 Boss
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 37373, attack: 377, defense: 377, goldReward: 370, difficulty: 10, isBoss: true },
@@ -82,7 +77,7 @@ export const ITEMS = [
         },
         {
                 id: 'heart-of-the-sea', name: '海洋之心', type: 'special',
-                value: 5000, price: 100000, rarity: 11,
+                value: 5000, price: 100000, rarity: 7,
                 image: 'icon/special/heart-of-the-sea.png',
                 intro: '蘊含汪洋之力的寶物。使用後可獲得海洋之力。'
         },
@@ -127,6 +122,24 @@ export const ITEMS = [
                 value: 5000, price: 100000, rarity: 7,
                 image: 'icon/special/heart-design-drawing.png',
                 intro: '古代羊皮紙，上面記載了古刀的設計稿。'
+        },
+        {
+                id: 'broken-fire-wings', name: '烈火折翼之羽', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/broken-fire-wings.png',
+                intro: '受傷的鳳凰羽毛，僅帶有微弱的鳳凰之力。'
+        },
+        {
+                id: 'heart-of-phoenix', name: '朱雀之涅槃核心', type: 'special',
+                value: 5000, price: 100000, rarity: 11,
+                image: 'icon/special/heart-of-phoenix.png',
+                intro: '涅槃核心，賦予新生的力量。'
+        },
+        {
+                id: 'flame-of-the-truth', name: '朱雀之三昧真火', type: 'special',
+                value: 5000, price: 100000, rarity: 11,
+                image: 'icon/special/flame-of-the-truth.png',
+                intro: '集元神、元氣、元精凝聚而成的火焰。'
         },
 
 
@@ -215,6 +228,10 @@ export const ITEMS = [
                 id: 'w17', name: '名刀月隱', type: 'weapon', attack: 125, critChance: 0.25, image: 'icon/weapon/w17.png',
                 value: 700, price: 1600, rarity: 9, intro: '由瑟利亞的刀匠以輝石鍛造\n因其收刀入鞘時會散發微光而得名。'
         },
+        {
+                id: 'w20', name: '黯淡的大夏龍雀刀', type: 'weapon', attack: 115, image: 'icon/weapon/w20.png',
+                value: 4700, price: 6500, rarity: 10, intro: '砍傷鳳凰的刀，但似乎失去了神力'
+        },
         // 合成
         {
                 id: 'w18', name: '天鯊海燕', type: 'weapon', attack: 750, image: 'icon/weapon/w18.png',
@@ -223,6 +240,10 @@ export const ITEMS = [
         {
                 id: 'w19', name: '心相湧流', type: 'weapon', attack: 350, defense: 350, image: 'icon/weapon/w19.png',
                 value: 5000, price: 25000, rarity: 10, intro: '「心刃合一，無盡湧動」'
+        },
+        {
+                id: 'w21', name: '涅槃真火-大夏龍雀', type: 'weapon', attack: 115, image: 'icon/weapon/w21.png',
+                value: 47000, price: 65000, rarity: 11, intro: '恢復神力的鳳凰神刀'
         },
 
         // 頭盔
@@ -440,6 +461,10 @@ export const ITEMS = [
                 id: 'n10', name: '混沌之星', type: 'necklace', attack: 75, hp: 200, defense: 45, image: 'icon/necklace/n10.png',
                 value: 2500, price: 4500, rarity: 9, intro: '造成怪物混沌化的主因\n淨化後可安全配戴'
         },
+        {
+                id: 'n11', name: '影之嘆息', type: 'necklace', attack: 175, hp: 250, defense: 55, image: 'icon/necklace/n11.png',
+                value: 2750, price: 4800, rarity: 9, intro: '蘊含黑影之力的神石'
+        },
 
         // 戒指
         {
@@ -498,10 +523,14 @@ export const ITEMS = [
                 id: 'r11', name: '毀滅指輪', type: 'ring', attack: 120, critChance: 0.15, image: 'icon/ring/r11.png',
                 value: 2350, price: 3800, rarity: 9, intro: '具有強大力量的毀滅性戒指'
         },
+        {
+                id: 'r12', name: '光之低語', type: 'ring', attack: 150, defense: 150, image: 'icon/ring/r12.png',
+                value: 2750, price: 4800, rarity: 10, intro: '蘊含皎月之力的神石'
+        },
 
         // 藥水
         {
-                id: 'ori-blood', name: '奧利哈鋼之血', type: 'consumable', heal: 300, image: 'icon/consumable/ori-blood.png',
+                id: 'ori-blood', name: '奧利哈鋼之血', type: 'consumable', hp: 300, image: 'icon/consumable/ori-blood.png',
                 value: 10, price: 50, rarity: 10, intro: '從奧利哈鋼傷口蒐集的血液\n似乎對人體有益處'
         },
         {
@@ -525,8 +554,8 @@ export const ITEMS = [
                 value: 150, price: 280, rarity: 3, intro: '500mL的藥水\n很甜很有用'
         },
         {
-                id: 'c6', name: '秘藥', type: 'consumable', hp: 100, image: 'icon/consumable/c6.png',
-                value: 700, price: 1440, rarity: 5, intro: '老僧侶製作的秘藥\n服用後可強化人體'
+                id: 'c6', name: '秘藥', type: 'consumable', heal: 100, hp: 100, image: 'icon/consumable/c6.png',
+                value: 700, price: 1440, rarity: 5, intro: '老僧侶製作的秘藥\n服用後可強化人體並治療傷勢'
         },
         {
                 id: 'c7', name: '神聖治療藥水', type: 'consumable', heal: 250, image: 'icon/consumable/c7.png',
@@ -541,8 +570,8 @@ export const ITEMS = [
                 value: 1500, price: 2800, rarity: 8, intro: '鳳凰血液製成的藥劑\n有效繼承了鳳凰的恢復能力'
         },
         {
-                id: 'c10', name: '賢者之心', type: 'consumable', defense: 50, image: 'icon/consumable/c10.png',
-                value: 1700, price: 2400, rarity: 9, intro: '古代賢者死後保存的心臟\n僅能給天選之人服用'
+                id: 'c10', name: '賢者之心', type: 'consumable', heal: 150, defense: 50, image: 'icon/consumable/c10.png',
+                value: 1700, price: 2400, rarity: 9, intro: '古代賢者死後保存的心臟\n僅能給天選之人服用\n提供強大治療和防禦'
         },
 
 ];
@@ -626,6 +655,20 @@ export const CRAFTING_RECIPES = [
                 ],
                 description: '收集心之古刀的所有碎片，重鑄傳說名刀',
                 goldCost: 50000
+        },
+        {
+                id: 'craft_w21',
+                name: '《涅槃真火-大夏龍雀》',
+                resultItemId: 'w21',
+                materials: [
+                        { itemId: 'w20', count: 1 },
+                        { itemId: 'broken-fire-wings', count: 1 },
+                        { itemId: 'heart-of-phoenix', count: 1 },
+                        { itemId: 'flame-of-the-truth', count: 1 },
+
+                ],
+                description: '集齊失落的鳳凰聖物，鍛造蘊火神刀',
+                goldCost: 500000
         },
 
 ];
@@ -862,6 +905,28 @@ export const ACHIEVEMENTS = [
                 checkFunction: 'checkBossKill',
                 bossId: 'xmasboss'
         },
+        {
+                id: 'moon_shadow_beater',
+                name: '滿月之日，破影之時',
+                description: '擊敗殘月魅影',
+                tier: 'LEGENDARY',
+                icon: '🌙',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: 'moon-shadow'
+        },
+        {
+                id: 'pheonix_beater',
+                name: '涅槃者',
+                description: '擊敗全部鳳凰系列Boss',
+                tier: 'LEGENDARY',
+                icon: '🔥',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: ['phoenix-boss', 'revive-phoenix-1', 'revive-phoenix-2']
+        },
 
 
         // 財富類
@@ -1004,7 +1069,7 @@ export const ACHIEVEMENTS = [
 
         // 鍛造武器成就
         {
-                id: 'craft_heart_flow',
+                id: 'craft_the_w19',
                 name: '相由心生，洶湧而溢',
                 description: '鍛造傳說名刀《心相湧流》',
                 category: 'COLLECTION',
@@ -1014,7 +1079,7 @@ export const ACHIEVEMENTS = [
                 targetWeapon: 'w19'
         },
         {
-                id: 'craft_sky_shark',
+                id: 'craft_the_18',
                 name: '蒼穹之蛟龍，滄溟之鴻雁',
                 description: '鍛造神刀《天鯊海燕》',
                 category: 'COLLECTION',
@@ -1022,6 +1087,16 @@ export const ACHIEVEMENTS = [
                 icon: '🛠️',
                 checkFunction: 'checkCraftedWeapon',
                 targetWeapon: 'w18'
+        },
+        {
+                id: 'craft_the_w21',
+                name: '涅槃之明，輝耀萬方',
+                description: '鍛造神器《涅槃真火-大夏龍雀》',
+                category: 'COLLECTION',
+                tier: 'LEGENDARY',
+                icon: '🛠️',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'w21'
         },
 
 ];
