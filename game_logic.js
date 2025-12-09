@@ -788,7 +788,7 @@ export function refreshShopInventory() {
         'ori-blood',
 
         // 活動限定裝備
-        'n11', 'r12',
+        'w20', 'n11', 'r12',
         'xmas-sword', 'xmas-helmet', 'xmas-armor', 'xmas-greaves'
     ];
 

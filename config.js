@@ -62,86 +62,10 @@ export const MONSTERS = [
         // 世界級 Boss
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 37373, attack: 377, defense: 377, goldReward: 370, difficulty: 10, isBoss: true },
         { id: 'ori-body', name: "奧利哈鋼之軀", hp: 737373, attack: 777, defense: 777, goldReward: 370, difficulty: 10, isBoss: true },
-        { id: 'ori-god', name: "奧利哈鋼之神", hp: 77777777, attack: 7777, defense: 7777, goldReward: 7777, difficulty: 10, isBoss: true },
+        { id: 'ori-god', name: "奧利哈鋼之神", hp: 7777777, attack: 7777, defense: 7777, goldReward: 7777, difficulty: 10, isBoss: true },
 ];
 
 export const ITEMS = [
-
-        // 特殊道具
-        {
-                id: 'return-jewel', name: '回歸玉', type: 'special',
-                value: 5000, price: 100000, rarity: 5,
-                image: 'icon/special/return-jewel.png',
-                intro: '使用後可重新選擇職業，但需再歷練500層才能再次轉職。'
-
-        },
-        {
-                id: 'heart-of-the-sea', name: '海洋之心', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
-                image: 'icon/special/heart-of-the-sea.png',
-                intro: '蘊含汪洋之力的寶物。使用後可獲得海洋之力。'
-        },
-        {
-                id: 'heart-of-the-sky', name: '蒼穹之核', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
-                image: 'icon/special/heart-of-the-sky.png',
-                intro: '蘊含蒼穹之力的寶物。使用後可獲得蒼穹之力。'
-        },
-        {
-                id: 'wings-of-the-swallow', name: '飛燕之羽', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
-                image: 'icon/special/wings-of-the-swallow.png',
-                intro: '飛燕的羽毛，可以使用後獲得飛燕之力。'
-        },
-        {
-                id: 'wings-of-the-shark', name: '暗鯊之鰭', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
-                image: 'icon/special/wings-of-the-shark.png',
-                intro: '深海暗鯊的鰭。'
-        },
-        {
-                id: 'heart-broken-scabbard', name: '心之碎裂刀鞘', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
-                image: 'icon/special/heart-broken-scabbard.png',
-                intro: '名刀的刀鞘，已碎裂。'
-        },
-        {
-                id: 'heart-broken-blade', name: '心之碎裂刀刃', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
-                image: 'icon/special/heart-broken-blade.png',
-                intro: '名刀的刀刃，已碎裂。'
-        },
-        {
-                id: 'heart-broken-jaw', name: '心之碎裂刀顎', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
-                image: 'icon/special/heart-broken-jaw.png',
-                intro: '名刀的刀顎，已碎裂。'
-        },
-        {
-                id: 'heart-design-drawing', name: '心之古刀羊皮紙', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
-                image: 'icon/special/heart-design-drawing.png',
-                intro: '古代羊皮紙，上面記載了古刀的設計稿。'
-        },
-        {
-                id: 'broken-fire-wings', name: '烈火折翼之羽', type: 'special',
-                value: 5000, price: 100000, rarity: 7,
-                image: 'icon/special/broken-fire-wings.png',
-                intro: '受傷的鳳凰羽毛，僅帶有微弱的鳳凰之力。'
-        },
-        {
-                id: 'heart-of-phoenix', name: '朱雀之涅槃核心', type: 'special',
-                value: 5000, price: 100000, rarity: 11,
-                image: 'icon/special/heart-of-phoenix.png',
-                intro: '涅槃核心，賦予新生的力量。'
-        },
-        {
-                id: 'flame-of-the-truth', name: '朱雀之三昧真火', type: 'special',
-                value: 5000, price: 100000, rarity: 11,
-                image: 'icon/special/flame-of-the-truth.png',
-                intro: '集元神、元氣、元精凝聚而成的火焰。'
-        },
-
 
         // 武器
         {
@@ -572,6 +496,81 @@ export const ITEMS = [
         {
                 id: 'c10', name: '賢者之心', type: 'consumable', hp: 150, defense: 50, image: 'icon/consumable/c10.png',
                 value: 1700, price: 2400, rarity: 9, intro: '古代賢者死後保存的心臟\n僅能給天選之人服用\n提供強大治療和防禦'
+        },
+
+        // 特殊道具
+        {
+                id: 'return-jewel', name: '回歸玉', type: 'special',
+                value: 5000, price: 100000, rarity: 5,
+                image: 'icon/special/return-jewel.png',
+                intro: '使用後可重新選擇職業，但需再歷練500層才能再次轉職。'
+
+        },
+        {
+                id: 'heart-of-the-sea', name: '海洋之心', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-of-the-sea.png',
+                intro: '蘊含汪洋之力的寶物。使用後可獲得海洋之力。'
+        },
+        {
+                id: 'heart-of-the-sky', name: '蒼穹之核', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-of-the-sky.png',
+                intro: '蘊含蒼穹之力的寶物。使用後可獲得蒼穹之力。'
+        },
+        {
+                id: 'wings-of-the-swallow', name: '飛燕之羽', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/wings-of-the-swallow.png',
+                intro: '飛燕的羽毛，可以使用後獲得飛燕之力。'
+        },
+        {
+                id: 'wings-of-the-shark', name: '暗鯊之鰭', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/wings-of-the-shark.png',
+                intro: '深海暗鯊的鰭。'
+        },
+        {
+                id: 'heart-broken-scabbard', name: '心之碎裂刀鞘', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-broken-scabbard.png',
+                intro: '名刀的刀鞘，已碎裂。'
+        },
+        {
+                id: 'heart-broken-blade', name: '心之碎裂刀刃', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-broken-blade.png',
+                intro: '名刀的刀刃，已碎裂。'
+        },
+        {
+                id: 'heart-broken-jaw', name: '心之碎裂刀顎', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-broken-jaw.png',
+                intro: '名刀的刀顎，已碎裂。'
+        },
+        {
+                id: 'heart-design-drawing', name: '心之古刀羊皮紙', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/heart-design-drawing.png',
+                intro: '古代羊皮紙，上面記載了古刀的設計稿。'
+        },
+        {
+                id: 'broken-fire-wings', name: '烈火折翼之羽', type: 'special',
+                value: 5000, price: 100000, rarity: 7,
+                image: 'icon/special/broken-fire-wings.png',
+                intro: '受傷的鳳凰羽毛，僅帶有微弱的鳳凰之力。'
+        },
+        {
+                id: 'heart-of-phoenix', name: '朱雀之涅槃核心', type: 'special',
+                value: 5000, price: 100000, rarity: 11,
+                image: 'icon/special/heart-of-phoenix.png',
+                intro: '涅槃核心，賦予新生的力量。'
+        },
+        {
+                id: 'flame-of-the-truth', name: '朱雀之三昧真火', type: 'special',
+                value: 5000, price: 100000, rarity: 11,
+                image: 'icon/special/flame-of-the-truth.png',
+                intro: '集元神、元氣、元精凝聚而成的火焰。'
         },
 
 ];
