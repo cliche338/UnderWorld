@@ -1549,7 +1549,7 @@ export function handleSellMaterial(materialId, count, sellPrice) {
 
 
 export function enterAdventureMode() {
-    elements.currentStageTitle.textContent = "地城探險";
+    //elements.currentStageTitle.textContent = "地城探險";
 
     // 顯示探索模式按鈕，隱藏戰鬥和死亡按鈕
     elements.exploreModeButtons.style.display = 'block';
@@ -2528,9 +2528,9 @@ export function enterTownMode() {
     enterAdventureMode();
 
     // 2. 更新標題
-    if (elements.currentStageTitle) {
-        elements.currentStageTitle.textContent = "城鎮休息";
-    }
+    //if (elements.currentStageTitle) {
+    //    elements.currentStageTitle.textContent = "城鎮休息";
+    //}
 
     // 3. 確保背包關閉
     if (elements.inventoryArea) elements.inventoryArea.style.display = 'none';

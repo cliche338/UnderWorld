@@ -1557,8 +1557,9 @@ input:focus {
     justify-content: center !important;
     align-items: center !important;
 }
+
 /* ========================================= */
-/* Boss ¿ï¾Ü¥d¤ù¼Ë¦¡ */
+/* Boss ï¿½ï¿½Ü¥dï¿½ï¿½ï¿½Ë¦ï¿½ */
 /* ========================================= */
 
 .boss-card {
@@ -1646,11 +1647,11 @@ input:focus {
     .boss-card {
         padding: 15px;
     }
-    
+
     .boss-card-icon {
         font-size: 2.5em;
     }
-    
+
     .boss-card-name {
         font-size: 1.2em;
     }
