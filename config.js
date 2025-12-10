@@ -576,6 +576,12 @@ export const ITEMS = [
                 image: 'icon/special/flame-of-the-truth.png',
                 intro: '集元神、元氣、元精凝聚而成的火焰。'
         },
+        {
+                id: 'broken-moon', name: '碎裂冰鑑', type: 'special',
+                value: 2400, price: 5000, rarity: 11,
+                image: 'icon/special/broken-moon.png',
+                intro: '凝聚凝霜月之力的寶物。'
+        },
 
 ];
 
@@ -607,7 +613,6 @@ export const MATERIALS_DATA = [
 
         // 活動Boss掉落
         { id: 'xmas-star', name: '聖誕星', value: 1500, dropRate: 0.005 },
-        { id: 'broken-moon', name: '碎裂冰鑑', value: 1500, dropRate: 0.005 },
 
         // 奧利哈鋼系列掉落 
         { id: 'ori_dust', name: '奧利哈鋼粉塵', value: 5000, dropRate: 0.003 },
