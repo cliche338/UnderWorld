@@ -198,6 +198,19 @@ export const elements = {
     bossSelectionModal: document.getElementById('boss-selection-modal'),
     bossListContainer: document.getElementById('boss-list-container'),
     bossSelectionCloseBtn: document.getElementById('boss-selection-close-btn'),
+
+    // Sell Quantity Modal
+    sellQuantityModalBackdrop: document.getElementById('sell-quantity-modal-backdrop'),
+    sellQuantityModal: document.getElementById('sell-quantity-modal'),
+    sellQuantityItemName: document.getElementById('sell-quantity-item-name'),
+    sellQuantityCurrentCount: document.getElementById('sell-quantity-current-count'),
+    sellQuantityValue: document.getElementById('sell-quantity-value'),
+    sellQuantitySlider: document.getElementById('sell-quantity-slider'),
+    sellQuantityMax: document.getElementById('sell-quantity-max'),
+    sellQuantityTotalPrice: document.getElementById('sell-quantity-total-price'),
+    sellQuantityConfirmBtn: document.getElementById('sell-quantity-confirm-btn'),
+    sellQuantityCancelBtn: document.getElementById('sell-quantity-cancel-btn'),
+    sellQuantityCloseBtn: document.getElementById('sell-quantity-close-btn'),
 };
 
 // DEBUG: Check if critical elements are found

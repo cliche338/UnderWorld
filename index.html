@@ -88,6 +88,90 @@
 </div>
 </div>
 
+<!-- 販賣數量選擇模態框 -->
+<div id="sell-quantity-modal-backdrop"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center;">
+    <div id="sell-quantity-modal"
+        style="position: relative; background: linear-gradient(135deg, #2a1a1a 0%, #1a1515 100%); border: 2px solid #f39c12; padding: 30px; border-radius: 10px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 0 30px rgba(243, 156, 18, 0.6);">
+
+        <!-- 關閉按鈕 -->
+        <button id="sell-quantity-close-btn"
+            style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #f39c12; font-size: 2em; cursor: pointer; padding: 0; width: 40px; height: 40px; line-height: 1; transition: all 0.3s ease;"
+            onmouseover="this.style.color='#e74c3c'; this.style.transform='scale(1.2)'"
+            onmouseout="this.style.color='#f39c12'; this.style.transform='scale(1)'">
+            ×
+        </button>
+
+        <h3 style="color: #f39c12; margin-top: 0; margin-bottom: 20px;">💰 選擇販賣數量</h3>
+
+        <div id="sell-quantity-item-info"
+            style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <div style="font-size: 1.2em; color: #ddd; margin-bottom: 10px;">
+                <span id="sell-quantity-item-name">物品名稱</span>
+            </div>
+            <div style="color: #95a5a6; font-size: 0.9em;">
+                持有數量: <span id="sell-quantity-current-count" style="color: #3498db; font-weight: bold;">0</span>
+            </div>
+        </div>
+
+        <div style="margin: 25px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span style="color: #ddd;">販賣數量:</span>
+                <span id="sell-quantity-value" style="color: #f39c12; font-size: 1.5em; font-weight: bold;">1</span>
+            </div>
+
+            <input type="range" id="sell-quantity-slider" min="1" max="1" value="1"
+                style="width: 100%; height: 8px; border-radius: 5px; outline: none; background: linear-gradient(to right, #f39c12 0%, #f39c12 0%, #555 0%, #555 100%); cursor: pointer;">
+
+            <style>
+                #sell-quantity-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    background: #f39c12;
+                    cursor: pointer;
+                    box-shadow: 0 0 10px rgba(243, 156, 18, 0.8);
+                }
+
+                #sell-quantity-slider::-moz-range-thumb {
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    background: #f39c12;
+                    cursor: pointer;
+                    box-shadow: 0 0 10px rgba(243, 156, 18, 0.8);
+                    border: none;
+                }
+            </style>
+
+            <div
+                style="display: flex; justify-content: space-between; color: #95a5a6; font-size: 0.85em; margin-top: 5px;">
+                <span>1</span>
+                <span id="sell-quantity-max">1</span>
+            </div>
+        </div>
+
+        <div
+            style="background: rgba(255, 215, 0, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 215, 0, 0.3); margin-bottom: 20px;">
+            <div style="color: #f1c40f; font-size: 0.9em; margin-bottom: 5px;">💰 預計收益</div>
+            <div id="sell-quantity-total-price" style="color: #f39c12; font-size: 1.3em; font-weight: bold;">0 金幣</div>
+        </div>
+
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button id="sell-quantity-confirm-btn"
+                style="background-color: #27ae60; border-color: #2ecc71; min-width: 120px; padding: 12px 24px; font-size: 1em; font-weight: bold;">
+                ✓ 確認販賣
+            </button>
+            <button id="sell-quantity-cancel-btn"
+                style="background-color: #666; border-color: #aaa; min-width: 120px; padding: 12px 24px; font-size: 1em;">
+                ✗ 取消
+            </button>
+        </div>
+    </div>
+</div>
+
 <div id="evolution-confirm-modal-backdrop"
     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); justify-content: center; align-items: center; z-index: 1045;">
     <div id="evolution-confirm-modal" class="panel"
@@ -206,21 +290,21 @@
                     style="margin-bottom: 15px; display: none; width: 100%; display: flex; justify-content: center; flex-direction: row; gap: 10px; align-items: stretch;">
 
                     <div id="evolution-challenge-panel" class="panel"
-                        style="text-align: center; background: #2c0e36; border-color: #9b59b6; padding: 15px; flex: 1; margin-bottom: 0px; display: none; box-shadow: 0 0 15px #9b59b6; flex-direction: column; justify-content: space-between;">
+                        style="text-align: center; background: #2c0e36; border-color: #9b59b6; padding: 15px; min-width: 250px; height: 100px; margin-bottom: 0px; display: none; box-shadow: 0 0 15px #9b59b6; flex-direction: column; justify-content: space-between;">
 
                         <div>
                             <h3 style="color: #d2b4de; margin: 0 0 10px 0;">✨ 靈魂的呼喚 ✨</h3>
-                            <p style="color: #ddd;">你的力量已經到達瓶頸，擊敗守護者以獲得晉升的資格。</p>
+                            <p style="color: #ddd;">靈魂的昇華之路</p>
                         </div>
 
                         <button id="evolution-challenge-btn"
-                            style="background-color: #8e44ad; border-color: #a569bd; margin-top: 10px; min-width: 150px; width: 100%; font-weight: bold;">
+                            style="background-color: #8e44ad; border-color: #a569bd; margin-top: 15px; min-width: 250px; width: 100%; font-weight: bold; height: 45px;">
                             ⚔️ 挑戰轉職試煉
                         </button>
                     </div>
 
                     <div id="dungeon-entrance-panel" class="panel"
-                        style="text-align: center; background: #331f1f; border-color: #7b4e4e; padding: 15px; max-width: 450px; display: flex; flex-direction: column; justify-content: space-between;">
+                        style="text-align: center; background: #331f1f; border-color: #7b4e4e; padding: 15px; max-width: 450px; height: 100px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 0 15px rgba(255, 85, 85, 0.5);">
 
                         <div>
                             <h3>🚨 試煉之門 🚨</h3>
@@ -228,7 +312,7 @@
                         </div>
 
                         <button id="dungeon-enter-btn"
-                            style="background-color: #8c0000; border-color: #ff5555; margin-top: 15px; min-width: 150px; width: 100%;">
+                            style="background-color: #8c0000; border-color: #ff5555; margin-top: 15px; min-width: 150px; width: 100%; font-weight: bold; height: 45px;">
                             🔥 前往挑戰
                         </button>
                     </div>

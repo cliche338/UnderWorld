@@ -1,4 +1,4 @@
-import * as State from './state.js';
+﻿import * as State from './state.js';
 
 import {
     saveGame, savePermanentData, loadGame,
@@ -25,7 +25,7 @@ export function showUpdateLog() {
 
 - 移除副本挑戰
 - 新增試煉之門 : 可自由選擇要挑戰的boss
-
+- 新增堆疊道具批量販賣UI
 
     `;
 
@@ -1475,38 +1475,37 @@ export function handleSellItem(inventoryIndex, sellPrice) {
         logMessage("🔒 必須返回城鎮才能販賣物品！", 'red');
         return;
     }
-    // 1. 獲取物品並移除
+    // 1. 獲取物品
     const itemToSell = State.player.inventory[inventoryIndex];
     if (!itemToSell) return;
 
-    // 2. 執行販賣 (處理堆疊)
+    // 2. 如果有堆疊，顯示數量選擇模態框
     if (itemToSell.count && itemToSell.count > 1) {
-        itemToSell.count--;
+        // 使用美化的模態框替代原生 prompt
+        showSellQuantityModal(itemToSell, inventoryIndex, sellPrice);
+        return; // 後續處理由模態框完成
+
     } else {
+        // 3. 非堆疊物品或只有1個，直接販賣
         State.player.inventory.splice(inventoryIndex, 1);
-    }
 
-    // 3. 增加金幣
-    let finalPrice = sellPrice;
+        let finalPrice = sellPrice;
+        if (State.player.className === '黑市大亨') {
+            finalPrice = Math.floor(sellPrice * 1.5);
+        }
 
-    // 黑市大亨職業特效：販賣價格 1.5 倍
-    if (State.player.className === '黑市大亨') {
-        finalPrice = Math.floor(sellPrice * 1.5);
-    }
+        State.player.gold += finalPrice;
+        State.player.totalGoldEarned = (State.player.totalGoldEarned || 0) + finalPrice;
 
-
-    State.player.gold += finalPrice;
-    State.player.totalGoldEarned = (State.player.totalGoldEarned || 0) + finalPrice;
-
-    // 4. 更新狀態與日誌
-    if (finalPrice > sellPrice) {
-        logMessage(`💰 [黑市大亨] 成功販賣 [${itemToSell.name}]，獲得 ${finalPrice} 金幣 (原價 ${sellPrice})。`, 'gold');
-    } else {
-        logMessage(`💰 成功販賣 [${itemToSell.name}]，獲得 ${finalPrice} 金幣。`, 'gold');
+        // 日誌
+        if (finalPrice > sellPrice) {
+            logMessage(`💰 [黑市大亨] 成功販賣 [${itemToSell.name}]，獲得 ${finalPrice} 金幣 (原價 ${sellPrice})。`, 'gold');
+        } else {
+            logMessage(`💰 成功販賣 [${itemToSell.name}]，獲得 ${finalPrice} 金幣。`, 'gold');
+        }
     }
 
     checkAchievements();
-
 
     // 5. 存檔與介面更新
     saveGame();
@@ -3224,6 +3223,110 @@ function renderCraftingPanel() {
     if (typeof window.renderCraftingPanel === 'function') {
         window.renderCraftingPanel();
     }
+}
+
+// =========================================================
+// 販賣數量選擇模態框
+// =========================================================
+
+async function showSellQuantityModal(item, inventoryIndex, sellPrice) {
+    const { elements } = await import('./ui_manager.js');
+
+    if (!elements.sellQuantityModalBackdrop) return;
+
+    const itemName = item.name;
+    const maxCount = item.count;
+
+    // 計算單價（考慮職業加成）
+    let unitPrice = sellPrice;
+    if (State.player.className === '黑市大亨') {
+        unitPrice = Math.floor(sellPrice * 1.5);
+    }
+
+    // 設置模態框內容
+    elements.sellQuantityItemName.textContent = itemName;
+    elements.sellQuantityCurrentCount.textContent = maxCount;
+    elements.sellQuantitySlider.max = maxCount;
+    elements.sellQuantitySlider.value = 1;
+    elements.sellQuantityMax.textContent = maxCount;
+
+    // 更新顯示函數
+    const updatePriceDisplay = () => {
+        const quantity = parseInt(elements.sellQuantitySlider.value);
+        elements.sellQuantityValue.textContent = quantity;
+        const totalPrice = unitPrice * quantity;
+        elements.sellQuantityTotalPrice.textContent = `${totalPrice} 金幣`;
+
+        // 更新滑桿漸變背景
+        const percent = maxCount > 1 ? ((quantity - 1) / (maxCount - 1)) * 100 : 0;
+        elements.sellQuantitySlider.style.background =
+            `linear-gradient(to right, #f39c12 0%, #f39c12 ${percent}%, #555 ${percent}%, #555 100%)`;
+    };
+
+    // 初始化顯示
+    updatePriceDisplay();
+
+    // 滑桿事件
+    elements.sellQuantitySlider.oninput = updatePriceDisplay;
+
+    // 確認按鈕
+    const confirmHandler = () => {
+        const sellQuantity = parseInt(elements.sellQuantitySlider.value);
+
+        // 扣除數量
+        item.count -= sellQuantity;
+
+        // 如果全部賣完，從背包移除
+        if (item.count <= 0) {
+            State.player.inventory.splice(inventoryIndex, 1);
+        }
+
+        // 增加金幣
+        const totalPrice = unitPrice * sellQuantity;
+        State.player.gold += totalPrice;
+        State.player.totalGoldEarned = (State.player.totalGoldEarned || 0) + totalPrice;
+
+        // 日誌
+        if (State.player.className === '黑市大亨') {
+            logMessage(`💰 [黑市大亨] 成功販賣 ${sellQuantity} 個 [${itemName}]，獲得 ${totalPrice} 金幣 (單價加成: ${unitPrice})。`, 'gold');
+        } else {
+            logMessage(`💰 成功販賣 ${sellQuantity} 個 [${itemName}]，獲得 ${totalPrice} 金幣。`, 'gold');
+        }
+
+        // 關閉模態框
+        elements.sellQuantityModalBackdrop.style.display = 'none';
+
+        // 清理事件
+        cleanup();
+
+        // 更新狀態
+        checkAchievements();
+        saveGame();
+        updateDisplay();
+    };
+
+    // 取消/關閉按鈕
+    const cancelHandler = () => {
+        elements.sellQuantityModalBackdrop.style.display = 'none';
+        cleanup();
+        logMessage("❌ 取消販賣", 'gray');
+    };
+
+    // 清理事件監聽器
+    const cleanup = () => {
+        elements.sellQuantityConfirmBtn.removeEventListener('click', confirmHandler);
+        elements.sellQuantityCancelBtn.removeEventListener('click', cancelHandler);
+        elements.sellQuantityCloseBtn.removeEventListener('click', cancelHandler);
+        elements.sellQuantitySlider.oninput = null;
+    };
+
+    // 綁定事件
+    elements.sellQuantityConfirmBtn.addEventListener('click', confirmHandler);
+    elements.sellQuantityCancelBtn.addEventListener('click', cancelHandler);
+    elements.sellQuantityCloseBtn.addEventListener('click', cancelHandler);
+
+    // 顯示模態框
+    elements.sellQuantityModalBackdrop.style.display = 'flex';
 }
 
 
