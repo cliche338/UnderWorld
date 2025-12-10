@@ -1,5 +1,5 @@
 import * as GameLogic from './game_logic.js';
-import { elements, updateExchangeDisplay, hideDungeonChallengeModal, showDungeonChallengeModal, toggleAchievements } from './ui_manager.js';
+import { elements, updateExchangeDisplay, hideDungeonChallengeModal, showDungeonChallengeModal, toggleAchievements, renderBossList, showBossSelectionModal, hideBossSelectionModal } from './ui_manager.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -86,30 +86,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 9. 綁定新增的副本按鈕 (使用防護檢查)
     if (elements.dungeonEnterBtn) {
-        // 點擊地圖上的「進入副本挑戰」時：只顯示確認模態框
+        // 點擊地圖上的「進入副本挑戰」時：顯示Boss選擇列表
         elements.dungeonEnterBtn.onclick = () => {
-            // 🚨 注意：這裡不再立即隱藏地圖入口
+            const bossList = GameLogic.getDungeonBossList();
+            renderBossList(bossList, (bossId) => {
+                GameLogic.selectDungeonBoss(bossId);
+            });
+            showBossSelectionModal();
+        };
+    }
 
-            // 呼叫模態框顯示函式 (可以根據實際 Boss 傳入名字)
-            showDungeonChallengeModal('你確定要挑戰這個強大的 Boss 嗎？你將面對一場沒有退路的戰鬥！');
+    // 綁定Boss選擇模態框的取消按鈕
+    if (elements.bossSelectionCloseBtn) {
+        elements.bossSelectionCloseBtn.onclick = () => {
+            hideBossSelectionModal();
+            GameLogic.logMessage("🚪 取消副本挑戰", 'white');
         };
     }
 
     if (elements.dungeonChallengeBtn) {
-        // 點擊模態框內的「再次挑戰」按鈕：啟動 Boss 戰
+        // 點擊確認模態框內的「挑戰」按鈕：啟動 Boss 戰
         elements.dungeonChallengeBtn.onclick = () => {
             hideDungeonChallengeModal();
-            // GameLogic.toggleDungeonEntrance(false); // Removed to keep button visible
             GameLogic.handleDungeonBossCombat(); // 啟動戰鬥
         };
     }
 
     if (elements.dungeonLeaveBtn) {
-        // 點擊模態框內的「離開」按鈕：關閉模態框
+        // 點擊確認模態框內的「離開」按鈕：關閉模態框
         elements.dungeonLeaveBtn.onclick = () => {
             hideDungeonChallengeModal();
             GameLogic.logMessage("⚔️ 決定暫時撤退，繼續探索！", 'white');
-            // GameLogic.toggleDungeonEntrance(false); // Removed as per user request
         };
     }
 

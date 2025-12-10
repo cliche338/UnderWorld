@@ -192,6 +192,12 @@ export const elements = {
     returnJewelModalBackdrop: document.getElementById('return-jewel-modal-backdrop'),
     returnJewelConfirmBtn: document.getElementById('return-jewel-confirm-btn'),
     returnJewelCancelBtn: document.getElementById('return-jewel-cancel-btn'),
+
+    // Boss Selection Modal
+    bossSelectionModalBackdrop: document.getElementById('boss-selection-modal-backdrop'),
+    bossSelectionModal: document.getElementById('boss-selection-modal'),
+    bossListContainer: document.getElementById('boss-list-container'),
+    bossSelectionCloseBtn: document.getElementById('boss-selection-close-btn'),
 };
 
 // DEBUG: Check if critical elements are found
@@ -616,15 +622,192 @@ export function updateCombatDisplay() {
 
 
 
-export function showDungeonChallengeModal(bossName, infoText) {
+// =========================================================
+// Boss 選擇系統 UI Functions
+// =========================================================
+
+export function showBossSelectionModal() {
+    if (!elements.bossSelectionModalBackdrop) return;
+    elements.bossSelectionModalBackdrop.style.display = 'flex';
+}
+
+export function hideBossSelectionModal() {
+    if (!elements.bossSelectionModalBackdrop) return;
+    elements.bossSelectionModalBackdrop.style.display = 'none';
+}
+
+export function renderBossList(bosses, onSelectCallback) {
+    if (!elements.bossListContainer) return;
+
+    elements.bossListContainer.innerHTML = '';
+
+    if (!bosses || bosses.length === 0) {
+        elements.bossListContainer.innerHTML = '<p style="color: #999;">目前沒有可挑戰的Boss</p>';
+        return;
+    }
+
+    bosses.forEach(boss => {
+        const bossCard = document.createElement('div');
+        bossCard.style.cssText = `
+            position: relative;
+            background: linear-gradient(135deg, #1a1515 0%, #2a1a1a 100%);
+            border: 2px solid #f39c12;
+            border-radius: 8px;
+            padding: 20px;
+            padding-right: 100px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        `;
+
+        // Boss 資訊區塊（包含圖片）
+        const bossInfo = document.createElement('div');
+        bossInfo.style.cssText = 'flex: 1; text-align: left; display: flex; align-items: center; gap: 15px;';
+
+        // Boss 圖片或圖示
+        let imageHtml = '';
+        if (boss.image) {
+            imageHtml = `
+                <img src="${boss.image}" alt="${boss.name}" 
+                     style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; background: rgba(0,0,0,0.3); padding: 5px;">
+            `;
+        } else {
+            // 如果沒有圖片，使用大型emoji圖示
+            imageHtml = `
+                <div style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 3em; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                    👹
+                </div>
+            `;
+        }
+
+
+        // 獲取掉落物名稱（如果有）
+        let dropsHtml = '';
+        if (boss.drops && boss.drops.length > 0) {
+            // 從 ITEMS 和 MATERIALS_DATA 獲取掉落物名稱
+            const dropNames = boss.drops.map(dropId => {
+                // 先在 ITEMS 中查找
+                let item = ITEMS.find(i => i.id === dropId);
+                // 如果找不到，在 MATERIALS_DATA 中查找
+                if (!item) {
+                    item = MATERIALS_DATA.find(m => m.id === dropId);
+                }
+                return item ? item.name : dropId;
+            });
+
+            dropsHtml = `
+                <div style="margin-top: 10px; padding: 8px; background: rgba(255, 215, 0, 0.1); border-radius: 5px; border: 1px solid rgba(255, 215, 0, 0.3);">
+                    <div style="font-size: 0.85em; color: #f1c40f; margin-bottom: 5px;">🎁 可能掉落:</div>
+                    <div style="font-size: 0.85em; color: #f39c12; max-height: 40px; overflow-y: auto;">
+                        ${dropNames.join(', ')}
+                    </div>
+                </div>
+            `;
+        }
+
+        bossInfo.innerHTML = `
+            ${imageHtml}
+            <div style="flex: 1;">
+                <div style="font-size: 1.3em; font-weight: bold; color: #f39c12; margin-bottom: 8px;">
+                    ${boss.name}
+                </div>
+                <div style="display: flex; gap: 15px; font-size: 0.95em; color: #ddd;">
+                    <span>❤️ HP: <strong style="color: #e74c3c;">${boss.hp}</strong></span>
+                    <span>⚔️ ATK: <strong style="color: #f39c12;">${boss.attack}</strong></span>
+                    <span>🛡️ DEF: <strong style="color: #3498db;">${boss.defense || 0}</strong></span>
+                </div>
+              
+                ${dropsHtml}
+            </div>
+        `;
+
+        // 選擇按鈕
+        const selectBtn = document.createElement('button');
+        selectBtn.textContent = '選擇';
+        selectBtn.style.cssText = `
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #e74c3c;
+            border: 2px solid #ff8888;
+            color: white;
+            padding: 8px 20px;
+            font-size: 0.95em;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        `;
+
+        selectBtn.onmouseover = () => {
+            selectBtn.style.backgroundColor = '#c0392b';
+            selectBtn.style.transform = 'scale(1.05)';
+        };
+        selectBtn.onmouseout = () => {
+            selectBtn.style.backgroundColor = '#e74c3c';
+            selectBtn.style.transform = 'scale(1)';
+        };
+
+        selectBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (onSelectCallback) {
+                onSelectCallback(boss.id);
+            }
+        };
+
+        // Hover 效果
+        bossCard.onmouseover = () => {
+            bossCard.style.borderColor = '#ff8';
+            bossCard.style.boxShadow = '0 0 20px rgba(243, 156, 18, 0.4)';
+            bossCard.style.transform = 'translateY(-2px)';
+        };
+        bossCard.onmouseout = () => {
+            bossCard.style.borderColor = '#f39c12';
+            bossCard.style.boxShadow = 'none';
+            bossCard.style.transform = 'translateY(0)';
+        };
+
+        bossCard.appendChild(bossInfo);
+        bossCard.appendChild(selectBtn);
+        elements.bossListContainer.appendChild(bossCard);
+    });
+}
+
+export function showDungeonChallengeModal(boss) {
     if (!elements.dungeonChallengeBackdrop) return;
 
-    // 更新內容並顯示
-    elements.dungeonChallengeTitle.textContent = `🔥 挑戰：${bossName} 🔥`;
-    elements.dungeonChallengeInfo.textContent = infoText;
+    // 更新內容並顯示Boss詳細資訊
+    elements.dungeonChallengeTitle.textContent = `🔥 挑戰：${boss.name} 🔥`;
+
+    // 構建詳細資訊
+    const infoHtml = `
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-around; margin-bottom: 10px;">
+                <div>
+                    <div style="color: #95a5a6; font-size: 0.9em;">生命值</div>
+                    <div style="color: #e74c3c; font-size: 1.3em; font-weight: bold;">${boss.hp}</div>
+                </div>
+                <div>
+                    <div style="color: #95a5a6; font-size: 0.9em;">攻擊力</div>
+                    <div style="color: #f39c12; font-size: 1.3em; font-weight: bold;">${boss.attack}</div>
+                </div>
+                <div>
+                    <div style="color: #95a5a6; font-size: 0.9em;">防禦力</div>
+                    <div style="color: #3498db; font-size: 1.3em; font-weight: bold;">${boss.defense || 0}</div>
+                </div>
+            </div>
+            <div style="color: #f1c40f; font-size: 1.1em; margin-top: 10px;">
+                💰 獎勵: ${boss.goldReward} 金幣
+            </div>
+        </div>
+        <p style="color: #e74c3c; font-weight: bold; margin: 15px 0;">⚠️ 這是一場沒有退路的戰鬥！</p>
+        <p style="color: #ddd;">你確定要挑戰這個強大的 Boss 嗎？</p>
+    `;
+
+    elements.dungeonChallengeInfo.innerHTML = infoHtml;
     elements.dungeonChallengeBackdrop.style.display = 'flex';
 
-    logMessage(`🔔 挑戰副本 Boss 提示已顯示: ${bossName} `, 'orange');
+    logMessage(`🔔 準備挑戰 Boss: ${boss.name}`, 'orange');
 }
 
 export function hideDungeonChallengeModal() {

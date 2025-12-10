@@ -1557,3 +1557,101 @@ input:focus {
     justify-content: center !important;
     align-items: center !important;
 }
+/* ========================================= */
+/* Boss 選擇卡片樣式 */
+/* ========================================= */
+
+.boss-card {
+    background: linear-gradient(135deg, #2a1f15 0%, #1a1410 100%);
+    border: 3px solid #6e5a3d;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.boss-card:hover {
+    transform: translateY(-5px);
+    border-color: #f39c12;
+    box-shadow: 0 8px 25px rgba(243, 156, 18, 0.5);
+    background: linear-gradient(135deg, #3a2f25 0%, #2a1f15 100%);
+}
+
+.boss-card-icon {
+    font-size: 3.5em;
+    text-align: center;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 10px rgba(243, 156, 18, 0.6));
+}
+
+.boss-card-name {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #f39c12;
+    text-align: center;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.boss-card-description {
+    font-size: 0.9em;
+    color: #bbb;
+    text-align: center;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+.boss-card-stats {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.boss-card-stat {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+    font-size: 0.95em;
+    color: #ddd;
+}
+
+.boss-card-stat-label {
+    color: #bfa76f;
+    font-weight: bold;
+}
+
+.boss-card-stat-value {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+.boss-card-difficulty {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 1.1em;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.boss-card.selected {
+    border-color: #27ae60;
+    box-shadow: 0 0 20px rgba(39, 174, 96, 0.7);
+}
+
+@media (max-width: 900px) {
+    .boss-card {
+        padding: 15px;
+    }
+    
+    .boss-card-icon {
+        font-size: 2.5em;
+    }
+    
+    .boss-card-name {
+        font-size: 1.2em;
+    }
+}

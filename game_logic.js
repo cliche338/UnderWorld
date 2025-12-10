@@ -8,13 +8,14 @@ import {
     setIsInventoryOpen, isCombatActive, gameActive,
 } from './state.js';
 
-import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, ACHIEVEMENTS, ACHIEVEMENT_TIERS, ACHIEVEMENT_CATEGORIES, CRAFTING_RECIPES } from './config.js';
+import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, ACHIEVEMENTS, ACHIEVEMENT_TIERS, ACHIEVEMENT_CATEGORIES, CRAFTING_RECIPES, DUNGEON_BOSSES } from './config.js';
 
 import {
     logMessage, updateDisplay, elements,
     renderInventoryList, renderMaterialInventory,
     updateExchangeDisplay, getItemIcon,
-    renderVisualEquipment, showToast // 新增浮動提示
+    renderVisualEquipment, showToast, // 新增浮動提示
+    showBossSelectionModal, hideBossSelectionModal, renderBossList, showDungeonChallengeModal
 } from './ui_manager.js';
 
 export { logMessage }; // Export logMessage for main.js usage
@@ -22,12 +23,8 @@ export { logMessage }; // Export logMessage for main.js usage
 export function showUpdateLog() {
     const updateLog = `
 
-- 新增未來限時活動Boss及道具
-- 修正特殊道具稀有等級
-- 修正藥水類道具功能失效Bug
-- 修正狂戰士吸血Bug
-- 修正治療後UI顯示Bug
-
+- 移除副本挑戰
+- 新增試煉之門 : 可自由選擇要挑戰的boss
 
 
     `;
@@ -36,7 +33,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none';
     }
 
-    const title = "v4.4 遊戲更新日誌";
+    const title = "v4.5 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal');
 }
 
@@ -1191,12 +1188,45 @@ export function toggleDungeonEntrance(isVisible) {
     }
 }
 
-export function getDungeonBoss() {
+// =========================================================
+// 副本挑戰系統 - Boss選擇與管理
+// =========================================================
 
-    // ⭐ 直接指定副本 Boss ID ⭐
-    const bossId = 'xmasboss';
+// 儲存當前選中的副本Boss ID
+let selectedDungeonBossId = null;
 
-    const boss = MONSTERS.find(m => m.id === bossId);
+// 獲取所有可挑戰的副本Boss列表
+export function getDungeonBossList() {
+    return DUNGEON_BOSSES.map(bossId => {
+        const boss = MONSTERS.find(m => m.id === bossId);
+        return boss ? JSON.parse(JSON.stringify(boss)) : null;
+    }).filter(b => b !== null);
+}
+
+// 選擇Boss並顯示確認模態框
+export function selectDungeonBoss(bossId) {
+    selectedDungeonBossId = bossId;
+    const boss = getDungeonBoss(bossId);
+
+    if (boss) {
+        // 隱藏Boss選擇列表
+        hideBossSelectionModal();
+        // 顯示確認模態框，包含Boss詳細資訊
+        showDungeonChallengeModal(boss);
+    }
+}
+
+export function getDungeonBoss(bossId) {
+
+    // 如果傳入了bossId，使用它；否則使用已選中的bossId
+    const targetBossId = bossId || selectedDungeonBossId;
+
+    if (!targetBossId) {
+        logMessage("❌ 未選擇Boss", 'red');
+        return null;
+    }
+
+    const boss = MONSTERS.find(m => m.id === targetBossId);
 
     if (boss) {
         logMessage(`🔥 你感應到強大的氣息... Boss：${boss.name} 準備就緒！`, 'orange');
@@ -1210,7 +1240,7 @@ export function getDungeonBoss() {
         return monsterData;
     }
 
-    logMessage("❌ 系統錯誤 ", 'red');
+    logMessage("❌ 系統錯誤：找不到該Boss ", 'red');
     return null;
 }
 
@@ -2021,8 +2051,6 @@ export function endCombat(isVictory) {
                 'xmas-helmet',        // 頭盔
                 'xmas-armor',         // 胸甲
                 'xmas-greaves',       // 護脛
-                'xmas-necklace',      // 項鍊
-                'xmas-ring',          // 戒指
             ];
 
             // 隨機選擇其中一件
@@ -2103,7 +2131,7 @@ export function endCombat(isVictory) {
             }
         }
 
-        // 擊敗 涅槃之朱雀 鳳
+        // 擊敗 涅槃之朱雀 凰
         if (enemy.id === 'revive-phoenix-1') {
 
             const rareLootIds = [
@@ -2123,7 +2151,7 @@ export function endCombat(isVictory) {
             }
         }
 
-        // 擊敗 真火之朱雀 凰
+        // 擊敗 真火之朱雀 鳳
         if (enemy.id === 'revive-phoenix-2') {
 
             const rareLootIds = [
@@ -2148,7 +2176,8 @@ export function endCombat(isVictory) {
 
             const rareLootIds = [
                 'n11',
-                'r12'
+                'r12',
+                'broken-moon'
             ];
 
             // 隨機選擇其中一件

@@ -4,6 +4,18 @@ export const SAVE_KEY = 'fantasy_adventure_save';
 export const ACCOUNTS_KEY = 'local_user_accounts';
 export const PERM_SAVE_KEY = 'fantasy_adventure_perm_save'
 
+// =========================================================
+// 副本挑戰系統 - 可挑戰的Boss列表
+// =========================================================
+export const DUNGEON_BOSSES = [
+        'xmasboss',           // 猩紅尼古拉 (聖誕活動Boss)
+        'moon-shadow',        // 殘月魅影
+        'revive-phoenix-1',   // 涅槃之朱雀 凰
+        'revive-phoenix-2',   // 涅槃之朱雀 鳳
+];
+
+
+
 export const MONSTERS = [
         // 簡單怪物 (Difficulty 1)
         { id: 'goblin1', name: "普通哥布林", hp: 30, attack: 10, defense: 5, goldReward: 15, difficulty: 1 },
@@ -53,13 +65,25 @@ export const MONSTERS = [
         { id: 'shark-boss', name: "汪洋-魔能影鯊", hp: 18500, attack: 550, defense: 450, goldReward: 1350, difficulty: 5, isBoss: true },
         { id: 'phoenix-boss', name: "墮落折翼鳳凰", hp: 50505, attack: 450, defense: 450, goldReward: 1450, difficulty: 5, isBoss: true },
 
-        // 活動 Boss
-        { id: 'xmasboss', name: "猩紅尼古拉", hp: 1500, attack: 320, defense: 150, goldReward: 1350, difficulty: 8, isBoss: true },
-        { id: 'moon-shadow', name: "殘月魅影", hp: 35515, attack: 1550, defense: 550, goldReward: 5120, difficulty: 8, isBoss: true },
-        { id: 'revive-phoenix-1', name: "涅槃之朱雀 鳳", hp: 500000, attack: 6060, defense: 660, goldReward: 8888, difficulty: 9, isBoss: true },
-        { id: 'revive-phoenix-2', name: "真火之朱雀 凰", hp: 500000, attack: 6060, defense: 660, goldReward: 8888, difficulty: 9, isBoss: true },
+        // 副本 Boss
+        {
+                id: 'xmasboss', name: "猩紅尼古拉", hp: 1500, attack: 320, defense: 150, goldReward: 1350, difficulty: 8, isBoss: true,
+                image: 'icon/boss/xmasboss.png', drops: ['xmas-sword', 'xmas-helmet', 'xmas-armor', 'xmas-greaves', 'xmas-star']
+        },
+        {
+                id: 'moon-shadow', name: "殘月魅影", hp: 35515, attack: 1550, defense: 550, goldReward: 5120, difficulty: 8, isBoss: true,
+                image: 'icon/boss/moon-shadow.png', drops: ['n11', 'r12', 'broken-moon']
+        },
+        {
+                id: 'revive-phoenix-1', name: "涅槃之朱雀 凰", hp: 500000, attack: 6060, defense: 660, goldReward: 8888, difficulty: 9, isBoss: true,
+                image: 'icon/boss/revive-phoenix-1.png', drops: ['heart-of-phoenix', 'c9']
+        },
+        {
+                id: 'revive-phoenix-2', name: "真火之朱雀 鳳", hp: 500000, attack: 6060, defense: 660, goldReward: 8888, difficulty: 9, isBoss:
+                        true, image: 'icon/boss/revive-phoenix-2.png', drops: ['flame-of-the-truth', 'c9']
+        },
 
-        // 世界級 Boss
+        // 世界 Boss
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 37373, attack: 377, defense: 377, goldReward: 370, difficulty: 10, isBoss: true },
         { id: 'ori-body', name: "奧利哈鋼之軀", hp: 737373, attack: 777, defense: 777, goldReward: 370, difficulty: 10, isBoss: true },
         { id: 'ori-god', name: "奧利哈鋼之神", hp: 7777777, attack: 7777, defense: 7777, goldReward: 7777, difficulty: 10, isBoss: true },
