@@ -5,7 +5,7 @@ export const ACCOUNTS_KEY = 'local_user_accounts';
 export const PERM_SAVE_KEY = 'fantasy_adventure_perm_save'
 
 // =========================================================
-// 副本挑戰系統 - 可挑戰的Boss列表
+// 試煉之門 
 // =========================================================
 export const DUNGEON_BOSSES = [
         'xmasboss',           // 猩紅尼古拉 (聖誕活動Boss)
@@ -14,6 +14,19 @@ export const DUNGEON_BOSSES = [
         'revive-phoenix-2',   // 涅槃之朱雀 鳳
 ];
 
+// =========================================================
+// 舊日支配者 - (解鎖條件: 擊敗奧利哈鋼之神)
+// =========================================================
+export const CHALLENGE_BOSSES = [
+        'Outer-Abhoth',
+        'Outer-Tulzscha',
+        'Outer-Daoloth',
+        'Outer-Ghroth',
+        'Outer-Nyarlathotep',
+        'Outer-Shub-Niggurath',
+        'Outer-Yog-Sothoth',
+        'Outer-Azathoth',
+];
 
 
 export const MONSTERS = [
@@ -87,6 +100,41 @@ export const MONSTERS = [
         { id: 'ori-shadow', name: "奧利哈鋼幻影", hp: 37373, attack: 377, defense: 377, goldReward: 370, difficulty: 10, isBoss: true },
         { id: 'ori-body', name: "奧利哈鋼之軀", hp: 737373, attack: 777, defense: 777, goldReward: 370, difficulty: 10, isBoss: true },
         { id: 'ori-god', name: "奧利哈鋼之神", hp: 7777777, attack: 7777, defense: 7777, goldReward: 7777, difficulty: 10, isBoss: true },
+
+        // 外神&舊日 Boss
+        {
+                id: 'Outer-Azathoth', name: "阿撒托斯", hp: 8800000, attack: 65430, defense: 76060, goldReward: 168888,
+                difficulty: 11, isBoss: true, image: 'icon/outergods/Azathoth.png', drops: ['heart-of-Azathoth']
+        },
+        {
+                id: 'Outer-Nyarlathotep', name: "奈亞拉托提普", hp: 4400000, attack: 45670, defense: 56060, goldReward: 128888,
+                difficulty: 11, isBoss: true, image: 'icon/outergods/Nyarlathotep.png', drops: ['shape-of-Nyarlathotep']
+        },
+        {
+                id: 'Outer-Shub-Niggurath', name: "莎布-尼古拉絲", hp: 4400000, attack: 45670, defense: 56060, goldReward: 128888,
+                difficulty: 11, isBoss: true, image: 'icon/outergods/Shub-Niggurath.png', drops: ['uterus-of-Shub-Niggurath']
+        },
+        {
+                id: 'Outer-Yog-Sothoth', name: "猶格-索托斯", hp: 4400000, attack: 45670, defense: 56060, goldReward: 128888,
+                difficulty: 11, isBoss: true, image: 'icon/outergods/Yog-Sothoth.png', drops: ['key-of-Yog-Sothoth']
+        },
+        {
+                id: 'Outer-Daoloth', name: "道羅斯", hp: 2200000, attack: 21980, defense: 3660, goldReward: 128888,
+                difficulty: 11, isBoss: true, image: 'icon/outergods/Daoloth.png', drops: ['scales-of-Daoloth']
+        },
+        {
+                id: 'Outer-Ghroth', name: "格赫羅斯", hp: 2200000, attack: 21980, defense: 3660, goldReward: 88888,
+                difficulty: 11, isBoss: true, image: 'icon/outergods/Ghroth.png', drops: ['eye-of-Ghroth']
+        },
+        {
+                id: 'Outer-Tulzscha', name: "圖爾茲查", hp: 2200000, attack: 21980, defense: 3660, goldReward: 88888,
+                difficulty: 11, isBoss: true, image: 'icon/outergods/Tulzscha.png', drops: ['flame-of-Tulzscha']
+        },
+        {
+                id: 'Outer-Abhoth', name: "阿布霍斯", hp: 2200000, attack: 21980, defense: 3660, goldReward: 88888,
+                difficulty: 11, isBoss: true, image: 'icon/outergods/Abhoth.png', drops: ['dust-of-Abhoth']
+        },
+
 ];
 
 export const ITEMS = [
@@ -195,7 +243,31 @@ export const ITEMS = [
         },
         {
                 id: 'w22', name: '霜月之輪刃', type: 'weapon', attack: 215, defense: -35, hp: 100, image: 'icon/weapon/w22.png',
-                value: 7000, price: 15000, rarity: 11, intro: '於冰月之地吸收月光精華而煉成的武器'
+                value: 7000, price: 15000, rarity: 10, intro: '於冰月之地吸收月光精華而煉成的武器'
+        },
+        {
+                id: 'The-Great-Old_sword', name: '舊日誓約之劍', type: 'weapon', attack: 2215, defense: 535, hp: 700, image: 'icon/weapon/The-Great-Old_sword.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之劍'
+        },
+        {
+                id: 'The-Great-Old_helmet', name: '舊日誓約之視', type: 'helmet', hp: 1750, attack: 1120, defense: 250, image: 'icon/helmet/The-Great-Old_sword.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之眼'
+        },
+        {
+                id: 'The-Great-Old_armor', name: '舊日誓約之盔', type: 'armor', hp: 1275, defense: 455, image: 'icon/armor/The-Great-Old_sword.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之盔'
+        },
+        {
+                id: 'The-Great-Old_greaves', name: '舊日誓約之脛', type: 'greaves', attack: 1015, defense: 355, hp: 330, image: 'icon/greaves/The-Great-Old_sword.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之脛'
+        },
+        {
+                id: 'The-Great-Old_necklace', name: '舊日誓約之鍊', type: 'necklace', attack: 615, defense: 135, hp: 340, image: 'icon/necklace/The-Great-Old_sword.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之鍊'
+        },
+        {
+                id: 'The-Great-Old_ring', name: '舊日誓約之環', type: 'ring', attack: 415, defense: 235, hp: 670, image: 'icon/ring/The-Great-Old_sword.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之環'
         },
 
         // 頭盔
@@ -590,22 +662,72 @@ export const ITEMS = [
         },
         {
                 id: 'heart-of-phoenix', name: '朱雀之涅槃核心', type: 'special',
-                value: 5000, price: 100000, rarity: 11,
+                value: 5000, price: 100000, rarity: 10,
                 image: 'icon/special/heart-of-phoenix.png',
                 intro: '涅槃核心，賦予新生的力量。'
         },
         {
                 id: 'flame-of-the-truth', name: '朱雀之三昧真火', type: 'special',
-                value: 5000, price: 100000, rarity: 11,
+                value: 5000, price: 100000, rarity: 10,
                 image: 'icon/special/flame-of-the-truth.png',
                 intro: '集元神、元氣、元精凝聚而成的火焰。'
         },
         {
                 id: 'broken-moon', name: '碎裂冰鑑', type: 'special',
-                value: 2400, price: 5000, rarity: 11,
+                value: 2400, price: 5000, rarity: 8,
                 image: 'icon/special/broken-moon.png',
                 intro: '凝聚凝霜月之力的寶物。'
         },
+        // 舊日遺物
+        {
+                id: 'heart-of-Azathoth', name: '阿撒托斯之核', type: 'special',
+                value: 62400, price: 115000, rarity: 11,
+                image: 'icon/special/heart-of-Azathoth.png',
+                intro: '原初混沌之源核'
+        },
+        {
+                id: 'shape-of-Nyarlathotep', name: '奈亞拉托提普之形', type: 'special',
+                value: 62400, price: 115000, rarity: 11,
+                image: 'icon/special/shape-of-Nyarlathotep.png',
+                intro: '伏行之混沌化身'
+        },
+        {
+                id: 'uterus-of-Shub-Niggurath', name: '莎布-尼古拉絲之卵', type: 'special',
+                value: 62400, price: 115000, rarity: 11,
+                image: 'icon/special/uterus-of-Shub-Niggurath.png',
+                intro: '至高母神的生命之源'
+        },
+        {
+                id: 'key-of-Yog-Sothoth', name: '猶格-索托斯之鑰', type: 'special',
+                value: 62400, price: 115000, rarity: 11,
+                image: 'icon/special/key-of-Yog-Sothoth.png',
+                intro: '鑰匙和門，一生萬物，萬物歸一'
+        },
+        {
+                id: 'scales-of-Daoloth', name: '道羅斯之秤', type: 'special',
+                value: 62400, price: 115000, rarity: 11,
+                image: 'icon/special/scales-of-Daoloth.png',
+                intro: '裂帷者'
+        },
+        {
+                id: 'eye-of-Ghroth', name: '格赫羅斯之眼', type: 'special',
+                value: 62400, price: 115000, rarity: 11,
+                image: 'icon/special/eye-of-Ghroth.png',
+                intro: '前兆，報應，死星'
+        },
+        {
+                id: 'flame-of-Tulzscha', name: '圖爾茲查之燄', type: 'special',
+                value: 62400, price: 115000, rarity: 11,
+                image: 'icon/special/flame-of-Tulzscha.png',
+                intro: '卓越之青炎'
+        },
+        {
+                id: 'dust-of-Abhoth', name: '阿布霍斯之塵', type: 'special',
+                value: 62400, price: 115000, rarity: 11,
+                image: 'icon/special/dust-of-Abhoth.png',
+                intro: '不淨者之源'
+        },
+
 
 ];
 
@@ -716,6 +838,111 @@ export const CRAFTING_RECIPES = [
                 description: '集齊四大冰霜聖器，鍛造霜月之器',
                 goldCost: 50000
         },
+
+        // 舊日套裝
+        {
+                id: 'craft_The-Great-Old_sword',
+                name: '《舊日誓約之劍》',
+                resultItemId: 'The-Great-Old_sword',
+                materials: [
+                        { itemId: 'heart-of-Azathoth', count: 1 },
+                        { itemId: 'shape-of-Nyarlathotep', count: 1 },
+                        { itemId: 'uterus-of-Shub-Niggurath', count: 1 },
+                        { itemId: 'key-of-Yog-Sothoth', count: 1 },
+                        { itemId: 'scales-of-Daoloth', count: 1 },
+                        { itemId: 'eye-of-Ghroth', count: 1 },
+                        { itemId: 'flame-of-Tulzscha', count: 1 },
+                        { itemId: 'dust-of-Abhoth', count: 1 },
+                ],
+                description: '集合舊日遺物，喚醒神器',
+                goldCost: 50000
+        },
+        {
+                id: 'craft_The-Great-Old_helmet',
+                name: '《舊日誓約之視》',
+                resultItemId: 'The-Great-Old_helmet',
+                materials: [
+                        { itemId: 'heart-of-Azathoth', count: 1 },
+                        { itemId: 'shape-of-Nyarlathotep', count: 1 },
+                        { itemId: 'uterus-of-Shub-Niggurath', count: 1 },
+                        { itemId: 'key-of-Yog-Sothoth', count: 1 },
+                        { itemId: 'scales-of-Daoloth', count: 1 },
+                        { itemId: 'eye-of-Ghroth', count: 1 },
+                        { itemId: 'flame-of-Tulzscha', count: 1 },
+                        { itemId: 'dust-of-Abhoth', count: 1 },
+                ],
+                description: '集合舊日遺物，喚醒神器',
+                goldCost: 50000
+        },
+        {
+                id: 'craft_The-Great-Old_armor',
+                name: '《舊日誓約之盔》',
+                resultItemId: 'The-Great-Old_armor',
+                materials: [
+                        { itemId: 'heart-of-Azathoth', count: 1 },
+                        { itemId: 'shape-of-Nyarlathotep', count: 1 },
+                        { itemId: 'uterus-of-Shub-Niggurath', count: 1 },
+                        { itemId: 'key-of-Yog-Sothoth', count: 1 },
+                        { itemId: 'scales-of-Daoloth', count: 1 },
+                        { itemId: 'eye-of-Ghroth', count: 1 },
+                        { itemId: 'flame-of-Tulzscha', count: 1 },
+                        { itemId: 'dust-of-Abhoth', count: 1 },
+                ],
+                description: '集合舊日遺物，喚醒神器',
+                goldCost: 50000
+        },
+        {
+                id: 'craft_The-Great-Old_greaves',
+                name: '《舊日誓約之脛》',
+                resultItemId: 'The-Great-Old_greaves',
+                materials: [
+                        { itemId: 'heart-of-Azathoth', count: 1 },
+                        { itemId: 'shape-of-Nyarlathotep', count: 1 },
+                        { itemId: 'uterus-of-Shub-Niggurath', count: 1 },
+                        { itemId: 'key-of-Yog-Sothoth', count: 1 },
+                        { itemId: 'scales-of-Daoloth', count: 1 },
+                        { itemId: 'eye-of-Ghroth', count: 1 },
+                        { itemId: 'flame-of-Tulzscha', count: 1 },
+                        { itemId: 'dust-of-Abhoth', count: 1 },
+                ],
+                description: '集合舊日遺物，喚醒神器',
+                goldCost: 50000
+        },
+        {
+                id: 'craft_The-Great-Old_necklace',
+                name: '《舊日誓約之鍊》',
+                resultItemId: 'The-Great-Old_necklace',
+                materials: [
+                        { itemId: 'heart-of-Azathoth', count: 1 },
+                        { itemId: 'shape-of-Nyarlathotep', count: 1 },
+                        { itemId: 'uterus-of-Shub-Niggurath', count: 1 },
+                        { itemId: 'key-of-Yog-Sothoth', count: 1 },
+                        { itemId: 'scales-of-Daoloth', count: 1 },
+                        { itemId: 'eye-of-Ghroth', count: 1 },
+                        { itemId: 'flame-of-Tulzscha', count: 1 },
+                        { itemId: 'dust-of-Abhoth', count: 1 },
+                ],
+                description: '集合舊日遺物，喚醒神器',
+                goldCost: 50000
+        },
+        {
+                id: 'craft_The-Great-Old_ring',
+                name: '《舊日誓約之環》',
+                resultItemId: 'The-Great-Old_ring',
+                materials: [
+                        { itemId: 'heart-of-Azathoth', count: 1 },
+                        { itemId: 'shape-of-Nyarlathotep', count: 1 },
+                        { itemId: 'uterus-of-Shub-Niggurath', count: 1 },
+                        { itemId: 'key-of-Yog-Sothoth', count: 1 },
+                        { itemId: 'scales-of-Daoloth', count: 1 },
+                        { itemId: 'eye-of-Ghroth', count: 1 },
+                        { itemId: 'flame-of-Tulzscha', count: 1 },
+                        { itemId: 'dust-of-Abhoth', count: 1 },
+                ],
+                description: '集合舊日遺物，喚醒神器',
+                goldCost: 50000
+        },
+
 ];
 
 // =========================================================
@@ -726,7 +953,8 @@ export const ACHIEVEMENT_TIERS = {
         COMMON: { name: '普通', color: '#27ae60', icon: '🟢' },
         RARE: { name: '稀有', color: '#3498db', icon: '🔵' },
         EPIC: { name: '史詩', color: '#9b59b6', icon: '🟣' },
-        LEGENDARY: { name: '傳說', color: '#e67e22', icon: '🟠' }
+        LEGENDARY: { name: '傳說', color: '#e67e22', icon: '🟠' },
+        GOD: { name: '神話', color: '#c22d12ff', icon: '🔴' }
 };
 
 export const ACHIEVEMENT_CATEGORIES = {
@@ -972,7 +1200,94 @@ export const ACHIEVEMENTS = [
                 checkFunction: 'checkBossKill',
                 bossId: ['phoenix-boss', 'revive-phoenix-1', 'revive-phoenix-2']
         },
-
+        {
+                id: 'Outer-Azathoth_beater',
+                name: '盲目痴愚之神',
+                description: '擊敗阿撒托斯',
+                tier: 'GOD',
+                icon: '🌑',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: 'Outer-Azathoth'
+        },
+        {
+                id: 'Outer-Nyarlathotep_beater',
+                name: '阿撒托斯之信使',
+                description: '擊敗奈亞拉托提普',
+                tier: 'GOD',
+                icon: '🌒',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: 'Outer-Nyarlathotep'
+        },
+        {
+                id: 'Outer-Shub-Niggurath_beater',
+                name: '孕育千萬子孫的森之黑山羊',
+                description: '擊敗莎布-尼古拉絲',
+                tier: 'GOD',
+                icon: '🌘',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: 'Outer-Shub-Niggurath'
+        },
+        {
+                id: 'Outer-Yog-Sothoth_beater',
+                name: '虛空之扉超越者',
+                description: '擊敗猶格-索托斯',
+                tier: 'GOD',
+                icon: '🌕',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: 'Outer-Yog-Sothoth'
+        },
+        {
+                id: 'Outer-Daoloth_beater',
+                name: '面紗粉飾者',
+                description: '擊敗道羅斯',
+                tier: 'GOD',
+                icon: '🌓',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: 'Outer-Daoloth'
+        },
+        {
+                id: 'Outer-Ghroth_beater',
+                name: '毀滅之先驅',
+                description: '擊敗格赫羅斯',
+                tier: 'GOD',
+                icon: '🌗',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: 'Outer-Ghroth'
+        },
+        {
+                id: 'Outer-Tulzscha_beater',
+                name: '獨尊之聖主',
+                description: '擊敗圖爾茲查',
+                tier: 'GOD',
+                icon: '🌔',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: 'Outer-Tulzscha'
+        },
+        {
+                id: 'Outer-Abhoth_beater',
+                name: '邪魔之祖',
+                description: '擊敗阿布霍斯',
+                tier: 'GOD',
+                icon: '🌒',
+                category: 'COMBAT',
+                requirement: 1,
+                checkFunction: 'checkBossKill',
+                bossId: 'Outer-Abhoth'
+        },
 
         // 財富類
         {
@@ -1111,6 +1426,26 @@ export const ACHIEVEMENTS = [
                 checkFunction: 'checkItemCollection',
                 requiredItems: ['xmas-sword', 'xmas-helmet', 'xmas-armor', 'xmas-greaves']
         },
+        {
+                id: 'The-Great-Old-Collector',
+                name: '舊日遺物物收藏家',
+                description: '收集所有舊日遺物',
+                tier: 'GOD',
+                icon: '🧿',
+                category: 'COLLECTION',
+                checkFunction: 'checkItemCollection',
+                requiredItems: ['heart-of-Azathoth', 'shape-of-Nyarlathotep', 'uterus-of-Shub-Niggurath', 'key-of-Yog-Sothoth', 'scales-of-Daoloth', 'eye-of-Ghroth', 'flame-of-Tulzscha', 'dust-of-Abhoth']
+        },
+        {
+                id: 'The-Great-Old-One',
+                name: '舊日支配者',
+                description: '收集所有舊日聖物',
+                tier: 'GOD',
+                icon: '🧿',
+                category: 'COLLECTION',
+                checkFunction: 'checkItemCollection',
+                requiredItems: ['The-Great-Old-sword', 'The-Great-Old-helmet', 'The-Great-Old-armor', 'The-Great-Old-greaves', 'The-Great-Old-necklace', 'The-Great-Old-ring']
+        },
 
         // 鍛造武器成就
         {
@@ -1153,5 +1488,70 @@ export const ACHIEVEMENTS = [
                 checkFunction: 'checkCraftedWeapon',
                 targetWeapon: 'w22'
         },
+
+        // 舊日裝備成就
+        {
+                id: 'craft_Great_sword',
+                name: '《誓約-猛擊》',
+                description: '鍛造武器《舊日誓約之劍》',
+                category: 'COLLECTION',
+                tier: 'GOD',
+                icon: '🛠️',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'The-Great-Old_sword'
+        },
+        {
+                id: 'craft_Great_helmet',
+                name: '《誓約-視界》',
+                description: '鍛造武器《舊日誓約之視》',
+                category: 'COLLECTION',
+                tier: 'GOD',
+                icon: '🛠️',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'The-Great-Old_helmet'
+        },
+        {
+                id: 'craft_Great_armor',
+                name: '《誓約-守護》',
+                description: '鍛造武器《舊日誓約之盔》',
+                category: 'COLLECTION',
+                tier: 'GOD',
+                icon: '🛠️',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'The-Great-Old_armor'
+        },
+        {
+                id: 'craft_Great_greaves',
+                name: '《誓約-迅捷》',
+                description: '鍛造武器《舊日誓約之脛》',
+                category: 'COLLECTION',
+                tier: 'GOD',
+                icon: '🛠️',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'The-Great-Old_greaves'
+        },
+        {
+                id: 'craft_Great_necklace',
+                name: '《誓約-束縛》',
+                description: '鍛造武器《舊日誓約之鍊》',
+                category: 'COLLECTION',
+                tier: 'GOD',
+                icon: '🛠️',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'The-Great-Old_necklace'
+        },
+        {
+                id: 'craft_Great_ring',
+                name: '《誓約-靈魂》',
+                description: '鍛造武器《舊日誓約之環》',
+                category: 'COLLECTION',
+                tier: 'GOD',
+                icon: '🛠️',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'The-Great-Old_ring'
+        },
+
+
+
 
 ];

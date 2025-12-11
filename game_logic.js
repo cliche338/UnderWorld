@@ -8,14 +8,15 @@ import {
     setIsInventoryOpen, isCombatActive, gameActive,
 } from './state.js';
 
-import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, ACHIEVEMENTS, ACHIEVEMENT_TIERS, ACHIEVEMENT_CATEGORIES, CRAFTING_RECIPES, DUNGEON_BOSSES } from './config.js';
+import { MONSTERS, ITEMS, STONE_CONVERSION_RATE, STARTER_LOOT_IDS, UPGRADE_COST, MATERIALS_DATA, ACHIEVEMENTS, ACHIEVEMENT_TIERS, ACHIEVEMENT_CATEGORIES, CRAFTING_RECIPES, DUNGEON_BOSSES, CHALLENGE_BOSSES } from './config.js';
 
 import {
     logMessage, updateDisplay, elements,
     renderInventoryList, renderMaterialInventory,
     updateExchangeDisplay, getItemIcon,
     renderVisualEquipment, showToast, // 新增浮動提示
-    showBossSelectionModal, hideBossSelectionModal, renderBossList, showDungeonChallengeModal
+    showBossSelectionModal, hideBossSelectionModal, renderBossList, showDungeonChallengeModal,
+    showChallengeSelectionModal, hideChallengeSelectionModal, renderChallengeBossList
 } from './ui_manager.js';
 
 export { logMessage }; // Export logMessage for main.js usage
@@ -23,9 +24,9 @@ export { logMessage }; // Export logMessage for main.js usage
 export function showUpdateLog() {
     const updateLog = `
 
-- 移除副本挑戰
-- 新增試煉之門 : 可自由選擇要挑戰的boss
-- 新增堆疊道具批量販賣UI
+- 新增"舊日"副本挑戰，首次擊敗奧利哈鋼之神開啟
+- 新增舊日遺物、舊日聖物、舊日收藏成就
+- 本次更新後，短期內將不會有重大更新
 
     `;
 
@@ -33,7 +34,7 @@ export function showUpdateLog() {
         elements.codexFilters.style.display = 'none';
     }
 
-    const title = "v4.5 遊戲更新日誌";
+    const title = "v4.6 遊戲更新日誌";
     openModal(title, updateLog, 'update-modal');
 }
 
@@ -90,6 +91,28 @@ export function checkClassEvolution() {
         // 暫時不隱藏父容器，避免影響副本入口顯示
     }
 }
+
+// =========================================================
+// 挑戰系統 - 檢查解鎖狀態並顯示/隱藏入口
+// =========================================================
+export function checkChallengeSystemUnlock() {
+    if (!elements.challengeEntrancePanel) return;
+
+    // 檢查是否已解鎖挑戰系統
+    if (State.permanentData.challengeSystemUnlocked) {
+        // 顯示挑戰入口面板
+        elements.challengeEntrancePanel.style.display = 'flex';
+
+        // 確保父容器也顯示
+        if (elements.topCentralAdventures) {
+            elements.topCentralAdventures.style.display = 'flex';
+        }
+    } else {
+        // 隱藏挑戰入口面板
+        elements.challengeEntrancePanel.style.display = 'none';
+    }
+}
+
 
 export function handleEvolutionChallenge() {
     console.log("Opening Evolution Confirmation Modal");
@@ -770,7 +793,7 @@ export function refreshShopInventory() {
         // 合成材料類 - 特殊Boss掉落
         'heart-of-the-sea', 'heart-of-the-sky', 'wings-of-the-swallow', 'wings-of-the-shark',
         'heart-broken-scabbard', 'heart-broken-blade', 'heart-broken-jaw', 'heart-design-drawing',
-        'broken-fire-wings', 'heart-of-phoenix', 'flame-of-the-truth',
+        'broken-fire-wings', 'heart-of-phoenix', 'flame-of-the-truth', 'broken-moon',
 
         // 合成武器
         'w18', 'w19', 'w21',
@@ -786,7 +809,15 @@ export function refreshShopInventory() {
 
         // 活動限定裝備
         'w20', 'n11', 'r12',
-        'xmas-sword', 'xmas-helmet', 'xmas-armor', 'xmas-greaves'
+        'xmas-sword', 'xmas-helmet', 'xmas-armor', 'xmas-greaves',
+
+        // 舊日遺物（Outer Gods relics）
+        'heart-of-Azathoth', 'shape-of-Nyarlathotep', 'uterus-of-Shub-Niggurath', 'key-of-Yog-Sothoth',
+        'scales-of-Daoloth', 'eye-of-Ghroth', 'flame-of-Tulzscha', 'dust-of-Abhoth',
+
+        // 舊日裝備（Old Ones equipment）
+        'The-Great-Old_sword', 'The-Great-Old_helmet', 'The-Great-Old_armor',
+        'The-Great-Old_greaves', 'The-Great-Old_necklace', 'The-Great-Old_ring'
     ];
 
     const sellableItems = ITEMS.filter(item =>
@@ -1229,7 +1260,7 @@ export function getDungeonBoss(bossId) {
     const boss = MONSTERS.find(m => m.id === targetBossId);
 
     if (boss) {
-        logMessage(`🔥 你感應到強大的氣息... Boss：${boss.name} 準備就緒！`, 'orange');
+
 
         // 🚨 關鍵：返回時確保 Boss 數據被複製，且包含 isDungeonBoss 旗標
         const monsterData = JSON.parse(JSON.stringify(boss));
@@ -1266,10 +1297,90 @@ export function handleDungeonBossCombat() {
     switchUIMode(true); // 進入戰鬥模式 (顯示攻擊/逃跑按鈕)
 
     // 3. 輸出遭遇日誌
-    logMessage(`🚨 副本挑戰啟動！遭遇 Boss: ${State.currentMonster.name} (HP: ${State.currentMonster.hp})！`, 'red');
+    logMessage(`🚨 副本挑戰啟動！Boss: ${State.currentMonster.name} (HP: ${State.currentMonster.hp}, ATK: ${State.currentMonster.attack}, DEF: ${State.currentMonster.defense})！`, 'red');
     logMessage(`--- 請選擇行動 ---`, 'white');
 
     updateDisplay();
+}
+
+// =========================================================
+// 挑戰系統 (神之試煉) - BOSS選擇與管理
+// =========================================================
+
+// 儲存當前選中的挑戰Boss ID
+let selectedChallengeBossId = null;
+
+// 獲取所有可挑戰的Boss列表
+export function getChallengeBossList() {
+    return CHALLENGE_BOSSES.map(bossId => {
+        const boss = MONSTERS.find(m => m.id === bossId);
+        return boss ? JSON.parse(JSON.stringify(boss)) : null;
+    }).filter(b => b !== null);
+}
+
+// 選擇Boss並直接開始挑戰
+export function selectChallengeBoss(bossId) {
+    selectedChallengeBossId = bossId;
+    const boss = getChallengeBoss(bossId);
+
+    if (boss) {
+        // 隱藏Boss選擇列表
+        hideChallengeSelectionModal();
+        // 直接開始挑戰
+        startChallengeCombat(boss);
+    }
+}
+
+export function getChallengeBoss(bossId) {
+    const targetBossId = bossId || selectedChallengeBossId;
+
+    if (!targetBossId) {
+        logMessage("❌ 未選擇Boss", 'red');
+        return null;
+    }
+
+    const boss = MONSTERS.find(m => m.id === targetBossId);
+
+    if (boss) {
+        logMessage(`舊日外神${boss.name}正在凝視你`, 'purple');
+        const monsterData = JSON.parse(JSON.stringify(boss));
+        return monsterData;
+    }
+
+    logMessage("❌ 系統錯誤：找不到該Boss", 'red');
+    return null;
+}
+
+// 開始挑戰戰鬥
+export function startChallengeCombat(boss) {
+    if (!boss) {
+        logMessage("❌ 無法開始挑戰，Boss數據無效", 'red');
+        return;
+    }
+
+    if (!State.gameActive) {
+        logMessage("請先選擇職業開始冒險！", 'red');
+        return;
+    }
+
+    // 設定當前怪物
+    State.setCurrentMonster(boss);
+    State.setIsCombatActive(true);
+
+    // 切換UI模式
+    switchUIMode(true);
+
+    logMessage(`⚡ ${boss.name} (HP: ${boss.hp}, ATK: ${boss.attack}, DEF: ${boss.defense})！`, 'purple');
+    logMessage(`--- 請選擇行動 ---`, 'white');
+
+    updateDisplay();
+}
+
+// 顯示挑戰Boss列表
+export function showChallengeModal() {
+    const bossList = getChallengeBossList();
+    renderChallengeBossList(bossList, selectChallengeBoss);
+    showChallengeSelectionModal();
 }
 
 export function startCombat() {
@@ -1943,6 +2054,26 @@ export function endCombat(isVictory) {
         // Trigger achievement check AFTER all stats (kills, gold, boss kills) are updated
         checkAchievements();
 
+        // =========================================================
+        // 通用Boss掉落系統 (Universal Boss Drops)
+        // =========================================================
+        // 檢查boss是否有定義drops屬性，如果有則隨機掉落一個
+        if (enemy.drops && Array.isArray(enemy.drops) && enemy.drops.length > 0) {
+            // 從drops陣列中隨機選擇一個物品
+            const randomIndex = Math.floor(Math.random() * enemy.drops.length);
+            const dropItemId = enemy.drops[randomIndex];
+
+            const droppedItem = getItemById(dropItemId);
+            if (droppedItem) {
+                addItemToInventory(droppedItem);
+                logMessage(`✨ 從 ${enemy.name} 獲得：[${droppedItem.name}]！`, 'gold');
+            }
+        }
+
+        // =========================================================
+        // 特殊Boss專屬掉落 (Special Boss Drops)
+        // =========================================================
+
         // 擊敗 奧利哈鋼幻影
         if (enemy.id === 'ori-shadow') {
 
@@ -2040,6 +2171,13 @@ export function endCombat(isVictory) {
             const dustCount = 10;
             State.player.materials[dustId] = (State.player.materials[dustId] || 0) + dustCount;
             logMessage(`✨ 獲得稀有素材 [奧利哈鋼粉塵] x${dustCount}！`, 'gold');
+
+            // ⭐ 解鎖挑戰系統
+            if (!State.permanentData.challengeSystemUnlocked) {
+                State.permanentData.challengeSystemUnlocked = true;
+                State.savePermanentData();
+                logMessage(`⚡ 【系統解鎖】舊日試煉已開啟！`, 'purple');
+            }
         }
 
         //擊敗 猩紅尼古拉

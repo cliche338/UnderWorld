@@ -6,7 +6,7 @@ export let isCombatActive = false;
 export let gameActive = false;
 export let currentUsername = null;
 export let isInventoryOpen = false;
-export let permanentData = { stones: 0, hpBonus: 0, attackBonus: 0, defenseBonus: 0, knownItems: [], achievements: [] };
+export let permanentData = { stones: 0, hpBonus: 0, attackBonus: 0, defenseBonus: 0, knownItems: [], achievements: [], challengeSystemUnlocked: false };
 export let currentUpgradeMultiplier = 1; // 1, 10, or 'MAX'
 
 export let isReselecting = false;
@@ -98,6 +98,7 @@ export function loadPermanentData() {
         permanentData.critChanceBonus = parseFloat(loadedData.critChanceBonus) || 0;
         permanentData.knownItems = Array.isArray(loadedData.knownItems) ? loadedData.knownItems : [];
         permanentData.achievements = Array.isArray(loadedData.achievements) ? loadedData.achievements : [];
+        permanentData.challengeSystemUnlocked = loadedData.challengeSystemUnlocked || false;
 
         // ✅ 新增診斷日誌！
         console.log("DIAGNOSTICS: Loaded permanent HP Bonus:", permanentData.hpBonus, "Type:", typeof permanentData.hpBonus);
@@ -111,6 +112,7 @@ export function loadPermanentData() {
         permanentData.critChanceBonus = 0;
         permanentData.knownItems = [];
         permanentData.achievements = [];
+        permanentData.challengeSystemUnlocked = false;
     }
 }
 

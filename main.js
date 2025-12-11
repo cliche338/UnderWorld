@@ -1,5 +1,5 @@
 import * as GameLogic from './game_logic.js';
-import { elements, updateExchangeDisplay, hideDungeonChallengeModal, showDungeonChallengeModal, toggleAchievements, renderBossList, showBossSelectionModal, hideBossSelectionModal } from './ui_manager.js';
+import { elements, updateExchangeDisplay, hideDungeonChallengeModal, showDungeonChallengeModal, toggleAchievements, renderBossList, showBossSelectionModal, hideBossSelectionModal, hideChallengeSelectionModal } from './ui_manager.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -117,6 +117,21 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.dungeonLeaveBtn.onclick = () => {
             hideDungeonChallengeModal();
             GameLogic.logMessage("⚔️ 決定暫時撤退，繼續探索！", 'white');
+        };
+    }
+
+    // 10. 綁定挑戰系統按鈕 (神之試煉)
+    if (elements.challengeEnterBtn) {
+        elements.challengeEnterBtn.onclick = () => {
+            GameLogic.showChallengeModal();
+        };
+    }
+
+    // 綁定挑戰選擇模態框的關閉按鈕
+    if (elements.challengeSelectionCloseBtn) {
+        elements.challengeSelectionCloseBtn.onclick = () => {
+            hideChallengeSelectionModal();
+            GameLogic.logMessage("🚪 取消挑戰", 'white');
         };
     }
 

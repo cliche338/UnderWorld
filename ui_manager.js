@@ -18,6 +18,7 @@ import {
     calculateTotalDefense, // 確保已引入
     calculateTotalMaxHp,
     handleReturnJewel, // 添加回歸玉處理函數
+    checkChallengeSystemUnlock, // 添加挑戰系統檢查函數
 } from './game_logic.js'; //
 
 
@@ -211,6 +212,14 @@ export const elements = {
     sellQuantityConfirmBtn: document.getElementById('sell-quantity-confirm-btn'),
     sellQuantityCancelBtn: document.getElementById('sell-quantity-cancel-btn'),
     sellQuantityCloseBtn: document.getElementById('sell-quantity-close-btn'),
+
+    // Challenge System (神之試煉)
+    challengeEntrancePanel: document.getElementById('challenge-entrance-panel'),
+    challengeEnterBtn: document.getElementById('challenge-enter-btn'),
+    challengeSelectionModalBackdrop: document.getElementById('challenge-selection-modal-backdrop'),
+    challengeSelectionModal: document.getElementById('challenge-selection-modal'),
+    challengeBossListContainer: document.getElementById('challenge-boss-list-container'),
+    challengeSelectionCloseBtn: document.getElementById('challenge-selection-close-btn'),
 };
 
 // DEBUG: Check if critical elements are found
@@ -611,6 +620,9 @@ export function updateDisplay() {
         }
     }
 
+    // 7.5 更新挑戰系統顯示
+    checkChallengeSystemUnlock();
+
     // 8. 更新戰鬥顯示 (如果戰鬥中)
     if (isCombatActive && elements.combatArea && elements.combatArea.style.display !== 'none') {
         updateCombatDisplay();
@@ -820,12 +832,160 @@ export function showDungeonChallengeModal(boss) {
     elements.dungeonChallengeInfo.innerHTML = infoHtml;
     elements.dungeonChallengeBackdrop.style.display = 'flex';
 
-    logMessage(`🔔 準備挑戰 Boss: ${boss.name}`, 'orange');
+
 }
 
 export function hideDungeonChallengeModal() {
     if (!elements.dungeonChallengeBackdrop) return;
     elements.dungeonChallengeBackdrop.style.display = 'none';
+}
+
+// =========================================================
+// 挑戰系統 UI Functions (藍紫色主題)
+// =========================================================
+
+export function showChallengeSelectionModal() {
+    if (!elements.challengeSelectionModalBackdrop) return;
+    elements.challengeSelectionModalBackdrop.style.display = 'flex';
+}
+
+export function hideChallengeSelectionModal() {
+    if (!elements.challengeSelectionModalBackdrop) return;
+    elements.challengeSelectionModalBackdrop.style.display = 'none';
+}
+
+export function renderChallengeBossList(bosses, onSelectCallback) {
+    if (!elements.challengeBossListContainer) return;
+
+    elements.challengeBossListContainer.innerHTML = '';
+
+    if (!bosses || bosses.length === 0) {
+        elements.challengeBossListContainer.innerHTML = '<p style="color: #999;">目前沒有可挑戰的Boss</p>';
+        return;
+    }
+
+    bosses.forEach(boss => {
+        const bossCard = document.createElement('div');
+        bossCard.style.cssText = `
+            position: relative;
+            background: linear-gradient(135deg, #1a0a30 0%, #2a1540 100%);
+            border: 2px solid #8b5cf6;
+            border-radius: 8px;
+            padding: 20px;
+            padding-right: 100px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        `;
+
+        // Boss 資訊區塊（包含圖片）
+        const bossInfo = document.createElement('div');
+        bossInfo.style.cssText = 'flex: 1; text-align: left; display: flex; align-items: center; gap: 15px;';
+
+        // Boss 圖片或圖示
+        let imageHtml = '';
+        if (boss.image) {
+            imageHtml = `
+                <img src="${boss.image}" alt="${boss.name}" 
+                     style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; background: rgba(139, 92, 246, 0.2); padding: 5px; border: 1px solid #8b5cf6;">
+            `;
+        } else {
+            imageHtml = `
+                <div style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 3em; background: rgba(139, 92, 246, 0.2); border-radius: 8px; border: 1px solid #8b5cf6;">
+                    👹
+                </div>
+            `;
+        }
+
+        // 獲取掉落物名稱（如果有）
+        let dropsHtml = '';
+        if (boss.drops && boss.drops.length > 0) {
+            const dropNames = boss.drops.map(dropId => {
+                let item = ITEMS.find(i => i.id === dropId);
+                if (!item) {
+                    item = MATERIALS_DATA.find(m => m.id === dropId);
+                }
+                return item ? item.name : dropId;
+            });
+
+            dropsHtml = `
+                <div style="margin-top: 10px; padding: 8px; background: rgba(139, 92, 246, 0.15); border-radius: 5px; border: 1px solid rgba(139, 92, 246, 0.4);">
+                    <div style="font-size: 0.85em; color: #c4b5fd; margin-bottom: 5px;">🎁 可能掉落:</div>
+                    <div style="font-size: 0.85em; color: #a78bfa; max-height: 40px; overflow-y: auto;">
+                        ${dropNames.join(', ')}
+                    </div>
+                </div>
+            `;
+        }
+
+        bossInfo.innerHTML = `
+            ${imageHtml}
+            <div style="flex: 1;">
+                <div style="font-size: 1.3em; font-weight: bold; color: #a78bfa; margin-bottom: 8px;">
+                    ${boss.name}
+                </div>
+                <div style="display: flex; gap: 15px; font-size: 0.95em; color: #ddd;">
+                    <span>❤️ HP: <strong style="color: #e74c3c;">${boss.hp}</strong></span>
+                    <span>⚔️ ATK: <strong style="color: #a78bfa;">${boss.attack}</strong></span>
+                    <span>🛡️ DEF: <strong style="color: #6366f1;">${boss.defense || 0}</strong></span>
+                </div>
+              
+                ${dropsHtml}
+            </div>
+        `;
+
+        // 選擇按鈕（藍紫色主題）
+        const selectBtn = document.createElement('button');
+        selectBtn.textContent = '選擇';
+        selectBtn.style.cssText = `
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            border: 2px solid #a78bfa;
+            color: white;
+            padding: 8px 20px;
+            font-size: 0.95em;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        `;
+
+        selectBtn.onmouseover = () => {
+            selectBtn.style.background = 'linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%)';
+            selectBtn.style.transform = 'scale(1.05)';
+            selectBtn.style.boxShadow = '0 0 15px rgba(139, 92, 246, 0.6)';
+        };
+        selectBtn.onmouseout = () => {
+            selectBtn.style.background = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)';
+            selectBtn.style.transform = 'scale(1)';
+            selectBtn.style.boxShadow = 'none';
+        };
+
+        selectBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (onSelectCallback) {
+                onSelectCallback(boss.id);
+            }
+        };
+
+        // Hover 效果（藍紫色）
+        bossCard.onmouseover = () => {
+            bossCard.style.borderColor = '#c4b5fd';
+            bossCard.style.boxShadow = '0 0 20px rgba(139, 92, 246, 0.5)';
+            bossCard.style.transform = 'translateY(-2px)';
+        };
+        bossCard.onmouseout = () => {
+            bossCard.style.borderColor = '#8b5cf6';
+            bossCard.style.boxShadow = 'none';
+            bossCard.style.transform = 'translateY(0)';
+        };
+
+        bossCard.appendChild(bossInfo);
+        bossCard.appendChild(selectBtn);
+        elements.challengeBossListContainer.appendChild(bossCard);
+    });
 }
 
 export function updateExchangeDisplay() {
