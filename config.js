@@ -138,7 +138,7 @@ export const ITEMS = [
         },
         {
                 id: 'w8', name: '澄澈之鋒刃', type: 'weapon', attack: 75, critChance: 0.15, image: 'icon/weapon/w8.png',
-                value: 520, price: 1220, rarity: 5, intro: '刀刃澄澈可透光的冰晶刀'
+                value: 520, price: 1220, rarity: 6, intro: '刀刃澄澈可透光的冰晶刀'
         },
         {
                 id: 'w9', name: '冰晶樹節枝', type: 'weapon', attack: 85, critChance: -0.25, image: 'icon/weapon/w9.png',
@@ -1142,6 +1142,16 @@ export const ACHIEVEMENTS = [
                 icon: '🛠️',
                 checkFunction: 'checkCraftedWeapon',
                 targetWeapon: 'w21'
+        },
+        {
+                id: 'craft_the_w22',
+                name: '冰月寒鋒凝霜華',
+                description: '鍛造武器《霜月之輪刃》',
+                category: 'COLLECTION',
+                tier: 'LEGENDARY',
+                icon: '🛠️',
+                checkFunction: 'checkCraftedWeapon',
+                targetWeapon: 'w22'
         },
 
 ];
