@@ -250,23 +250,23 @@ export const ITEMS = [
                 value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之劍'
         },
         {
-                id: 'The-Great-Old_helmet', name: '舊日誓約之視', type: 'helmet', hp: 1750, attack: 1120, defense: 250, image: 'icon/helmet/The-Great-Old_sword.png',
+                id: 'The-Great-Old_helmet', name: '舊日誓約之視', type: 'helmet', hp: 1750, attack: 1120, defense: 250, image: 'icon/helmet/The-Great-Old_helmet.png',
                 value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之眼'
         },
         {
-                id: 'The-Great-Old_armor', name: '舊日誓約之盔', type: 'armor', hp: 1275, defense: 455, image: 'icon/armor/The-Great-Old_sword.png',
+                id: 'The-Great-Old_armor', name: '舊日誓約之盔', type: 'armor', hp: 1275, defense: 455, image: 'icon/armor/The-Great-Old_armor.png',
                 value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之盔'
         },
         {
-                id: 'The-Great-Old_greaves', name: '舊日誓約之脛', type: 'greaves', attack: 1015, defense: 355, hp: 330, image: 'icon/greaves/The-Great-Old_sword.png',
+                id: 'The-Great-Old_greaves', name: '舊日誓約之脛', type: 'greaves', attack: 1015, defense: 355, hp: 330, image: 'icon/greaves/The-Great-Old_greaves.png',
                 value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之脛'
         },
         {
-                id: 'The-Great-Old_necklace', name: '舊日誓約之鍊', type: 'necklace', attack: 615, defense: 135, hp: 340, image: 'icon/necklace/The-Great-Old_sword.png',
+                id: 'The-Great-Old_necklace', name: '舊日誓約之鍊', type: 'necklace', attack: 615, defense: 135, hp: 340, image: 'icon/necklace/The-Great-Old_necklace.png',
                 value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之鍊'
         },
         {
-                id: 'The-Great-Old_ring', name: '舊日誓約之環', type: 'ring', attack: 415, defense: 235, hp: 670, image: 'icon/ring/The-Great-Old_sword.png',
+                id: 'The-Great-Old_ring', name: '舊日誓約之環', type: 'ring', attack: 415, defense: 235, hp: 670, image: 'icon/ring/The-Great-Old_ring.png',
                 value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之環'
         },
 
