@@ -249,26 +249,6 @@ export const ITEMS = [
                 id: 'The-Great-Old_sword', name: '舊日誓約之劍', type: 'weapon', attack: 2215, defense: 535, hp: 700, image: 'icon/weapon/The-Great-Old_sword.png',
                 value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之劍'
         },
-        {
-                id: 'The-Great-Old_helmet', name: '舊日誓約之視', type: 'helmet', hp: 1750, attack: 1120, defense: 250, image: 'icon/helmet/The-Great-Old_helmet.png',
-                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之眼'
-        },
-        {
-                id: 'The-Great-Old_armor', name: '舊日誓約之盔', type: 'armor', hp: 1275, defense: 455, image: 'icon/armor/The-Great-Old_armor.png',
-                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之盔'
-        },
-        {
-                id: 'The-Great-Old_greaves', name: '舊日誓約之脛', type: 'greaves', attack: 1015, defense: 355, hp: 330, image: 'icon/greaves/The-Great-Old_greaves.png',
-                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之脛'
-        },
-        {
-                id: 'The-Great-Old_necklace', name: '舊日誓約之鍊', type: 'necklace', attack: 615, defense: 135, hp: 340, image: 'icon/necklace/The-Great-Old_necklace.png',
-                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之鍊'
-        },
-        {
-                id: 'The-Great-Old_ring', name: '舊日誓約之環', type: 'ring', attack: 415, defense: 235, hp: 670, image: 'icon/ring/The-Great-Old_ring.png',
-                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之環'
-        },
 
         // 頭盔
         {
@@ -326,6 +306,10 @@ export const ITEMS = [
         {
                 id: 'h10', name: '王者頭冠', type: 'helmet', hp: 180, attack: 40, defense: 40, image: 'icon/helmet/h10.png',
                 value: 1200, price: 2000, rarity: 6, intro: '古代失落國度帝王的頭冠'
+        },
+        {
+                id: 'The-Great-Old_helmet', name: '舊日誓約之視', type: 'helmet', hp: 1750, attack: 1120, defense: 250, image: 'icon/helmet/The-Great-Old_helmet.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之眼'
         },
 
         // 胸甲
@@ -385,6 +369,11 @@ export const ITEMS = [
                 id: 'a10', name: '守護者之鎧', type: 'armor', hp: 450, defense: 100, image: 'icon/armor/a10.png',
                 value: 1800, price: 3800, rarity: 6, intro: '失落帝國守護者的鎧甲\n在末日時仍然堅守國度'
         },
+        {
+                id: 'The-Great-Old_armor', name: '舊日誓約之盔', type: 'armor', hp: 1275, defense: 455, image: 'icon/armor/The-Great-Old_armor.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之盔'
+        },
+
 
         // 護脛
         {
@@ -431,6 +420,11 @@ export const ITEMS = [
                 id: 'g7', name: '泰坦合金護脛', type: 'greaves', defense: 90, hp: 80, image: 'icon/greaves/g7.png',
                 value: 900, price: 1600, rarity: 5, intro: '泰坦甲殼融合金\n製成的堅硬護脛'
         },
+        {
+                id: 'The-Great-Old_greaves', name: '舊日誓約之脛', type: 'greaves', attack: 1015, defense: 355, hp: 330, image: 'icon/greaves/The-Great-Old_greaves.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之脛'
+        },
+
 
         // 項鍊
         {
@@ -489,6 +483,11 @@ export const ITEMS = [
                 id: 'n11', name: '影之嘆息', type: 'necklace', attack: 175, hp: 250, defense: 55, image: 'icon/necklace/n11.png',
                 value: 2750, price: 4800, rarity: 9, intro: '蘊含黑影之力的神石'
         },
+        {
+                id: 'The-Great-Old_necklace', name: '舊日誓約之鍊', type: 'necklace', attack: 615, defense: 135, hp: 340, image: 'icon/necklace/The-Great-Old_necklace.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之鍊'
+        },
+
 
         // 戒指
         {
@@ -550,6 +549,10 @@ export const ITEMS = [
         {
                 id: 'r12', name: '光之低語', type: 'ring', attack: 150, defense: 150, image: 'icon/ring/r12.png',
                 value: 2750, price: 4800, rarity: 10, intro: '蘊含皎月之力的神石'
+        },
+        {
+                id: 'The-Great-Old_ring', name: '舊日誓約之環', type: 'ring', attack: 415, defense: 235, hp: 670, image: 'icon/ring/The-Great-Old_ring.png',
+                value: 75000, price: 111520, rarity: 11, intro: '和外神簽訂契約的舊日之環'
         },
 
         // 藥水
