@@ -1426,26 +1426,7 @@ export const ACHIEVEMENTS = [
                 checkFunction: 'checkItemCollection',
                 requiredItems: ['xmas-sword', 'xmas-helmet', 'xmas-armor', 'xmas-greaves']
         },
-        {
-                id: 'The-Great-Old-Collector',
-                name: '舊日遺物物收藏家',
-                description: '收集所有舊日遺物',
-                tier: 'GOD',
-                icon: '🧿',
-                category: 'COLLECTION',
-                checkFunction: 'checkItemCollection',
-                requiredItems: ['heart-of-Azathoth', 'shape-of-Nyarlathotep', 'uterus-of-Shub-Niggurath', 'key-of-Yog-Sothoth', 'scales-of-Daoloth', 'eye-of-Ghroth', 'flame-of-Tulzscha', 'dust-of-Abhoth']
-        },
-        {
-                id: 'The-Great-Old-One',
-                name: '舊日支配者',
-                description: '收集所有舊日聖物',
-                tier: 'GOD',
-                icon: '🧿',
-                category: 'COLLECTION',
-                checkFunction: 'checkItemCollection',
-                requiredItems: ['The-Great-Old-sword', 'The-Great-Old-helmet', 'The-Great-Old-armor', 'The-Great-Old-greaves', 'The-Great-Old-necklace', 'The-Great-Old-ring']
-        },
+
 
         // 鍛造武器成就
         {
@@ -1550,7 +1531,26 @@ export const ACHIEVEMENTS = [
                 checkFunction: 'checkCraftedWeapon',
                 targetWeapon: 'The-Great-Old_ring'
         },
-
+        {
+                id: 'The-Great-Old-Collector',
+                name: '舊日遺物物收藏家',
+                description: '收集所有舊日遺物',
+                tier: 'GOD',
+                icon: '🧿',
+                category: 'COLLECTION',
+                checkFunction: 'checkItemCollection',
+                requiredItems: ['heart-of-Azathoth', 'shape-of-Nyarlathotep', 'uterus-of-Shub-Niggurath', 'key-of-Yog-Sothoth', 'scales-of-Daoloth', 'eye-of-Ghroth', 'flame-of-Tulzscha', 'dust-of-Abhoth']
+        },
+        {
+                id: 'The-Great-Old-One',
+                name: '舊日支配者',
+                description: '收集所有舊日聖物',
+                tier: 'GOD',
+                icon: '🧿',
+                category: 'COLLECTION',
+                checkFunction: 'checkItemCollection',
+                requiredItems: ['The-Great-Old_sword', 'The-Great-Old_helmet', 'The-Great-Old_armor', 'The-Great-Old_greaves', 'The-Great-Old_necklace', 'The-Great-Old_ring']
+        },
 
 
 
