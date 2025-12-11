@@ -1533,7 +1533,7 @@ export const ACHIEVEMENTS = [
         },
         {
                 id: 'The-Great-Old-Collector',
-                name: '舊日遺物物收藏家',
+                name: '舊日遺物收藏家',
                 description: '收集所有舊日遺物',
                 tier: 'GOD',
                 icon: '🧿',
